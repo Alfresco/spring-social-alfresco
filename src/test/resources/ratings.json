@@ -1,0 +1,28 @@
+{
+  "list" : {
+    "pagination" : {
+      "count" : 2,
+      "hasMoreItems" : false,
+      "totalItems" : 2,
+      "skipCount" : 0,
+      "maxItems" : 100
+    },
+    "entries" : [ {
+      "entry" : {
+        "id" : "likes",
+        "aggregate" : {
+          "numberOfRatings" : 1
+        },
+        "ratedAt" : "2012-07-30T17:31:32.242+0000",
+        "myRating" : true
+      }
+    }, {
+      "entry" : {
+        "id" : "fiveStar",
+        "aggregate" : {
+          "numberOfRatings" : 0
+        }
+      }
+    } ]
+  }
+}

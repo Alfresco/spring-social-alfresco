@@ -1,0 +1,23 @@
+{
+  "list" : {
+    "pagination" : {
+      "count" : 1,
+      "hasMoreItems" : false,
+      "skipCount" : 0,
+      "maxItems" : 100
+    },
+      "entries":[
+         {
+          "entry":{
+                     "id":"fred-bloggs-yourcompany-com",
+                     "site":{
+                        "title":"Fred Bloggs's Home",
+                                                "description":"Fred Bloggs's private home site.",
+                        "visibility":"PRIVATE",
+                        "id":"fred-bloggs-yourcompany-com"
+                     }
+                }
+            }
+      ]
+   }
+}

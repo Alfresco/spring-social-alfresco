@@ -1,0 +1,16 @@
+{
+  "list" : {
+    "pagination" : {
+      "count" : 1,
+      "hasMoreItems" : false,
+      "skipCount" : 0,
+      "maxItems" : 100
+    },
+    "entries" : [ {
+      "entry" : {
+        "id" : "ed2444b5-d0c1-440b-b5b8-34a53e578091",
+        "tag" : "test tag 1"
+      }
+    } ]
+  }
+}

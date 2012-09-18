@@ -1,0 +1,32 @@
+{
+  "list" : {
+    "pagination" : {
+      "count" : 2,
+      "hasMoreItems" : false,
+      "skipCount" : 0,
+      "maxItems" : 100
+    },
+    "entries" : [ {
+      "entry" : {
+        "site" : {
+          "id" : "general-test-site",
+          "title" : "General Test Site",
+          "visibility" : "PRIVATE",
+          "description" : "Test Site"
+        },
+        "id" : "general-test-site",
+        "role" : "SiteCollaborator"
+      }
+    }, {
+      "entry" : {
+        "site" : {
+          "id" : "fred-bloggs-yourcompany-com",
+          "visibility" : "PRIVATE",
+          "description" : "Fred Bloggs's private home site."
+        },
+        "id" : "fred-bloggs-yourcompany-com",
+        "role" : "SiteManager"
+      }
+    } ]
+  }
+}

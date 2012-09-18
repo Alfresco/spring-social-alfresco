@@ -1,0 +1,12 @@
+{
+  "entry" : {
+    "site" : {
+      "id" : "fred-bloggs-yourcompany-com",
+      "title" : "Fred Bloggs's Home",
+      "visibility" : "PRIVATE",
+      "description" : "Fred Bloggs's private home site."
+    },
+    "id" : "fred-bloggs-yourcompany-com",
+    "role" : "SiteManager"
+  }
+}

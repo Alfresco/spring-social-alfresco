@@ -1,0 +1,25 @@
+{
+   "entry":{
+      "enabled":true,
+      "lastName":"Bloggs",
+      "location":"Someplace",
+      "avatarId":"93df15f5-dee2-4bfe-8f1d-f0026d548f86",
+      "instantMessageId":"fredb",
+      "googleId":"fred.bloggs@gmail.com",
+      "id":"fred.bloggs@yourcompany.com",
+      "skypeId":"fredb",
+      "description":"A generic person",
+      "company":{
+         "organization":"Alfresco",
+         "address1":"address",
+         "postcode":"post code",
+         "telephone":"0123 456789",
+         "fax":"0123 456789",
+         "email":"enquiries@yourcompany.com"
+      },
+      "firstName":"Fred",
+      "telephone":"0123 456777",
+      "jobTitle":"VP of something",
+      "mobile":"0777 456777"
+   }
+}

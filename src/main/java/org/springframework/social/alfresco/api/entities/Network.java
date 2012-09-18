@@ -9,27 +9,47 @@ import java.util.Date;
 public class Network
 {
     private String           id;
-    private String           type;
-    private boolean          enabled;
     private Date             creationDate;
+    private boolean          isEnabled;
     private ArrayList<Quota> quotas;
-    private String           accountClassName;
-    private String           accountType;
-    private String           accountClassDisplayName;
+    private boolean          paidNetwork;
+    private String           subscriptionLevel;
 
 
-    Network(String id, String type, boolean enabled, Date creationDate, ArrayList<Quota> quotas, String accountClassName,
-            String accountType, String accountClassDisplayName)
+    public void setId(String id)
     {
         this.id = id;
-        this.type = type;
-        this.enabled = enabled;
+    }
+
+
+    public void setIsEnabled(boolean enabled)
+    {
+        this.isEnabled = enabled;
+    }
+
+
+    public void setCreationDate(Date creationDate)
+    {
         this.creationDate = creationDate;
+    }
+
+
+    public void setQuotas(ArrayList<Quota> quotas)
+    {
         this.quotas = quotas;
-        this.accountClassName = accountClassName;
-        this.accountType = accountType;
-        this.accountClassDisplayName = accountClassDisplayName;
-    };
+    }
+
+
+    public void setPaidNetwork(boolean paidNetwork)
+    {
+        this.paidNetwork = paidNetwork;
+    }
+
+
+    public void setSubscriptionLevel(String subscriptionLevel)
+    {
+        this.subscriptionLevel = subscriptionLevel;
+    }
 
 
     public String getId()
@@ -38,15 +58,9 @@ public class Network
     }
 
 
-    public String getType()
-    {
-        return type;
-    }
-
-
     public boolean isEnabled()
     {
-        return enabled;
+        return isEnabled;
     }
 
 
@@ -62,35 +76,39 @@ public class Network
     }
 
 
-    public String getAccountClassName()
+    public boolean isPaidNetwork()
     {
-        return accountClassName;
+        return paidNetwork;
     }
 
 
-    public String getAccountType()
+    public String getSubscriptionLevel()
     {
-        return accountType;
+        return subscriptionLevel;
     }
 
 
-    public String getAccountClassDisplayName()
-    {
-        return accountClassDisplayName;
-    }
-
-
-    public class Quota
+    public static class Quota
     {
         private long   limit;
         private long   usage;
         private String id;
 
 
-        public Quota(long limit, long usage, String id)
+        public void setLimit(long limit)
         {
             this.limit = limit;
+        }
+
+
+        public void setUsage(long usage)
+        {
             this.usage = usage;
+        }
+
+
+        public void setId(String id)
+        {
             this.id = id;
         }
 

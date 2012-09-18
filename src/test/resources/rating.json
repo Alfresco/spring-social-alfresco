@@ -1,0 +1,8 @@
+{
+  "entry" : {
+    "id" : "likes",
+    "aggregate" : {
+      "numberOfRatings" : 0
+    }
+  }
+}

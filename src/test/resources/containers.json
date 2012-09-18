@@ -1,0 +1,24 @@
+{
+   "list":{
+      "pagination":{
+         "count":1,
+         "hasMoreItems":false,
+         "skipCount":0,
+         "maxItems":100
+      },
+      "entries":[
+         {
+            "entry":{
+               "folderId":"documentLibrary",
+               "id":"7fb6c69b-f462-429a-a168-87762f660c65"
+            }
+         },
+         {
+            "entry":{
+               "folderId":"documentLibrary2",
+               "id":"7fb6c69b-f462-429a-a168-87762f660c62"
+            }
+         }    
+      ]
+   }
+}

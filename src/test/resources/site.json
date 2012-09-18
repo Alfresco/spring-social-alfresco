@@ -1,0 +1,8 @@
+{
+      "entry":{
+         "title":"Fred Blogg's Home",
+         "description":"Fred Blogg's private home site.",
+         "visibility":"PRIVATE",
+         "id":"fred-bloggs-yourcompany-com"
+      }
+}
