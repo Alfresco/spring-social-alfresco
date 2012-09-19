@@ -23,7 +23,6 @@ import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.entities.people.Activity;
 import org.springframework.social.alfresco.api.entities.people.Person;
 import org.springframework.social.alfresco.api.entities.people.Preference;
-import org.springframework.social.alfresco.api.entities.people.SiteFavorite;
 import org.springframework.social.alfresco.api.entities.people.SiteMembership;
 
 
@@ -38,7 +37,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Network network = mapper.readValue(new File("src/test/resources/network.json"), Network.class);
+        Entry<Network> network = mapper.readValue(new File("src/test/resources/network.json"), mapper.getTypeFactory().constructParametricType(Entry.class, Network.class));
     }
 
 
@@ -148,7 +147,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Entries<SiteFavorite> siteFavorites = mapper.readValue(new File("src/test/resources/sitefavorites.json"), mapper.getTypeFactory().constructParametricType(Entries.class, SiteFavorite.class));
+        Entries<Site> siteFavorites = mapper.readValue(new File("src/test/resources/sitefavorites.json"), mapper.getTypeFactory().constructParametricType(Entries.class, Site.class));
     }
 
 
@@ -163,7 +162,7 @@ public class JsonValidator
 
 
     @Test
-    public void TestPrefernces()
+    public void TestPreferences()
         throws JsonParseException,
             JsonMappingException,
             IOException

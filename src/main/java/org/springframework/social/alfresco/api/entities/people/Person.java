@@ -1,6 +1,9 @@
 
 package org.springframework.social.alfresco.api.entities.people;
 
+
+import java.util.Date;
+
 import org.springframework.social.alfresco.api.entities.Company;
 
 
@@ -13,6 +16,7 @@ public class Person
     private String  location;
     private String  instantMessageId;
     private String  avatarId;
+    private String  avatar;
     private String  googleId;
     private String  skypeId;
     private String  telephone;
@@ -21,6 +25,8 @@ public class Person
     private String  email;
     private String  description;
     private Company company;
+    private Date    statusUpdatedAt;
+    private String  userStatus;
 
 
     public boolean isEnabled()
@@ -104,6 +110,18 @@ public class Person
     public void setAvatarId(String avatarId)
     {
         this.avatarId = avatarId;
+    }
+
+
+    public String getAvatar()
+    {
+        return avatar;
+    }
+
+
+    public void setAvatar(String avatar)
+    {
+        this.avatar = avatar;
     }
 
 
@@ -201,4 +219,29 @@ public class Person
     {
         this.company = company;
     }
+
+
+    public Date getStatusUpdatedAt()
+    {
+        return statusUpdatedAt;
+    }
+
+
+    public void setStatusUpdatedAt(Date statusUpdatedAt)
+    {
+        this.statusUpdatedAt = statusUpdatedAt;
+    }
+
+
+    public String getUserStatus()
+    {
+        return userStatus;
+    }
+
+
+    public void setUserStatus(String userStatus)
+    {
+        this.userStatus = userStatus;
+    }
+
 }

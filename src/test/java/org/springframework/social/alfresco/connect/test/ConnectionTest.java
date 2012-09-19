@@ -9,10 +9,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.Test;
 import org.springframework.social.alfresco.api.Alfresco;
-import org.springframework.social.alfresco.api.entities.Network;
+import org.springframework.social.alfresco.api.entities.people.Activity;
 import org.springframework.social.alfresco.connect.AlfrescoConnectionFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.oauth2.AccessGrant;
@@ -28,15 +32,26 @@ import org.springframework.social.oauth2.OAuth2Parameters;
 public class ConnectionTest
 {
 
-    private static final String              CONSUMER_KEY    = "<INSERT CLIENT ID HERE";
-    private static final String              CONSUMER_SECRET = "<INSET CLIENT SECRET HERE>";
+    private static final String              CONSUMER_KEY    = "l7xx16247a05ab7b46968625d4dda1f45aeb";
+    private static final String              CONSUMER_SECRET = "3af3780039de4da5892519d2d6d856b9";
 
-    private static final String              REDIRECT_URI    = "<INSERT REDIRECT URI HERE>"; // "http://localhost:8080/alfoauthsample/mycallback.html"
+    private static final String              REDIRECT_URI    = "http://localhost:8080/alfoauthsample/mycallback.html";
     private static final String              STATE           = "test";
     private static final String              SCOPE           = "public_api";
 
     private static AlfrescoConnectionFactory connectionFactory;
     private static AuthUrl                   authUrlObject;
+
+    private static Alfresco                  alfresco;
+
+
+    private static final String              network         = "alfresco.com";
+    private static final String              person          = "jared.ottley@alfresco.com";
+    private static final String              site            = "oauth-sample-clients";
+    private static final String              container       = "documentLibrary";
+    private static final String              preference      = "org.alfresco.share.siteWelcome.oauth-sample-clients";
+    private static final String              node            = "790968f3-b7ba-4774-834a-53d5248a3cdb";
+    private static final String              rating          = "likes";
 
 
     @Test
@@ -88,7 +103,7 @@ public class ConnectionTest
 
 
     @Test
-    public void API()
+    public void GetAPI()
     {
         // Wait for the authorization code
         System.out.println("Type the code you received here: ");
@@ -110,13 +125,251 @@ public class ConnectionTest
                            + accessGrant.getScope() + " expires: " + accessGrant.getExpireTime());
 
         Connection<Alfresco> connection = connectionFactory.createConnection(accessGrant);
-        Alfresco alfresco = connection.getApi();
-
-        Network network = alfresco.getNetwork("alfresco.com");
-
-        System.out.println(network.getId());
+        alfresco = connection.getApi();
 
 
     }
+
+
+    @Test
+    public void getNetwork()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getNetwork(network);
+    }
+
+
+    @Test
+    public void getNetworks()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getNetworks();
+    }
+
+
+    @Test
+    public void getSite()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getSite(network, site);
+    }
+
+
+    @Test
+    public void getSites()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getSites(network);
+
+    }
+
+
+    @Test
+    public void getContainer()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getContainer(network, site, container);
+    }
+
+
+    @Test
+    public void getContainers()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getContainers(network, site);
+    }
+
+
+    @Test
+    public void getMember()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getMember(network, site, person);
+    }
+
+
+    @Test
+    public void getMembers()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getMembers(network, site);
+    }
+
+
+    @Test
+    public void getPerson()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getPerson(network, person);
+    }
+
+
+    @Test
+    public void getPersonSites()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getSites(network, person);
+    }
+
+
+    @Test
+    public void getPersonSite()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getSite(network, person, site);
+    }
+
+
+    @Test
+    public void getFavoriteSites()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getFavoriteSites(network, person);
+    }
+
+
+    @Test
+    public void getPreference()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getPreference(network, person, preference);
+    }
+
+
+    @Test
+    public void getPreferences()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getPreferences(network, person);
+    }
+
+
+    @Test
+    public void getPersonNetwork()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getNetwork(network, person);
+    }
+
+
+    @Test
+    public void getPersonNetworks()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getNetworks(network, person);
+    }
+
+
+    @Test
+    public void getActivities()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> parameters = null;
+        // alfresco.getActivities(network, person, parameters);
+
+        parameters = new HashMap<String, String>();
+        // alfresco.getActivities(network, person, parameters);
+
+        parameters.put(Activity.SITEID, site);
+        alfresco.getActivities(network, person, parameters);
+
+        parameters.put(Activity.WHO, Activity.Who.me.toString());
+        alfresco.getActivities(network, person, parameters);
+
+        parameters = new HashMap<String, String>();
+        parameters.put(Activity.SITEID, site);
+        parameters.put(Activity.WHO, Activity.Who.others.toString());
+        alfresco.getActivities(network, person, parameters);
+
+        parameters = new HashMap<String, String>();
+        parameters.put(Activity.WHO, Activity.Who.me.toString());
+        alfresco.getActivities(network, person, parameters);
+
+        parameters = new HashMap<String, String>();
+        parameters.put(Activity.WHO, Activity.Who.others.toString());
+        alfresco.getActivities(network, person, parameters);
+    }
+
+
+    @Test
+    public void getTags()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getTags(network);
+    }
+
+
+    @Test
+    public void getComments()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getComments(network, node);
+    }
+
+
+    @Test
+    public void getNodeTags()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getNodesTags(network, node);
+    }
+
+    @Test
+    public void getNodeRating()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getNodeRating(network, node, rating);
+    }
+    
+    @Test
+    public void getNodeRatings()
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+        {
+            alfresco.getNodeRating(network, node);
+        }
 
 }

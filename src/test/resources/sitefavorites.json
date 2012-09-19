@@ -9,13 +9,10 @@
       "entries":[
          {
           "entry":{
-                     "id":"fred-bloggs-yourcompany-com",
-                     "site":{
                         "title":"Fred Bloggs's Home",
-                                                "description":"Fred Bloggs's private home site.",
+                        "description":"Fred Bloggs's private home site.",
                         "visibility":"PRIVATE",
                         "id":"fred-bloggs-yourcompany-com"
-                     }
                 }
             }
       ]

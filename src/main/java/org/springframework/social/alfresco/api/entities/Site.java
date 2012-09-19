@@ -14,6 +14,7 @@ public class Site
     private String     description;
     private Visibility visibility;
     private String     id;
+    private String     sitePreset;
 
 
     public String getTitle()
@@ -61,5 +62,17 @@ public class Site
     public void setId(String id)
     {
         this.id = id;
+    }
+
+
+    public String getSitePreset()
+    {
+        return sitePreset;
+    }
+
+
+    public void setSitePreset(String sitePreset)
+    {
+        this.sitePreset = sitePreset;
     }
 }

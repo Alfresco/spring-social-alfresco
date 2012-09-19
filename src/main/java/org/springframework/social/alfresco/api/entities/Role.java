@@ -4,6 +4,6 @@ package org.springframework.social.alfresco.api.entities;
 
 public enum Role
 {
-    SiteManager, SiteContributor, SiteCollaborator;
+    SiteManager, SiteContributor, SiteCollaborator, SiteConsumer;
 
 }

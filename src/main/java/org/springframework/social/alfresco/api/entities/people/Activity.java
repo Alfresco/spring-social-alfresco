@@ -10,6 +10,16 @@ import org.springframework.social.alfresco.api.entities.Role;
 
 public class Activity
 {
+    public static final String SITEID = "siteId";
+    public static final String WHO    = "who";
+
+
+    public static enum Who
+    {
+        me, others
+    };
+
+
     private String          postPersonId;
     private String          id;
     private String          siteId;
@@ -122,6 +132,7 @@ public class Activity
         private String lastName;
         private String title;
         private String objectId;
+        private String parentNodeRef;
         private String memberPersonId;
         private String memberFirstName;
         private String memberLastName;
@@ -173,6 +184,18 @@ public class Activity
         public void setObjectId(String objectId)
         {
             this.objectId = objectId;
+        }
+
+
+        public String getParentNodeRef()
+        {
+            return parentNodeRef;
+        }
+
+
+        public void setParentNodeRef(String parentNodeRef)
+        {
+            this.parentNodeRef = parentNodeRef;
         }
 
 

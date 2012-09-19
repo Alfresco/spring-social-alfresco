@@ -13,7 +13,7 @@
         "homeNetwork" : true,
         "network" : {
           "id" : "alfresco.com",
-          "creationDate" : "2012-06-07T10:22:28.000+0000",
+          "createdAt" : "2012-06-07T10:22:28.000+0000",
           "quotas" : [ {
             "limit" : 52428800,
             "id" : "fileUploadQuota"

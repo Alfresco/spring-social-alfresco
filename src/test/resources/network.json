@@ -1,6 +1,6 @@
 {
+  "entry" :{    
     "id" : "yourcompany.com",
-    "creationDate" : "2012-06-07T10:22:28.000+0000",
     "quotas" : [ {
       "limit" : 52428800,
       "id" : "fileUploadQuota"
@@ -25,7 +25,10 @@
       "usage" : 0,
       "id" : "personNetworkAdminCountQuota"
     } ],
+    "createdAt" : "2012-01-18T12:09:58.000+0000",
     "paidNetwork" : false,
     "isEnabled" : true,
     "subscriptionLevel" : "Free"
   }
+}
+  

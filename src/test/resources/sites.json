@@ -13,7 +13,8 @@
                "title":"Fred Blogg's Home",
                "description":"Fred Blogg's private home site.",
                "visibility":"PRIVATE",
-               "id":"fred-bloggs-yourcompany-com"
+               "id":"fred-bloggs-yourcompany-com",
+               "sitePreset" : "site-dashboard"
             }
          },
          {
@@ -21,7 +22,8 @@
                "title":"Fred Blogg's Home2",
                "description":"Fred Blogg's 2 private home site.",
                "visibility":"PRIVATE",
-               "id":"fred-bloggs-2-yourcompany-com"
+               "id":"fred-bloggs-2-yourcompany-com",
+               "sitePreset" : "site-dashboard"
             }
          }         
       ]

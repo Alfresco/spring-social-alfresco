@@ -7,6 +7,7 @@
                "lastName":"Bloggs",
                "location":"Somewhere",
                "avatarId":"6be34757-5764-4a4b-a86c-f5f0878b9700",
+               "avatar" : "4486d7da-9456-47d9-b585-0d7cac1a725f",
                "instantMessageId":"fred",
                "googleId":"fred@google.com",
                "id":"fred.bloggs@yourcompany.com",

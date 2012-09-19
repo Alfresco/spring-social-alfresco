@@ -13,9 +13,11 @@ public class Comment
     private String     content;
     private String     id;
     private Date       modifiedAt;
+    private Date       createdAt;
     private Person     createdBy;
     private boolean    canDelete;
     private ModifiedBy modifiedBy;
+    private boolean    canEdit;
 
 
     public boolean isEdited()
@@ -66,6 +68,18 @@ public class Comment
     }
 
 
+    public Date getCreatedAt()
+    {
+        return createdAt;
+    }
+
+
+    public void setCreatedAt(Date createdAt)
+    {
+        this.createdAt = createdAt;
+    }
+
+
     public Person getCreatedBy()
     {
         return createdBy;
@@ -102,4 +116,14 @@ public class Comment
     }
 
 
+    public boolean canEdit()
+    {
+        return canDelete;
+    }
+
+
+    public void setCanEdit(boolean canEdit)
+    {
+        this.canDelete = canEdit;
+    }
 }

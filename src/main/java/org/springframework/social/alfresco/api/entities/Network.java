@@ -9,7 +9,8 @@ import java.util.Date;
 public class Network
 {
     private String           id;
-    private Date             creationDate;
+    private Date             createdAt;
+    private boolean          homeNetwork;
     private boolean          isEnabled;
     private ArrayList<Quota> quotas;
     private boolean          paidNetwork;
@@ -28,9 +29,15 @@ public class Network
     }
 
 
-    public void setCreationDate(Date creationDate)
+    public void setIsHomeNetwork(boolean homeNetwork)
     {
-        this.creationDate = creationDate;
+        this.homeNetwork = homeNetwork;
+    }
+
+
+    public void setCreatedAt(Date createdAt)
+    {
+        this.createdAt = createdAt;
     }
 
 
@@ -58,15 +65,21 @@ public class Network
     }
 
 
+    public boolean isHomeNetwork()
+    {
+        return homeNetwork;
+    }
+
+
     public boolean isEnabled()
     {
         return isEnabled;
     }
 
 
-    public Date getCreationDate()
+    public Date getCreatedAt()
     {
-        return creationDate;
+        return createdAt;
     }
 
 
