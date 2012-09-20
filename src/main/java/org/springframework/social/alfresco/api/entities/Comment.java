@@ -4,20 +4,19 @@ package org.springframework.social.alfresco.api.entities;
 
 import java.util.Date;
 
-import org.springframework.social.alfresco.api.entities.people.Person;
 
 
 public class Comment
 {
-    private boolean    edited;
-    private String     content;
-    private String     id;
-    private Date       modifiedAt;
-    private Date       createdAt;
-    private Person     createdBy;
-    private boolean    canDelete;
-    private ModifiedBy modifiedBy;
-    private boolean    canEdit;
+    private boolean edited;
+    private String  content;
+    private String  id;
+    private Date    modifiedAt;
+    private Date    createdAt;
+    private Person  createdBy;
+    private boolean canDelete;
+    private Person  modifiedBy;
+    private boolean canEdit;
 
 
     public boolean isEdited()
@@ -104,13 +103,13 @@ public class Comment
     }
 
 
-    public ModifiedBy getModifiedBy()
+    public Person getModifiedBy()
     {
         return modifiedBy;
     }
 
 
-    public void setModifiedBy(ModifiedBy modifiedBy)
+    public void setModifiedBy(Person modifiedBy)
     {
         this.modifiedBy = modifiedBy;
     }
@@ -118,7 +117,7 @@ public class Comment
 
     public boolean canEdit()
     {
-        return canDelete;
+        return canEdit;
     }
 
 

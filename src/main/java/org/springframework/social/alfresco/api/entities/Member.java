@@ -1,7 +1,6 @@
 
 package org.springframework.social.alfresco.api.entities;
 
-import org.springframework.social.alfresco.api.entities.people.Person;
 
 
 public class Member

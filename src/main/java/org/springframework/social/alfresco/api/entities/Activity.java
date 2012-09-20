@@ -1,11 +1,13 @@
 
-package org.springframework.social.alfresco.api.entities.people;
+package org.springframework.social.alfresco.api.entities;
 
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.springframework.social.alfresco.api.entities.Role;
+import org.springframework.social.alfresco.api.entities.exceptions.UnknownActivityTypeException;
+import org.springframework.social.alfresco.api.entities.exceptions.UnknownRoleException;
 
 
 public class Activity
@@ -110,6 +112,10 @@ public class Activity
 
     public void setActivityType(String activityType)
     {
+        if (!validateActivityType(activityType))
+        {
+            throw new UnknownActivityTypeException(activityType);
+        }
         this.activityType = activityType;
     }
 
@@ -136,7 +142,7 @@ public class Activity
         private String memberPersonId;
         private String memberFirstName;
         private String memberLastName;
-        private Role   role;
+        private String role;
 
 
         public String getFirstName()
@@ -235,23 +241,28 @@ public class Activity
         }
 
 
-        public Role getRole()
+        public String getRole()
         {
             return role;
         }
 
 
-        public void setRole(Role role)
+        public void setRole(String role)
         {
+            if (!validateRole(role))
+            {
+                throw new UnknownRoleException(role);
+            }
             this.role = role;
+
         }
     }
 
 
     // TODO need to add to setActivityType
-    private boolean validateActivityType(String activityType)
+    private static boolean validateActivityType(String activityType)
     {
-        ArrayList<String> activityTypes = new ArrayList<String>();
+        List<String> activityTypes = new ArrayList<String>(22);
         activityTypes.add("org.alfresco.comments.comment-created");
         activityTypes.add("org.alfresco.comments.comment-updated");
         activityTypes.add("org.alfresco.comments.comment-deleted");
@@ -262,6 +273,7 @@ public class Activity
         activityTypes.add("org.alfresco.documentlibrary.file-created");
         activityTypes.add("org.alfresco.documentlibrary.file-deleted");
         activityTypes.add("org.alfresco.documentlibrary.file-liked");
+        activityTypes.add("org.alfresco.documentlibrary.file-updated");
         activityTypes.add("org.alfresco.documentlibrary.inline-edit");
         activityTypes.add("org.alfresco.documentlibrary.folder-liked");
         activityTypes.add("org.alfresco.site.user-joined");
@@ -275,5 +287,18 @@ public class Activity
         activityTypes.add("org.alfresco.subscriptions.subscribed");
 
         return activityTypes.contains(activityType);
+    }
+
+
+    private static boolean validateRole(String role)
+    {
+        List<String> roles = new ArrayList<String>(5);
+        roles.add("");
+        roles.add("SiteContributor");
+        roles.add("SiteManager");
+        roles.add("SiteCollaborator");
+        roles.add("SiteConsumer");
+
+        return roles.contains(role);
     }
 }

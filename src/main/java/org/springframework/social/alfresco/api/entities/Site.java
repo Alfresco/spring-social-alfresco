@@ -15,6 +15,8 @@ public class Site
     private Visibility visibility;
     private String     id;
     private String     sitePreset;
+    private Role       role;
+    private Site       site;
 
 
     public String getTitle()
@@ -74,5 +76,29 @@ public class Site
     public void setSitePreset(String sitePreset)
     {
         this.sitePreset = sitePreset;
+    }
+
+
+    public Site getSite()
+    {
+        return site;
+    }
+
+
+    public void setSite(Site site)
+    {
+        this.site = site;
+    }
+
+
+    public Role getRole()
+    {
+        return role;
+    }
+
+
+    public void setRole(Role role)
+    {
+        this.role = role;
     }
 }

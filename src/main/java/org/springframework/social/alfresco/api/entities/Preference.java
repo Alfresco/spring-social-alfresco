@@ -1,5 +1,5 @@
 
-package org.springframework.social.alfresco.api.entities.people;
+package org.springframework.social.alfresco.api.entities;
 
 
 public class Preference

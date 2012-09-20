@@ -16,7 +16,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.Test;
 import org.springframework.social.alfresco.api.Alfresco;
-import org.springframework.social.alfresco.api.entities.people.Activity;
+import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.connect.AlfrescoConnectionFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.oauth2.AccessGrant;
@@ -157,7 +157,7 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        alfresco.getSite(network, site);
+        alfresco.getSite(site, network);
     }
 
 

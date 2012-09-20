@@ -17,20 +17,17 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.JavaType;
 import org.springframework.social.alfresco.api.Alfresco;
+import org.springframework.social.alfresco.api.Response;
+import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
-import org.springframework.social.alfresco.api.entities.Entries;
-import org.springframework.social.alfresco.api.entities.Entry;
+import org.springframework.social.alfresco.api.entities.Person;
+import org.springframework.social.alfresco.api.entities.Preference;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Network;
-import org.springframework.social.alfresco.api.entities.NetworkExtended;
 import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Tag;
-import org.springframework.social.alfresco.api.entities.people.Activity;
-import org.springframework.social.alfresco.api.entities.people.Person;
-import org.springframework.social.alfresco.api.entities.people.PersonSite;
-import org.springframework.social.alfresco.api.entities.people.Preference;
 import org.springframework.social.oauth2.AbstractOAuth2ApiBinding;
 
 
@@ -52,7 +49,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entry<Network> getNetwork(String network)
+    public Response<Network> getNetwork(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -65,17 +62,17 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Network> getNetworks()
+    public Response<Network> getNetworks()
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
         String response = getRestTemplate().getForObject(NETWORKS_URL, String.class);
-        return mapper.readValue(response, entriesResponseType(NetworkExtended.class));
+        return mapper.readValue(response, entryResponseType(Network.class));
     }
 
 
-    public Entry<Site> getSite(String network, String site)
+    public Response<Site> getSite(String site, String network)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -89,18 +86,18 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Site> getSites(String network)
+    public Response<Site> getSites(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
         Map<String, String> vars = Collections.singletonMap(NETWORK, network);
         String response = getRestTemplate().getForObject(SITES_URL, String.class, vars);
-        return mapper.readValue(response, entriesResponseType(Site.class));
+        return mapper.readValue(response, entryResponseType(Site.class));
     }
 
 
-    public Entry<Container> getContainer(String network, String site, String contatiner)
+    public Response<Container> getContainer(String network, String site, String contatiner)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -115,7 +112,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Container> getContainers(String network, String site)
+    public Response<Container> getContainers(String network, String site)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -125,11 +122,11 @@ public class AlfrescoTemplate
         vars.put(SITE, site);
 
         String response = getRestTemplate().getForObject(CONTAINERS_URL, String.class, vars);
-        return mapper.readValue(response, entriesResponseType(Container.class));
+        return mapper.readValue(response, entryResponseType(Container.class));
     }
 
 
-    public Entry<Member> getMember(String network, String site, String person)
+    public Response<Member> getMember(String network, String site, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -137,7 +134,7 @@ public class AlfrescoTemplate
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(NETWORK, network);
         vars.put(SITE, site);
-        vars.put(PERSON, person);
+        vars.put(MEMBER, person);
 
         String response = getRestTemplate().getForObject(MEMBER_URL, String.class, vars);
         System.out.println("getMemember URL: " + MEMBER_URL);
@@ -146,7 +143,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Member> getMembers(String network, String site)
+    public Response<Member> getMembers(String network, String site)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -156,11 +153,11 @@ public class AlfrescoTemplate
         vars.put(SITE, site);
 
         String response = getRestTemplate().getForObject(MEMBERS_URL, String.class, vars);
-        return mapper.readValue(response, entriesResponseType(Member.class));
+        return mapper.readValue(response, entryResponseType(Member.class));
     }
 
 
-    public Entry<Member> createMember(String network, String site, Member member)
+    public Response<Member> createMember(String network, String site, Member member)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -170,7 +167,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entry<Member> updateMember(String network, String site, Member member)
+    public Response<Member> updateMember(String network, String site, Member member)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -190,7 +187,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entry<Person> getPerson(String network, String person)
+    public Response<Person> getPerson(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -205,7 +202,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<PersonSite> getSites(String network, String person)
+    public Response<Site> getSites(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -216,11 +213,11 @@ public class AlfrescoTemplate
 
         String response = getRestTemplate().getForObject(PEOPLE_SITES_URL, String.class, vars);
         System.out.println("Person Sites: " + response);
-        return mapper.readValue(response, entriesResponseType(PersonSite.class));
+        return mapper.readValue(response, entryResponseType(Site.class));
     }
 
 
-    public Entry<PersonSite> getSite(String network, String person, String site)
+    public Response<Site> getSite(String network, String person, String site)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -233,11 +230,11 @@ public class AlfrescoTemplate
 
         String response = getRestTemplate().getForObject(PEOPLE_SITE_URL, String.class, vars);
         System.out.println("Person Site: " + response);
-        return mapper.readValue(response, entryResponseType(PersonSite.class));
+        return mapper.readValue(response, entryResponseType(Site.class));
     }
 
 
-    public Entries<Site> getFavoriteSites(String network, String person)
+    public Response<Site> getFavoriteSites(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -248,11 +245,11 @@ public class AlfrescoTemplate
 
         String response = getRestTemplate().getForObject(PEOPLE_FAVORITE_SITES_URL, String.class, vars);
         System.out.println("Favorite Sites: " + response);
-        return mapper.readValue(response, entriesResponseType(Site.class));
+        return mapper.readValue(response, entryResponseType(Site.class));
     }
 
 
-    public Entry<Preference> getPreference(String network, String person, String preference)
+    public Response<Preference> getPreference(String network, String person, String preference)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -268,7 +265,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Preference> getPreferences(String network, String person)
+    public Response<Preference> getPreferences(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -279,11 +276,11 @@ public class AlfrescoTemplate
 
         String response = getRestTemplate().getForObject(PEOPLE_PREFERENCES_URL, String.class, vars);
         System.out.println("Preferences: " + response);
-        return mapper.readValue(response, entriesResponseType(Preference.class));
+        return mapper.readValue(response, entryResponseType(Preference.class));
     }
 
 
-    public Entry<NetworkExtended> getNetwork(String network, String person)
+    public Response<Network> getNetwork(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -294,11 +291,11 @@ public class AlfrescoTemplate
 
         String response = getRestTemplate().getForObject(PEOPLE_NETWORK_URL, String.class, vars);
         System.out.println("Person Network: " + response);
-        return mapper.readValue(response, entryResponseType(NetworkExtended.class));
+        return mapper.readValue(response, entryResponseType(Network.class));
     }
 
 
-    public Entries<NetworkExtended> getNetworks(String network, String person)
+    public Response<Network> getNetworks(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -309,11 +306,11 @@ public class AlfrescoTemplate
 
         String response = getRestTemplate().getForObject(PEOPLE_NETWORKS_URL, String.class, vars);
         System.out.println("Person Networks: " + response);
-        return mapper.readValue(response, entriesResponseType(NetworkExtended.class));
+        return mapper.readValue(response, entryResponseType(Network.class));
     }
 
 
-    public Entries<Activity> getActivities(String network, String person, Map<String, String> parameters)
+    public Response<Activity> getActivities(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -325,11 +322,11 @@ public class AlfrescoTemplate
         String response = getRestTemplate().getForObject(PEOPLE_ACTIVITIES_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("getActivities URL: " + PEOPLE_ACTIVITIES_URL + generateQueryString(parameters));
         System.out.println("activities: " + response);
-        return mapper.readValue(response, entriesResponseType(Activity.class));
+        return mapper.readValue(response, entryResponseType(Activity.class));
     }
 
 
-    public Entries<Tag> getTags(String network)
+    public Response<Tag> getTags(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -338,11 +335,11 @@ public class AlfrescoTemplate
 
         String response = getRestTemplate().getForObject(TAGS_URL, String.class, vars);
         System.out.println("Tags: " + response);
-        return mapper.readValue(response, entriesResponseType(Tag.class));
+        return mapper.readValue(response, entryResponseType(Tag.class));
     }
 
 
-    public Entry<Tag> updateTag(String network, String tagId, Tag tag)
+    public Response<Tag> updateTag(String network, String tagId, Tag tag)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -352,7 +349,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Comment> getComments(String network, String node)
+    public Response<Comment> getComments(String network, String node)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -363,11 +360,11 @@ public class AlfrescoTemplate
 
         String response = getRestTemplate().getForObject(NODE_COMMENTS_URL, String.class, vars);
         System.out.println("Comments: " + response);
-        return mapper.readValue(response, entriesResponseType(Comment.class));
+        return mapper.readValue(response, entryResponseType(Comment.class));
     }
 
 
-    public Entry<Comment> createComment(String network, String node, Comment comment)
+    public Response<Comment> createComment(String network, String node, Comment comment)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -377,7 +374,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Comment> createComments(String network, String node, List<Comment> comments)
+    public Response<Comment> createComments(String network, String node, List<Comment> comments)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -387,7 +384,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entry<Comment> updateComment(String network, String node, String commentId, Comment comment)
+    public Response<Comment> updateComment(String network, String node, String commentId, Comment comment)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -407,7 +404,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Tag> getNodesTags(String network, String node)
+    public Response<Tag> getNodesTags(String network, String node)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -418,11 +415,11 @@ public class AlfrescoTemplate
 
         String response = getRestTemplate().getForObject(NODE_TAGS_URL, String.class, vars);
         System.out.println("Node Tags: " + response);
-        return mapper.readValue(response, entriesResponseType(Tag.class));
+        return mapper.readValue(response, entryResponseType(Tag.class));
     }
 
 
-    public Entry<Tag> addTagToNode(String network, String node, Tag tag)
+    public Response<Tag> addTagToNode(String network, String node, Tag tag)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -432,7 +429,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Tag> addTagsToNode(String network, String node, List<Tag> tags)
+    public Response<Tag> addTagsToNode(String network, String node, List<Tag> tags)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -452,7 +449,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entries<Rating> getNodeRating(String network, String node)
+    public Response<Rating> getNodeRating(String network, String node)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -463,11 +460,11 @@ public class AlfrescoTemplate
 
         String resposne = getRestTemplate().getForObject(NODE_RATINGS_URL, String.class, vars);
         System.out.println("Node Ratings: " + resposne);
-        return mapper.readValue(resposne, entriesResponseType(Rating.class));
+        return mapper.readValue(resposne, entryResponseType(Rating.class));
     }
 
 
-    public Entry<Rating> getNodeRating(String network, String node, String rating)
+    public Response<Rating> getNodeRating(String network, String node, String rating)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -493,7 +490,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Entry<Rating> rateNode(String network, String node, Rating rating)
+    public Response<Rating> rateNode(String network, String node, Rating rating)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -505,13 +502,7 @@ public class AlfrescoTemplate
 
     private JavaType entryResponseType(Class<?> type)
     {
-        return mapper.getTypeFactory().constructParametricType(Entry.class, type);
-    }
-
-
-    private JavaType entriesResponseType(Class<?> type)
-    {
-        return mapper.getTypeFactory().constructParametricType(Entries.class, type);
+        return mapper.getTypeFactory().constructParametricType(Response.class, type);
     }
 
 
@@ -553,6 +544,7 @@ public class AlfrescoTemplate
     private final static String COMMENT                   = "comment";
     private final static String NODE                      = "node";
     private final static String PERSON                    = "person";
+    private final static String MEMBER                    = "member";
 
     private final int           VERSION_NO                = 1;
     private final String        VERSION                   = "/public/alfresco/versions/" + VERSION_NO + "/";
