@@ -57,8 +57,7 @@ public class AlfrescoAdapter
 
     public void setConnectionValues(Alfresco alfresco, ConnectionValues values)
     {
-        throw new OperationNotPermittedException("updateStatus not implemented.");
-
+        //Not implemented at this time
     }
 
 

@@ -18,6 +18,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.Test;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
+import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Pagination;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.impl.AlfrescoTemplate;
@@ -407,6 +408,18 @@ public class ConnectionTest
         Response<Tag> response = alfresco.getTags(network, parameters);
 
         assertNull(response.getList().getEntries().get(0).getId());
+    }
+
+
+    @Test
+    public void getHomeNetwork()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Network homeNetwork = alfresco.getHomeNetwork();
+
+        assertEquals(network, homeNetwork.getId());
     }
 
 }
