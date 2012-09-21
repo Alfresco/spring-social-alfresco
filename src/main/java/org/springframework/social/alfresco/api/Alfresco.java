@@ -310,4 +310,10 @@ public interface Alfresco
         throws JsonParseException,
             JsonMappingException,
             IOException;
+
+
+    public Network getHomeNetwork()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException;
 }

@@ -623,6 +623,25 @@ public class AlfrescoTemplate
     }
 
 
+    public Network getHomeNetwork()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Network homeNetwork = null;
+        Response<Network> response = getNetworks();
+
+        for (Iterator<Network> iterator = response.getList().getEntries().iterator(); iterator.hasNext();)
+        {
+            Network network = iterator.next();
+
+            if (network.isHomeNetwork())
+                homeNetwork = network;
+        }
+        return homeNetwork;
+    }
+
+
     /**
      * Build QueryString
      * 
