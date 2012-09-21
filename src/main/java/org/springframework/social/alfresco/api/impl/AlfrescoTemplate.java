@@ -17,7 +17,6 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.JavaType;
 import org.springframework.social.alfresco.api.Alfresco;
-import org.springframework.social.alfresco.api.Response;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
@@ -54,7 +53,7 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = Collections.singletonMap(NETWORK, network);
+        Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK, network);
         String response = getRestTemplate().getForObject(NETWORK_URL, String.class, vars);
         return mapper.readValue(response, entryResponseType(Network.class));
 
@@ -67,7 +66,16 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        String response = getRestTemplate().getForObject(NETWORKS_URL, String.class);
+        return getNetworks(null);
+    }
+
+
+    public Response<Network> getNetworks(Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        String response = getRestTemplate().getForObject(NETWORKS_URL + generateQueryString(parameters), String.class);
         return mapper.readValue(response, entryResponseType(Network.class));
     }
 
@@ -78,8 +86,8 @@ public class AlfrescoTemplate
             IOException
     {
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(SITE, site);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SITE, site);
 
         String response = getRestTemplate().getForObject(SITE_URL, String.class, vars);
         return mapper.readValue(response, entryResponseType(Site.class));
@@ -91,7 +99,17 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = Collections.singletonMap(NETWORK, network);
+        // Use empty hashmap to avoid ambiguity in method signature with a null
+        return getSites(network, new HashMap<String, String>());
+    }
+
+
+    public Response<Site> getSites(String network, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK + generateQueryString(parameters), network);
         String response = getRestTemplate().getForObject(SITES_URL, String.class, vars);
         return mapper.readValue(response, entryResponseType(Site.class));
     }
@@ -103,9 +121,9 @@ public class AlfrescoTemplate
             IOException
     {
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(SITE, site);
-        vars.put(CONTAINER, contatiner);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SITE, site);
+        vars.put(TemplateParams.CONTAINER, contatiner);
 
         String response = getRestTemplate().getForObject(CONTAINER_URL, String.class, vars);
         return mapper.readValue(response, entryResponseType(Container.class));
@@ -117,11 +135,20 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(SITE, site);
+        return getContainers(network, site, null);
+    }
 
-        String response = getRestTemplate().getForObject(CONTAINERS_URL, String.class, vars);
+
+    public Response<Container> getContainers(String network, String site, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SITE, site);
+
+        String response = getRestTemplate().getForObject(CONTAINERS_URL + generateQueryString(parameters), String.class, vars);
         return mapper.readValue(response, entryResponseType(Container.class));
     }
 
@@ -132,9 +159,9 @@ public class AlfrescoTemplate
             IOException
     {
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(SITE, site);
-        vars.put(MEMBER, person);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SITE, site);
+        vars.put(TemplateParams.MEMBER, person);
 
         String response = getRestTemplate().getForObject(MEMBER_URL, String.class, vars);
         System.out.println("getMemember URL: " + MEMBER_URL);
@@ -148,11 +175,20 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(SITE, site);
+        return getMembers(network, site, null);
+    }
 
-        String response = getRestTemplate().getForObject(MEMBERS_URL, String.class, vars);
+
+    public Response<Member> getMembers(String network, String site, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SITE, site);
+
+        String response = getRestTemplate().getForObject(MEMBERS_URL + generateQueryString(parameters), String.class, vars);
         return mapper.readValue(response, entryResponseType(Member.class));
     }
 
@@ -193,8 +229,8 @@ public class AlfrescoTemplate
             IOException
     {
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(PERSON, person);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_URL, String.class, vars);
         System.out.println("Person: " + response);
@@ -207,11 +243,20 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(PERSON, person);
+        return getSites(network, person, null);
+    }
 
-        String response = getRestTemplate().getForObject(PEOPLE_SITES_URL, String.class, vars);
+
+    public Response<Site> getSites(String network, String person, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
+
+        String response = getRestTemplate().getForObject(PEOPLE_SITES_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("Person Sites: " + response);
         return mapper.readValue(response, entryResponseType(Site.class));
     }
@@ -224,9 +269,9 @@ public class AlfrescoTemplate
     {
 
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(PERSON, person);
-        vars.put(SITE, site);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
+        vars.put(TemplateParams.SITE, site);
 
         String response = getRestTemplate().getForObject(PEOPLE_SITE_URL, String.class, vars);
         System.out.println("Person Site: " + response);
@@ -239,11 +284,20 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(PERSON, person);
+        return getFavoriteSites(network, person, null);
+    }
 
-        String response = getRestTemplate().getForObject(PEOPLE_FAVORITE_SITES_URL, String.class, vars);
+
+    public Response<Site> getFavoriteSites(String network, String person, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
+
+        String response = getRestTemplate().getForObject(PEOPLE_FAVORITE_SITES_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("Favorite Sites: " + response);
         return mapper.readValue(response, entryResponseType(Site.class));
     }
@@ -255,9 +309,9 @@ public class AlfrescoTemplate
             IOException
     {
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(PERSON, person);
-        vars.put(PREFERENCE, preference);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
+        vars.put(TemplateParams.PREFERENCE, preference);
 
         String response = getRestTemplate().getForObject(PEOPLE_PREFERENCE_URL, String.class, vars);
         System.out.println("Preference: " + response);
@@ -270,11 +324,20 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(PERSON, person);
+        return getPreferences(network, person, null);
+    }
 
-        String response = getRestTemplate().getForObject(PEOPLE_PREFERENCES_URL, String.class, vars);
+
+    public Response<Preference> getPreferences(String network, String person, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
+
+        String response = getRestTemplate().getForObject(PEOPLE_PREFERENCES_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("Preferences: " + response);
         return mapper.readValue(response, entryResponseType(Preference.class));
     }
@@ -286,8 +349,8 @@ public class AlfrescoTemplate
             IOException
     {
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(PERSON, person);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_NETWORK_URL, String.class, vars);
         System.out.println("Person Network: " + response);
@@ -300,13 +363,31 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(PERSON, person);
+        return getNetworks(network, person, null);
+    }
 
-        String response = getRestTemplate().getForObject(PEOPLE_NETWORKS_URL, String.class, vars);
+
+    public Response<Network> getNetworks(String network, String person, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
+
+        String response = getRestTemplate().getForObject(PEOPLE_NETWORKS_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("Person Networks: " + response);
         return mapper.readValue(response, entryResponseType(Network.class));
+    }
+
+
+    public Response<Activity> getActivities(String network, String person)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        return getActivities(network, person, null);
     }
 
 
@@ -316,8 +397,8 @@ public class AlfrescoTemplate
             IOException
     {
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(PERSON, person);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_ACTIVITIES_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("getActivities URL: " + PEOPLE_ACTIVITIES_URL + generateQueryString(parameters));
@@ -331,9 +412,18 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = Collections.singletonMap(NETWORK, network);
+        return getTags(network, null);
+    }
 
-        String response = getRestTemplate().getForObject(TAGS_URL, String.class, vars);
+
+    public Response<Tag> getTags(String network, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK, network);
+
+        String response = getRestTemplate().getForObject(TAGS_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("Tags: " + response);
         return mapper.readValue(response, entryResponseType(Tag.class));
     }
@@ -354,11 +444,20 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(NODE, node);
+        return getComments(network, node, null);
+    }
 
-        String response = getRestTemplate().getForObject(NODE_COMMENTS_URL, String.class, vars);
+
+    public Response<Comment> getComments(String network, String node, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+
+        String response = getRestTemplate().getForObject(NODE_COMMENTS_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("Comments: " + response);
         return mapper.readValue(response, entryResponseType(Comment.class));
     }
@@ -409,11 +508,20 @@ public class AlfrescoTemplate
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(NODE, node);
+        return getNodesTags(network, node, null);
+    }
 
-        String response = getRestTemplate().getForObject(NODE_TAGS_URL, String.class, vars);
+
+    public Response<Tag> getNodesTags(String network, String node, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+
+        String response = getRestTemplate().getForObject(NODE_TAGS_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("Node Tags: " + response);
         return mapper.readValue(response, entryResponseType(Tag.class));
     }
@@ -449,16 +557,25 @@ public class AlfrescoTemplate
     }
 
 
-    public Response<Rating> getNodeRating(String network, String node)
+    public Response<Rating> getNodeRatings(String network, String node)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        return getNodeRatings(network, node, null);
+    }
+
+
+    public Response<Rating> getNodeRatings(String network, String node, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(NODE, node);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
 
-        String resposne = getRestTemplate().getForObject(NODE_RATINGS_URL, String.class, vars);
+        String resposne = getRestTemplate().getForObject(NODE_RATINGS_URL + generateQueryString(parameters), String.class, vars);
         System.out.println("Node Ratings: " + resposne);
         return mapper.readValue(resposne, entryResponseType(Rating.class));
     }
@@ -470,9 +587,9 @@ public class AlfrescoTemplate
             IOException
     {
         Map<String, String> vars = new HashMap<String, String>();
-        vars.put(NETWORK, network);
-        vars.put(NODE, node);
-        vars.put(RATING, rating);
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+        vars.put(TemplateParams.RATING, rating);
 
         String resposne = getRestTemplate().getForObject(NODE_RATING_URL, String.class, vars);
         System.out.println("Node Rating: " + resposne);
@@ -535,44 +652,48 @@ public class AlfrescoTemplate
     }
 
 
-    private final static String NETWORK                   = "network";
-    private final static String SITE                      = "site";
-    private final static String CONTAINER                 = "container";
-    private final static String PREFERENCE                = "preference";
-    private final static String TAG                       = "tag";
-    private final static String RATING                    = "rating";
-    private final static String COMMENT                   = "comment";
-    private final static String NODE                      = "node";
-    private final static String PERSON                    = "person";
-    private final static String MEMBER                    = "member";
+    private static class TemplateParams
+    {
+        public final static String NETWORK    = "network";
+        public final static String SITE       = "site";
+        public final static String CONTAINER  = "container";
+        public final static String PREFERENCE = "preference";
+        public final static String TAG        = "tag";
+        public final static String RATING     = "rating";
+        public final static String COMMENT    = "comment";
+        public final static String NODE       = "node";
+        public final static String PERSON     = "person";
+        public final static String MEMBER     = "member";
+    }
 
-    private final int           VERSION_NO                = 1;
-    private final String        VERSION                   = "/public/alfresco/versions/" + VERSION_NO + "/";
-    private final String        BASE_URL                  = "https://api.alfresco.com/";
-    private final String        NETWORKS_URL              = BASE_URL;
-    private final String        NETWORK_URL               = BASE_URL + "{network}" + VERSION + "networks/{network}";
-    private final String        SITES_URL                 = BASE_URL + "{network}" + VERSION + "sites";
-    private final String        SITE_URL                  = SITES_URL + "/{site}";
-    private final String        CONTAINERS_URL            = SITE_URL + "/containers";
-    private final String        CONTAINER_URL             = CONTAINERS_URL + "/{container}";
-    private final String        MEMBERS_URL               = SITE_URL + "/members";
-    private final String        MEMBER_URL                = MEMBERS_URL + "/{member}";
-    private final String        PEOPLE_URL                = BASE_URL + "{network}" + VERSION + "people/{person}";
-    private final String        PEOPLE_SITES_URL          = PEOPLE_URL + "/sites";
-    private final String        PEOPLE_SITE_URL           = PEOPLE_SITES_URL + "/{site}";
-    private final String        PEOPLE_FAVORITE_SITES_URL = PEOPLE_URL + "/favorite-sites";
-    private final String        PEOPLE_PREFERENCES_URL    = PEOPLE_URL + "/preferences";
-    private final String        PEOPLE_PREFERENCE_URL     = PEOPLE_PREFERENCES_URL + "/{preference}";
-    private final String        PEOPLE_NETWORKS_URL       = PEOPLE_URL + "/networks";
-    private final String        PEOPLE_NETWORK_URL        = PEOPLE_NETWORKS_URL + "/{network}";
-    private final String        PEOPLE_ACTIVITIES_URL     = PEOPLE_URL + "/activities";
-    private final String        TAGS_URL                  = BASE_URL + "{network}" + VERSION + "tags";
-    private final String        TAG_URL                   = TAGS_URL + "/{tag}";
-    private final String        BASE_NODE_URL             = BASE_URL + "{network}" + VERSION + "nodes/{node}/";
-    private final String        NODE_COMMENTS_URL         = BASE_NODE_URL + "comments";
-    private final String        NODE_COMMENT_URL          = NODE_COMMENTS_URL + "/{comment}";
-    private final String        NODE_TAGS_URL             = BASE_NODE_URL + "tags";
-    private final String        NODE_TAG_URL              = NODE_TAGS_URL + "/{tag}";
-    private final String        NODE_RATINGS_URL          = BASE_NODE_URL + "ratings";
-    private final String        NODE_RATING_URL           = NODE_RATINGS_URL + "/{rating}";
+
+    private final int    VERSION_NO                = 1;
+    private final String VERSION                   = "/public/alfresco/versions/" + VERSION_NO + "/";
+    private final String BASE_URL                  = "https://api.alfresco.com/";
+    private final String NETWORKS_URL              = BASE_URL;
+    private final String NETWORK_URL               = BASE_URL + "{network}" + VERSION + "networks/{network}";
+    private final String SITES_URL                 = BASE_URL + "{network}" + VERSION + "sites";
+    private final String SITE_URL                  = SITES_URL + "/{site}";
+    private final String CONTAINERS_URL            = SITE_URL + "/containers";
+    private final String CONTAINER_URL             = CONTAINERS_URL + "/{container}";
+    private final String MEMBERS_URL               = SITE_URL + "/members";
+    private final String MEMBER_URL                = MEMBERS_URL + "/{member}";
+    private final String PEOPLE_URL                = BASE_URL + "{network}" + VERSION + "people/{person}";
+    private final String PEOPLE_SITES_URL          = PEOPLE_URL + "/sites";
+    private final String PEOPLE_SITE_URL           = PEOPLE_SITES_URL + "/{site}";
+    private final String PEOPLE_FAVORITE_SITES_URL = PEOPLE_URL + "/favorite-sites";
+    private final String PEOPLE_PREFERENCES_URL    = PEOPLE_URL + "/preferences";
+    private final String PEOPLE_PREFERENCE_URL     = PEOPLE_PREFERENCES_URL + "/{preference}";
+    private final String PEOPLE_NETWORKS_URL       = PEOPLE_URL + "/networks";
+    private final String PEOPLE_NETWORK_URL        = PEOPLE_NETWORKS_URL + "/{network}";
+    private final String PEOPLE_ACTIVITIES_URL     = PEOPLE_URL + "/activities";
+    private final String TAGS_URL                  = BASE_URL + "{network}" + VERSION + "tags";
+    private final String TAG_URL                   = TAGS_URL + "/{tag}";
+    private final String BASE_NODE_URL             = BASE_URL + "{network}" + VERSION + "nodes/{node}/";
+    private final String NODE_COMMENTS_URL         = BASE_NODE_URL + "comments";
+    private final String NODE_COMMENT_URL          = NODE_COMMENTS_URL + "/{comment}";
+    private final String NODE_TAGS_URL             = BASE_NODE_URL + "tags";
+    private final String NODE_TAG_URL              = NODE_TAGS_URL + "/{tag}";
+    private final String NODE_RATINGS_URL          = BASE_NODE_URL + "ratings";
+    private final String NODE_RATING_URL           = NODE_RATINGS_URL + "/{rating}";
 }

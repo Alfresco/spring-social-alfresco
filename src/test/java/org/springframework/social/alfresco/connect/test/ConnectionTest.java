@@ -17,6 +17,9 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.Test;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
+import org.springframework.social.alfresco.api.entities.Pagination;
+import org.springframework.social.alfresco.api.entities.Tag;
+import org.springframework.social.alfresco.api.impl.Response;
 import org.springframework.social.alfresco.connect.AlfrescoConnectionFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.oauth2.AccessGrant;
@@ -354,6 +357,7 @@ public class ConnectionTest
         alfresco.getNodesTags(network, node);
     }
 
+
     @Test
     public void getNodeRating()
         throws JsonParseException,
@@ -362,14 +366,30 @@ public class ConnectionTest
     {
         alfresco.getNodeRating(network, node, rating);
     }
-    
+
+
     @Test
     public void getNodeRatings()
-            throws JsonParseException,
-                JsonMappingException,
-                IOException
-        {
-            alfresco.getNodeRating(network, node);
-        }
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.getNodeRatings(network, node);
+    }
+
+
+    @Test
+    public void getAlotOfTags()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put(Pagination.MAXITEMS, "300");
+
+        Response<Tag> response = alfresco.getTags(network, parameters);
+
+        assertEquals(300, response.getList().getPagination().getCount());
+    }
 
 }

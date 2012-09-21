@@ -1,5 +1,5 @@
 
-package org.springframework.social.alfresco.api;
+package org.springframework.social.alfresco.api.impl;
 
 import org.springframework.social.alfresco.api.entities.List;
 

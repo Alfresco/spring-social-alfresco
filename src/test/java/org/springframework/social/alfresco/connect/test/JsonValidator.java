@@ -10,7 +10,6 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
-import org.springframework.social.alfresco.api.Response;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
@@ -21,6 +20,7 @@ import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Tag;
+import org.springframework.social.alfresco.api.impl.Response;
 
 
 public class JsonValidator
