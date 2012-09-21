@@ -666,6 +666,11 @@ public class AlfrescoTemplate
         public final static String MEMBER     = "member";
     }
 
+    public static class QueryParams
+    {
+        public final static String PROPERTIES = "properties";
+    }
+
 
     private final int    VERSION_NO                = 1;
     private final String VERSION                   = "/public/alfresco/versions/" + VERSION_NO + "/";

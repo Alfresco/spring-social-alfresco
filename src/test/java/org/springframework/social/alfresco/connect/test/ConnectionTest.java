@@ -4,6 +4,7 @@ package org.springframework.social.alfresco.connect.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Pagination;
 import org.springframework.social.alfresco.api.entities.Tag;
+import org.springframework.social.alfresco.api.impl.AlfrescoTemplate;
 import org.springframework.social.alfresco.api.impl.Response;
 import org.springframework.social.alfresco.connect.AlfrescoConnectionFactory;
 import org.springframework.social.connect.Connection;
@@ -390,6 +392,21 @@ public class ConnectionTest
         Response<Tag> response = alfresco.getTags(network, parameters);
 
         assertEquals(300, response.getList().getPagination().getCount());
+    }
+
+
+    @Test
+    public void getTagsNoIds()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put(AlfrescoTemplate.QueryParams.PROPERTIES, "tag");
+
+        Response<Tag> response = alfresco.getTags(network, parameters);
+
+        assertNull(response.getList().getEntries().get(0).getId());
     }
 
 }
