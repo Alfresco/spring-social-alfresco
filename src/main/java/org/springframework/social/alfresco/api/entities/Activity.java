@@ -241,9 +241,17 @@ public class Activity
         }
 
 
-        public String getRole()
+        public Role getRole()
         {
-            return role;
+            if (this.role != null)
+            {
+                return Role.valueOf(role);
+            }
+            else
+            {
+                return null;
+            }
+
         }
 
 

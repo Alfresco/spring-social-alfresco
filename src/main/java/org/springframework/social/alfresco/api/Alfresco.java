@@ -11,11 +11,13 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
+import org.springframework.social.alfresco.api.entities.Metadata;
 import org.springframework.social.alfresco.api.entities.Person;
 import org.springframework.social.alfresco.api.entities.Preference;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Rating;
+import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.impl.Response;
@@ -96,19 +98,16 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Member> createMember(String network, String site, Member member)
+    public Response<Member> addMember(String network, String site, String personId, Role role)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Member> updateMember(String network, String site, Member member)
-        throws JsonParseException,
-            JsonMappingException,
-            IOException;
+    public boolean updateMember(String network, String site, String personId, Role role);
 
 
-    public boolean deleteMember(String network, String site, String person)
+    public void deleteMember(String network, String site, String personId)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -316,4 +315,10 @@ public interface Alfresco
         throws JsonParseException,
             JsonMappingException,
             IOException;
+
+
+    public Response<Metadata> networkOptions(String network)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException;;
 }

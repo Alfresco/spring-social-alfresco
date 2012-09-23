@@ -18,8 +18,10 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.Test;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
+import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Pagination;
+import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.impl.AlfrescoTemplate;
 import org.springframework.social.alfresco.api.impl.Response;
@@ -53,10 +55,10 @@ public class ConnectionTest
 
     private static final String              network         = "alfresco.com";
     private static final String              person          = "jared.ottley@alfresco.com";
-    private static final String              site            = "oauth-sample-clients";
+    private static final String              site            = "spring-social-alfresco";
     private static final String              container       = "documentLibrary";
-    private static final String              preference      = "org.alfresco.share.siteWelcome.oauth-sample-clients";
-    private static final String              node            = "790968f3-b7ba-4774-834a-53d5248a3cdb";
+    private static final String              preference      = "org.alfresco.share.siteWelcome.spring-social-alfresco";
+    private static final String              node            = "8c368b84-4a88-4d62-9e7e-8e7eabe39969";
     private static final String              rating          = "likes";
 
 
@@ -71,6 +73,7 @@ public class ConnectionTest
 
     @Test
     public void UrlTest()
+        throws MalformedURLException
     {
         OAuth2Parameters parameters = new OAuth2Parameters();
         parameters.setRedirectUri(REDIRECT_URI);
@@ -81,16 +84,9 @@ public class ConnectionTest
 
         System.out.println(authUrl);
 
-        try
-        {
-            authUrlObject = new AuthUrl(authUrl);
-            assertEquals("https://api.alfresco.com/auth/oauth/versions/2/authorize", authUrlObject.getBase());
-        }
-        catch (MalformedURLException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
+        authUrlObject = new AuthUrl(authUrl);
+        assertEquals("https://api.alfresco.com/auth/oauth/versions/2/authorize", authUrlObject.getBase());
     }
 
 
@@ -110,20 +106,14 @@ public class ConnectionTest
 
     @Test
     public void GetAPI()
+        throws IOException
     {
         // Wait for the authorization code
         System.out.println("Type the code you received here: ");
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String accessToken = null;
-        try
-        {
-            accessToken = in.readLine();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
+        accessToken = in.readLine();
 
         AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(accessToken, REDIRECT_URI, null);
 
@@ -219,6 +209,39 @@ public class ConnectionTest
 
 
     @Test
+    public void addMember()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.addMember(network, site, "pmonks@alfresco.com", Role.SiteConsumer);
+    }
+
+
+    @Test
+    public void updateMember()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.updateMember(network, site, "pmonks@alfresco.com", Role.SiteContributor);
+        Response<Member> member = alfresco.getMember(network, site, "pmonks@alfresco.com");
+
+        assertEquals(Role.SiteContributor, member.getEntry().getRole());
+    }
+
+
+    @Test
+    public void deleteMember()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.deleteMember(network, site, "pmonks@alfresco.com");
+    }
+
+
+    @Test
     public void getPerson()
         throws JsonParseException,
             JsonMappingException,
@@ -304,11 +327,9 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        Map<String, String> parameters = null;
-        // alfresco.getActivities(network, person, parameters);
+        Map<String, String> parameters = null; // alfresco.getActivities(network, person, parameters);
 
-        parameters = new HashMap<String, String>();
-        // alfresco.getActivities(network, person, parameters);
+        parameters = new HashMap<String, String>(); // alfresco.getActivities(network, person, parameters);
 
         parameters.put(Activity.SITEID, site);
         alfresco.getActivities(network, person, parameters);
@@ -421,5 +442,6 @@ public class ConnectionTest
 
         assertEquals(network, homeNetwork.getId());
     }
+
 
 }

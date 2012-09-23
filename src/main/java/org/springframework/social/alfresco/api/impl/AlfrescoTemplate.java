@@ -16,18 +16,25 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.JavaType;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
+import org.springframework.social.alfresco.api.entities.Metadata;
 import org.springframework.social.alfresco.api.entities.Person;
 import org.springframework.social.alfresco.api.entities.Preference;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Rating;
+import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.oauth2.AbstractOAuth2ApiBinding;
+import org.springframework.web.client.RestClientException;
 
 
 /**
@@ -39,12 +46,14 @@ public class AlfrescoTemplate
     implements Alfresco
 {
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper  = new ObjectMapper();
+    private final HttpHeaders  headers = new HttpHeaders();
 
 
     public AlfrescoTemplate(String accessToken)
     {
         super(accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
     }
 
 
@@ -193,33 +202,59 @@ public class AlfrescoTemplate
     }
 
 
-    public Response<Member> createMember(String network, String site, Member member)
+    public Response<Member> addMember(String network, String site, String personId, Role role)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SITE, site);
+
+        Member member = new Member();
+        member.setId(personId);
+        member.setRole(role);
+
+        String response = getRestTemplate().postForObject(MEMBERS_URL, new HttpEntity<Member>(member, headers), String.class, vars);
+        System.out.println("Added Member: " + response);
+        return mapper.readValue(response, entryResponseType(Member.class));
     }
 
 
-    public Response<Member> updateMember(String network, String site, Member member)
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
+    public boolean updateMember(String network, String site, String personId, Role role)
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SITE, site);
+        vars.put(TemplateParams.MEMBER, personId);
+
+        Member member = new Member();
+        member.setRole(role);
+
+        try
+        {
+            getRestTemplate().put(MEMBER_URL, new HttpEntity<Member>(member, headers), vars);
+            return true;
+        }
+        catch (RestClientException e)
+        {
+            throw e;
+        }
     }
 
 
-    public boolean deleteMember(String network, String site, String person)
+    public void deleteMember(String network, String site, String personId)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return false;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SITE, site);
+        vars.put(TemplateParams.MEMBER, personId);
+
+        getRestTemplate().delete(MEMBER_URL, vars);
+
     }
 
 
@@ -639,6 +674,26 @@ public class AlfrescoTemplate
                 homeNetwork = network;
         }
         return homeNetwork;
+    }
+
+
+    /**
+     * Not Implemented yet
+     */
+    @Deprecated
+    public Response<Metadata> networkOptions(String network)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        throw new OperationNotPermittedException("HTTP OPTIONS Not implemented yet");
+        // Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK, network);
+        // ResponseEntity<String> response =
+        // getRestTemplate().exchange("https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes", HttpMethod.OPTIONS,
+        // null, String.class, vars);
+        // System.out.println("Network Options: " + response.getBody());
+        // return mapper.readValue(response.getBody(), entryResponseType(Metadata.class));
+
     }
 
 
