@@ -30,6 +30,7 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Parameters;
+import org.springframework.web.client.RestClientException;
 
 
 /**
@@ -220,9 +221,8 @@ public class ConnectionTest
 
     @Test
     public void updateMember()
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
+        throws RestClientException,
+            JsonParseException, JsonMappingException, IOException
     {
         alfresco.updateMember(network, site, "pmonks@alfresco.com", Role.SiteContributor);
         Response<Member> member = alfresco.getMember(network, site, "pmonks@alfresco.com");
@@ -233,9 +233,7 @@ public class ConnectionTest
 
     @Test
     public void deleteMember()
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
+        throws RestClientException
     {
         alfresco.deleteMember(network, site, "pmonks@alfresco.com");
     }

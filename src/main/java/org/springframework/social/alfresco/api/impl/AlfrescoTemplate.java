@@ -221,7 +221,9 @@ public class AlfrescoTemplate
     }
 
 
-    public boolean updateMember(String network, String site, String personId, Role role)
+    // TODO should this make the additional call to get the updated entity or just move forward
+    public void updateMember(String network, String site, String personId, Role role)
+        throws RestClientException
     {
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(TemplateParams.NETWORK, network);
@@ -231,22 +233,14 @@ public class AlfrescoTemplate
         Member member = new Member();
         member.setRole(role);
 
-        try
-        {
-            getRestTemplate().put(MEMBER_URL, new HttpEntity<Member>(member, headers), vars);
-            return true;
-        }
-        catch (RestClientException e)
-        {
-            throw e;
-        }
+        getRestTemplate().put(MEMBER_URL, new HttpEntity<Member>(member, headers), vars);
+
     }
 
 
+    // TODO should this make the additional call to get the updated entity or just move forward
     public void deleteMember(String network, String site, String personId)
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
+        throws RestClientException
     {
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(TemplateParams.NETWORK, network);

@@ -21,6 +21,7 @@ import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.impl.Response;
+import org.springframework.web.client.RestClientException;
 
 
 public interface Alfresco
@@ -104,13 +105,12 @@ public interface Alfresco
             IOException;
 
 
-    public boolean updateMember(String network, String site, String personId, Role role);
+    public void updateMember(String network, String site, String personId, Role role)
+        throws RestClientException;
 
 
     public void deleteMember(String network, String site, String personId)
-        throws JsonParseException,
-            JsonMappingException,
-            IOException;
+        throws RestClientException;
 
 
     public Response<Person> getPerson(String network, String person)
