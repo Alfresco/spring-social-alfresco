@@ -222,7 +222,9 @@ public class ConnectionTest
     @Test
     public void updateMember()
         throws RestClientException,
-            JsonParseException, JsonMappingException, IOException
+            JsonParseException,
+            JsonMappingException,
+            IOException
     {
         alfresco.updateMember(network, site, "pmonks@alfresco.com", Role.SiteContributor);
         Response<Member> member = alfresco.getMember(network, site, "pmonks@alfresco.com");
@@ -351,12 +353,42 @@ public class ConnectionTest
 
 
     @Test
+    public void getNamedTag()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Tag tag = alfresco.getTag(network, "spring-social-alfresco");
+
+        assertEquals("spring-social-alfresco", tag.getTag());
+    }
+
+
+    @Test
     public void getTags()
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
         alfresco.getTags(network);
+    }
+
+
+    @Test
+    public void updateTag()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Tag tag = alfresco.getTag(network, "spring-social-alfresco");
+
+        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco-test");
+
+        tag = alfresco.getTag(network, "spring-social-alfresco-test");
+
+        assertNotNull(tag);
+
+        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco");
     }
 
 
@@ -440,6 +472,4 @@ public class ConnectionTest
 
         assertEquals(network, homeNetwork.getId());
     }
-
-
 }

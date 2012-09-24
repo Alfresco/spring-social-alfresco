@@ -25,6 +25,7 @@ import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
 import org.springframework.social.alfresco.api.entities.Metadata;
+import org.springframework.social.alfresco.api.entities.Pagination;
 import org.springframework.social.alfresco.api.entities.Person;
 import org.springframework.social.alfresco.api.entities.Preference;
 import org.springframework.social.alfresco.api.entities.Member;
@@ -436,6 +437,54 @@ public class AlfrescoTemplate
     }
 
 
+    public Tag getTag(String network, String tag)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        int count = 0;
+        final int MAXITEMS = 10;
+
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put(Pagination.MAXITEMS, Integer.toString(MAXITEMS));
+
+        boolean found = false;
+        Tag tagFound = null;
+
+        Response<Tag> response = getTags(network, parameters);
+        while (!found)
+        {
+            for (Iterator<Tag> iterator = response.getList().getEntries().iterator(); iterator.hasNext();)
+            {
+                Tag _tag = iterator.next();
+                if (_tag.getTag().equals(tag))
+                {
+                    tagFound = _tag;
+                    found = true;
+                    break;
+                }
+                else
+                {
+                    if (!iterator.hasNext())
+                    {
+                        if (response.getList().getPagination().isHasMoreItems())
+                        {
+                            parameters.put(Pagination.SKIPCOUNT, Integer.toString(count = count + MAXITEMS));
+                            response = getTags(network, parameters);
+                        }
+                        else
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return tagFound;
+    }
+
+
     public Response<Tag> getTags(String network)
         throws JsonParseException,
             JsonMappingException,
@@ -458,13 +507,18 @@ public class AlfrescoTemplate
     }
 
 
-    public Response<Tag> updateTag(String network, String tagId, Tag tag)
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
+    public void updateTag(String network, String tagId, String tag)
+        throws RestClientException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.TAG, tagId);
+
+        Tag _tag = new Tag();
+        _tag.setTag(tag);
+
+        getRestTemplate().put(TAG_URL, new HttpEntity<Tag>(_tag, headers), vars);
+
     }
 
 

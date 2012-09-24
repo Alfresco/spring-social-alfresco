@@ -197,6 +197,12 @@ public interface Alfresco
             IOException;
 
 
+    public Tag getTag(String network, String tag)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException;
+
+
     public Response<Tag> getTags(String network)
         throws JsonParseException,
             JsonMappingException,
@@ -209,10 +215,8 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Tag> updateTag(String network, String tagId, Tag tag)
-        throws JsonParseException,
-            JsonMappingException,
-            IOException;
+    public void updateTag(String network, String tagId, String tag)
+        throws RestClientException;
 
 
     public Response<Comment> getComments(String network, String node)
