@@ -231,25 +231,25 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Comment> createComment(String network, String node, Comment comment)
+    public Response<Comment> createComment(String network, String node, String comment)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Comment> createComments(String network, String node, List<Comment> comments)
+    public Response<Comment> createComments(String network, String node, List<String> comments)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Comment> updateComment(String network, String node, String commentId, Comment comment)
+    public void updateComment(String network, String node, String commentId, String comment)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public boolean deleteComment(String network, String node, String commentId)
+    public void deleteComment(String network, String node, String commentId)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -267,19 +267,19 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Tag> addTagToNode(String network, String node, Tag tag)
+    public Response<Tag> addTagToNode(String network, String node, String tag)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Tag> addTagsToNode(String network, String node, List<Tag> tags)
+    public Response<Tag> addTagsToNode(String network, String node, List<String> tags)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public boolean removeTagFromNode(String network, String node, String tag)
+    public void removeTagFromNode(String network, String node, String tagId)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -303,13 +303,13 @@ public interface Alfresco
             IOException;
 
 
-    public boolean removeNodeRating(String network, String node, String rating)
+    public void removeNodeRating(String network, String node, String ratingId)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Rating> rateNode(String network, String node, Rating rating)
+    public Response<Rating> rateNode(String network, String node, String rating)
         throws JsonParseException,
             JsonMappingException,
             IOException;

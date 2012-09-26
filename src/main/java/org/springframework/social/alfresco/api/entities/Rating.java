@@ -4,13 +4,16 @@ package org.springframework.social.alfresco.api.entities;
 
 import java.util.Date;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
+@JsonSerialize(include = Inclusion.NON_NULL)
 public class Rating
 {
     private String    id;
     private Aggregate aggregate;
     private Date      ratedAt;
-    private boolean   myRating;
+    private String   myRating;
 
 
     public String getId()
@@ -49,13 +52,13 @@ public class Rating
     }
 
 
-    public boolean isMyRating()
+    public String isMyRating()
     {
         return myRating;
     }
 
 
-    public void setMyRating(boolean myRating)
+    public void setMyRating(String myRating)
     {
         this.myRating = myRating;
     }

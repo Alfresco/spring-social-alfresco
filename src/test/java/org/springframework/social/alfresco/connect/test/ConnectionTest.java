@@ -10,7 +10,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonParseException;
@@ -18,6 +20,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.Test;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
+import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Pagination;
@@ -61,6 +64,8 @@ public class ConnectionTest
     private static final String              preference      = "org.alfresco.share.siteWelcome.spring-social-alfresco";
     private static final String              node            = "8c368b84-4a88-4d62-9e7e-8e7eabe39969";
     private static final String              rating          = "likes";
+
+    private static String              commentId       = null;
 
 
     @Test
@@ -358,7 +363,7 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        Tag tag = alfresco.getTag(network, "spring-social-alfresco");
+        Tag tag = alfresco.getTag(network, "spring-social-alfresco-test");
 
         assertEquals("spring-social-alfresco", tag.getTag());
     }
@@ -380,15 +385,15 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        Tag tag = alfresco.getTag(network, "spring-social-alfresco");
+        Tag tag = alfresco.getTag(network, "spring-social-alfresco-test");
 
-        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco-test");
+        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco");
 
-        tag = alfresco.getTag(network, "spring-social-alfresco-test");
+        tag = alfresco.getTag(network, "spring-social-alfresco");
 
         assertNotNull(tag);
 
-        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco");
+        //alfresco.updateTag(network, tag.getId(), "spring-social-alfresco");
     }
 
 
@@ -399,6 +404,44 @@ public class ConnectionTest
             IOException
     {
         alfresco.getComments(network, node);
+    }
+
+
+    @Test
+    public void createComment()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Response<Comment> comment = alfresco.createComment(network, node, "This is a comment created by spring-social-alfresco");
+
+        commentId = comment.getEntry().getId();
+    }
+
+
+    @Test
+    public void createComments()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        List<String> comments = new ArrayList<String>();
+        comments.add("This is comment 1");
+        comments.add("This is comment 2");
+
+        alfresco.createComments(network, node, comments);
+    }
+    
+    @Test
+    public void updateComment()
+        throws JsonParseException, JsonMappingException, IOException{
+        alfresco.updateComment(network, node, commentId, "This is an updated comment");
+    }
+    
+    @Test
+    public void deleteComment()
+        throws JsonParseException, JsonMappingException, IOException{
+        alfresco.deleteComment(network, node, commentId);
     }
 
 

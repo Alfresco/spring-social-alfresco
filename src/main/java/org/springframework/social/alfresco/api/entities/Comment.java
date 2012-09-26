@@ -4,8 +4,11 @@ package org.springframework.social.alfresco.api.entities;
 
 import java.util.Date;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 
+@JsonSerialize(include = Inclusion.NON_NULL)
 public class Comment
 {
     private boolean edited;

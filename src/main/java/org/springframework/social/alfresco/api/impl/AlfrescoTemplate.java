@@ -6,6 +6,7 @@ package org.springframework.social.alfresco.api.impl;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -546,43 +547,74 @@ public class AlfrescoTemplate
     }
 
 
-    public Response<Comment> createComment(String network, String node, Comment comment)
+    public Response<Comment> createComment(String network, String node, String comment)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+
+        Comment _comment = new Comment();
+        _comment.setContent(comment);
+
+        String response = getRestTemplate().postForObject(NODE_COMMENT_URL, new HttpEntity<Comment>(_comment, headers), String.class, vars);
+        return mapper.readValue(response, entryResponseType(Comment.class));
+
     }
 
 
-    public Response<Comment> createComments(String network, String node, List<Comment> comments)
+    public Response<Comment> createComments(String network, String node, List<String> comments)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+
+        List<Comment> _comments = new ArrayList<Comment>();
+        for (String content : comments)
+        {
+            Comment _comment = new Comment();
+            _comment.setContent(content);
+            _comments.add(_comment);
+        }
+
+        String response = getRestTemplate().postForObject(NODE_COMMENT_URL, new HttpEntity<List<Comment>>(_comments, headers), String.class, vars);
+        return mapper.readValue(response, entryResponseType(Comment.class));
     }
 
 
-    public Response<Comment> updateComment(String network, String node, String commentId, Comment comment)
+    public void updateComment(String network, String node, String commentId, String comment)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+        vars.put(TemplateParams.COMMENT, commentId);
+
+        Comment _comment = new Comment();
+        _comment.setContent(comment);
+
+        getRestTemplate().put(NODE_COMMENT_URL, new HttpEntity<Comment>(_comment, headers), vars);
     }
 
 
-    public boolean deleteComment(String network, String node, String commentId)
+    public void deleteComment(String network, String node, String commentId)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return false;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+        vars.put(TemplateParams.COMMENT, commentId);
+
+        getRestTemplate().delete(NODE_COMMENT_URL, vars);
     }
 
 
@@ -610,33 +642,56 @@ public class AlfrescoTemplate
     }
 
 
-    public Response<Tag> addTagToNode(String network, String node, Tag tag)
+    public Response<Tag> addTagToNode(String network, String node, String tag)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+
+        Tag _tag = new Tag();
+        _tag.setTag(tag);
+
+        String response = getRestTemplate().postForObject(NODE_TAG_URL, new HttpEntity<Tag>(_tag, headers), String.class, vars);
+        return mapper.readValue(response, entryResponseType(Tag.class));
     }
 
 
-    public Response<Tag> addTagsToNode(String network, String node, List<Tag> tags)
+    public Response<Tag> addTagsToNode(String network, String node, List<String> tags)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+
+        List<Tag> _tags = new ArrayList<Tag>();
+        for (String tag : tags)
+        {
+            Tag _tag = new Tag();
+            _tag.setTag(tag);
+            _tags.add(_tag);
+        }
+
+        String response = getRestTemplate().postForObject(NODE_TAG_URL, new HttpEntity<List<Tag>>(_tags, headers), String.class, vars);
+        return mapper.readValue(response, entryResponseType(Tag.class));
     }
 
 
-    public boolean removeTagFromNode(String network, String node, String tag)
+    public void removeTagFromNode(String network, String node, String tagId)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return false;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+        vars.put(TemplateParams.TAG, tagId);
+
+        getRestTemplate().delete(NODE_TAG_URL, vars);
     }
 
 
@@ -680,23 +735,34 @@ public class AlfrescoTemplate
     }
 
 
-    public boolean removeNodeRating(String network, String node, String rating)
+    public void removeNodeRating(String network, String node, String ratingId)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return false;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+        vars.put(TemplateParams.RATING, ratingId);
+
+        getRestTemplate().delete(NODE_RATING_URL, vars);
     }
 
 
-    public Response<Rating> rateNode(String network, String node, Rating rating)
+    public Response<Rating> rateNode(String network, String node, String rating)
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+
+        Rating _rating = new Rating();
+        _rating.setMyRating(rating);
+
+        String response = getRestTemplate().postForObject(NODE_RATINGS_URL, new HttpEntity<Rating>(_rating, headers), String.class, vars);
+        return mapper.readValue(response, entryResponseType(Rating.class));
     }
 
 
@@ -823,4 +889,5 @@ public class AlfrescoTemplate
     private final String NODE_TAG_URL              = NODE_TAGS_URL + "/{tag}";
     private final String NODE_RATINGS_URL          = BASE_NODE_URL + "ratings";
     private final String NODE_RATING_URL           = NODE_RATINGS_URL + "/{rating}";
+
 }
