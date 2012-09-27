@@ -26,7 +26,6 @@ import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Pagination;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Tag;
-import org.springframework.social.alfresco.api.impl.AlfrescoTemplate;
 import org.springframework.social.alfresco.api.impl.Response;
 import org.springframework.social.alfresco.connect.AlfrescoConnectionFactory;
 import org.springframework.social.connect.Connection;
@@ -49,7 +48,6 @@ public class ConnectionTest
 
     private static final String              REDIRECT_URI    = "http://localhost:8080/alfoauthsample/mycallback.html";
     private static final String              STATE           = "test";
-    private static final String              SCOPE           = "public_api";
 
     private static AlfrescoConnectionFactory connectionFactory;
     private static AuthUrl                   authUrlObject;
@@ -65,7 +63,7 @@ public class ConnectionTest
     private static final String              node            = "8c368b84-4a88-4d62-9e7e-8e7eabe39969";
     private static final String              rating          = "likes";
 
-    private static String              commentId       = null;
+    private static String                    commentId       = null;
 
 
     @Test
@@ -83,7 +81,7 @@ public class ConnectionTest
     {
         OAuth2Parameters parameters = new OAuth2Parameters();
         parameters.setRedirectUri(REDIRECT_URI);
-        parameters.setScope(SCOPE);
+        parameters.setScope(Alfresco.DEFAULT_SCOPE);
         parameters.setState(STATE);
 
         String authUrl = connectionFactory.getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);
@@ -150,6 +148,18 @@ public class ConnectionTest
             IOException
     {
         alfresco.getNetworks();
+    }
+
+
+    @Test
+    public void getHomeNetwork()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Network homeNetwork = alfresco.getHomeNetwork();
+
+        assertEquals(network, homeNetwork.getId());
     }
 
 
@@ -363,9 +373,9 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        Tag tag = alfresco.getTag(network, "spring-social-alfresco-test");
+        Tag tag = alfresco.getTag(network, "test");
 
-        assertEquals("spring-social-alfresco", tag.getTag());
+        assertEquals("test", tag.getTag());
     }
 
 
@@ -380,20 +390,50 @@ public class ConnectionTest
 
 
     @Test
+    public void getAlotOfTags()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put(Pagination.MAXITEMS, "300");
+
+        Response<Tag> response = alfresco.getTags(network, parameters);
+
+        assertEquals(300, response.getList().getPagination().getCount());
+    }
+
+
+    @Test
+    public void getTagsNoIds()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put(Alfresco.QueryParams.PROPERTIES, "tag");
+
+        Response<Tag> response = alfresco.getTags(network, parameters);
+
+        assertNull(response.getList().getEntries().get(0).getId());
+    }
+
+
+    @Test
     public void updateTag()
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        Tag tag = alfresco.getTag(network, "spring-social-alfresco-test");
+        Tag tag = alfresco.getTag(network, "spring-social-alfresco");
 
-        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco");
+        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco-test");
 
-        tag = alfresco.getTag(network, "spring-social-alfresco");
+        tag = alfresco.getTag(network, "spring-social-alfresco-test");
 
         assertNotNull(tag);
 
-        //alfresco.updateTag(network, tag.getId(), "spring-social-alfresco");
+        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco");
     }
 
 
@@ -431,16 +471,24 @@ public class ConnectionTest
 
         alfresco.createComments(network, node, comments);
     }
-    
+
+
     @Test
     public void updateComment()
-        throws JsonParseException, JsonMappingException, IOException{
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
         alfresco.updateComment(network, node, commentId, "This is an updated comment");
     }
-    
+
+
     @Test
     public void deleteComment()
-        throws JsonParseException, JsonMappingException, IOException{
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
         alfresco.deleteComment(network, node, commentId);
     }
 
@@ -452,6 +500,41 @@ public class ConnectionTest
             IOException
     {
         alfresco.getNodesTags(network, node);
+    }
+
+
+    @Test
+    public void addTagToNode()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        alfresco.addTagToNode(network, node, "test");
+    }
+
+
+    @Test
+    public void addTagsToNode()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        List<String> tags = new ArrayList<String>();
+        tags.add("test1");
+        tags.add("test2");
+
+        alfresco.addTagsToNode(network, node, tags);
+    }
+
+
+    @Test
+    public void removeTagFromNode()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Tag tag = alfresco.getTag(network, "test");
+        alfresco.removeTagFromNode(network, node, tag.getId());
     }
 
 
@@ -476,43 +559,21 @@ public class ConnectionTest
 
 
     @Test
-    public void getAlotOfTags()
+    public void rateNode()
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put(Pagination.MAXITEMS, "300");
-
-        Response<Tag> response = alfresco.getTags(network, parameters);
-
-        assertEquals(300, response.getList().getPagination().getCount());
+        alfresco.rateNode(network, node, rating, "true");
     }
 
 
     @Test
-    public void getTagsNoIds()
+    public void removeRating()
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put(AlfrescoTemplate.QueryParams.PROPERTIES, "tag");
-
-        Response<Tag> response = alfresco.getTags(network, parameters);
-
-        assertNull(response.getList().getEntries().get(0).getId());
-    }
-
-
-    @Test
-    public void getHomeNetwork()
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
-    {
-        Network homeNetwork = alfresco.getHomeNetwork();
-
-        assertEquals(network, homeNetwork.getId());
+        alfresco.removeNodeRating(network, node, rating);
     }
 }

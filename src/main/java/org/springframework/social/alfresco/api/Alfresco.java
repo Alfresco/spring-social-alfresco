@@ -26,6 +26,54 @@ import org.springframework.web.client.RestClientException;
 
 public interface Alfresco
 {
+    public static final String DEFAULT_SCOPE             = "public_api";
+
+    public final String        NETWORKS_URL              = "https://api.alfresco.com/";
+    public final String        NETWORK_URL               = "https://api.alfresco.com/{network}/public/alfresco/versions/1/networks/{network}";
+    public final String        SITES_URL                 = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites";
+    public final String        SITE_URL                  = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}";
+    public final String        CONTAINERS_URL            = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/containers";
+    public final String        CONTAINER_URL             = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/containers/{container}";
+    public final String        MEMBERS_URL               = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/members";
+    public final String        MEMBER_URL                = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/members/{member}";
+    public final String        PEOPLE_URL                = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}";
+    public final String        PEOPLE_SITES_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/sites";
+    public final String        PEOPLE_SITE_URL           = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/sites/{site}";
+    public final String        PEOPLE_FAVORITE_SITES_URL = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/favorite-sites";
+    public final String        PEOPLE_PREFERENCES_URL    = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/preferences";
+    public final String        PEOPLE_PREFERENCE_URL     = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/preferences/{preference}";
+    public final String        PEOPLE_NETWORKS_URL       = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/networks";
+    public final String        PEOPLE_NETWORK_URL        = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/networks/{network}";
+    public final String        PEOPLE_ACTIVITIES_URL     = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/activities";
+    public final String        TAGS_URL                  = "https://api.alfresco.com/{network}/public/alfresco/versions/1/tags";
+    public final String        TAG_URL                   = "https://api.alfresco.com/{network}/public/alfresco/versions/1/tags/{tag}";
+    public final String        NODE_COMMENTS_URL         = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/comments";
+    public final String        NODE_COMMENT_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/comments/{comment}";
+    public final String        NODE_TAGS_URL             = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/tags";
+    public final String        NODE_TAG_URL              = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/tags/{tag}";
+    public final String        NODE_RATINGS_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/ratings";
+    public final String        NODE_RATING_URL           = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}";
+
+
+    public static class QueryParams
+    {
+        public final static String PROPERTIES = "properties";
+    }
+
+    public static class TemplateParams
+    {
+        public final static String NETWORK    = "network";
+        public final static String SITE       = "site";
+        public final static String CONTAINER  = "container";
+        public final static String PREFERENCE = "preference";
+        public final static String TAG        = "tag";
+        public final static String RATING     = "rating";
+        public final static String COMMENT    = "comment";
+        public final static String NODE       = "node";
+        public final static String PERSON     = "person";
+        public final static String MEMBER     = "member";
+    }
+
 
     public Response<Network> getNetwork(String network)
         throws JsonParseException,
@@ -309,7 +357,7 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Rating> rateNode(String network, String node, String rating)
+    public Response<Rating> rateNode(String network, String node, String ratingType, String rating)
         throws JsonParseException,
             JsonMappingException,
             IOException;

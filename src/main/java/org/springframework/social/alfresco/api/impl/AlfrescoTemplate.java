@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -47,6 +49,7 @@ public class AlfrescoTemplate
     extends AbstractOAuth2ApiBinding
     implements Alfresco
 {
+    private static final Log   log     = LogFactory.getLog(AlfrescoTemplate.class);
 
     private final ObjectMapper mapper  = new ObjectMapper();
     private final HttpHeaders  headers = new HttpHeaders();
@@ -66,6 +69,7 @@ public class AlfrescoTemplate
     {
         Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK, network);
         String response = getRestTemplate().getForObject(NETWORK_URL, String.class, vars);
+        log.debug("getNetwork: " + response);
         return mapper.readValue(response, entryResponseType(Network.class));
 
 
@@ -87,6 +91,7 @@ public class AlfrescoTemplate
             IOException
     {
         String response = getRestTemplate().getForObject(NETWORKS_URL + generateQueryString(parameters), String.class);
+        log.debug("getNetworks: " + response);
         return mapper.readValue(response, entryResponseType(Network.class));
     }
 
@@ -101,6 +106,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.SITE, site);
 
         String response = getRestTemplate().getForObject(SITE_URL, String.class, vars);
+        log.debug("getSite: " + response);
         return mapper.readValue(response, entryResponseType(Site.class));
     }
 
@@ -122,6 +128,7 @@ public class AlfrescoTemplate
     {
         Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK + generateQueryString(parameters), network);
         String response = getRestTemplate().getForObject(SITES_URL, String.class, vars);
+        log.debug("getSites: " + response);
         return mapper.readValue(response, entryResponseType(Site.class));
     }
 
@@ -137,6 +144,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.CONTAINER, contatiner);
 
         String response = getRestTemplate().getForObject(CONTAINER_URL, String.class, vars);
+        log.debug("getContainer: " + response);
         return mapper.readValue(response, entryResponseType(Container.class));
     }
 
@@ -160,6 +168,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.SITE, site);
 
         String response = getRestTemplate().getForObject(CONTAINERS_URL + generateQueryString(parameters), String.class, vars);
+        log.debug("getContainers: " + response);
         return mapper.readValue(response, entryResponseType(Container.class));
     }
 
@@ -175,8 +184,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.MEMBER, person);
 
         String response = getRestTemplate().getForObject(MEMBER_URL, String.class, vars);
-        System.out.println("getMemember URL: " + MEMBER_URL);
-        System.out.println("Member: " + response);
+        log.debug("getMember: " + response);
         return mapper.readValue(response, entryResponseType(Member.class));
     }
 
@@ -200,6 +208,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.SITE, site);
 
         String response = getRestTemplate().getForObject(MEMBERS_URL + generateQueryString(parameters), String.class, vars);
+        log.debug("getMembers: " + response);
         return mapper.readValue(response, entryResponseType(Member.class));
     }
 
@@ -218,7 +227,7 @@ public class AlfrescoTemplate
         member.setRole(role);
 
         String response = getRestTemplate().postForObject(MEMBERS_URL, new HttpEntity<Member>(member, headers), String.class, vars);
-        System.out.println("Added Member: " + response);
+        log.debug("addMember: " + response);
         return mapper.readValue(response, entryResponseType(Member.class));
     }
 
@@ -236,6 +245,7 @@ public class AlfrescoTemplate
         member.setRole(role);
 
         getRestTemplate().put(MEMBER_URL, new HttpEntity<Member>(member, headers), vars);
+        log.debug("updateMember: member: " + personId + " to Role: " + role);
 
     }
 
@@ -250,6 +260,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.MEMBER, personId);
 
         getRestTemplate().delete(MEMBER_URL, vars);
+        log.debug("deleteMember: " + personId + " from site: " + site);
 
     }
 
@@ -264,7 +275,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_URL, String.class, vars);
-        System.out.println("Person: " + response);
+        log.debug("getPerson: " + response);
         return mapper.readValue(response, entryResponseType(Person.class));
     }
 
@@ -288,7 +299,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_SITES_URL + generateQueryString(parameters), String.class, vars);
-        System.out.println("Person Sites: " + response);
+        log.debug("getSites: " + response);
         return mapper.readValue(response, entryResponseType(Site.class));
     }
 
@@ -305,7 +316,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.SITE, site);
 
         String response = getRestTemplate().getForObject(PEOPLE_SITE_URL, String.class, vars);
-        System.out.println("Person Site: " + response);
+        log.debug("getSite: " + response);
         return mapper.readValue(response, entryResponseType(Site.class));
     }
 
@@ -329,7 +340,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_FAVORITE_SITES_URL + generateQueryString(parameters), String.class, vars);
-        System.out.println("Favorite Sites: " + response);
+        log.debug("getFavoriteSites: " + response);
         return mapper.readValue(response, entryResponseType(Site.class));
     }
 
@@ -345,7 +356,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.PREFERENCE, preference);
 
         String response = getRestTemplate().getForObject(PEOPLE_PREFERENCE_URL, String.class, vars);
-        System.out.println("Preference: " + response);
+        log.debug("getPreference: " + response);
         return mapper.readValue(response, entryResponseType(Preference.class));
     }
 
@@ -369,7 +380,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_PREFERENCES_URL + generateQueryString(parameters), String.class, vars);
-        System.out.println("Preferences: " + response);
+        log.debug("getPreferences: " + response);
         return mapper.readValue(response, entryResponseType(Preference.class));
     }
 
@@ -384,7 +395,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_NETWORK_URL, String.class, vars);
-        System.out.println("Person Network: " + response);
+        log.debug("getNetwork: " + response);
         return mapper.readValue(response, entryResponseType(Network.class));
     }
 
@@ -408,7 +419,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_NETWORKS_URL + generateQueryString(parameters), String.class, vars);
-        System.out.println("Person Networks: " + response);
+        log.debug("getNetworks: " + response);
         return mapper.readValue(response, entryResponseType(Network.class));
     }
 
@@ -432,8 +443,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.PERSON, person);
 
         String response = getRestTemplate().getForObject(PEOPLE_ACTIVITIES_URL + generateQueryString(parameters), String.class, vars);
-        System.out.println("getActivities URL: " + PEOPLE_ACTIVITIES_URL + generateQueryString(parameters));
-        System.out.println("activities: " + response);
+        log.debug("getActivities: " + response);
         return mapper.readValue(response, entryResponseType(Activity.class));
     }
 
@@ -503,7 +513,7 @@ public class AlfrescoTemplate
         Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK, network);
 
         String response = getRestTemplate().getForObject(TAGS_URL + generateQueryString(parameters), String.class, vars);
-        System.out.println("Tags: " + response);
+        log.debug("getTags: " + response);
         return mapper.readValue(response, entryResponseType(Tag.class));
     }
 
@@ -519,6 +529,7 @@ public class AlfrescoTemplate
         _tag.setTag(tag);
 
         getRestTemplate().put(TAG_URL, new HttpEntity<Tag>(_tag, headers), vars);
+        log.debug("updateTag: " + tag);
 
     }
 
@@ -542,7 +553,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.NODE, node);
 
         String response = getRestTemplate().getForObject(NODE_COMMENTS_URL + generateQueryString(parameters), String.class, vars);
-        System.out.println("Comments: " + response);
+        log.debug("getComments: " + response);
         return mapper.readValue(response, entryResponseType(Comment.class));
     }
 
@@ -560,6 +571,7 @@ public class AlfrescoTemplate
         _comment.setContent(comment);
 
         String response = getRestTemplate().postForObject(NODE_COMMENT_URL, new HttpEntity<Comment>(_comment, headers), String.class, vars);
+        log.debug("createComment: " + response);
         return mapper.readValue(response, entryResponseType(Comment.class));
 
     }
@@ -583,6 +595,7 @@ public class AlfrescoTemplate
         }
 
         String response = getRestTemplate().postForObject(NODE_COMMENT_URL, new HttpEntity<List<Comment>>(_comments, headers), String.class, vars);
+        log.debug("createComments: " + response);
         return mapper.readValue(response, entryResponseType(Comment.class));
     }
 
@@ -601,6 +614,7 @@ public class AlfrescoTemplate
         _comment.setContent(comment);
 
         getRestTemplate().put(NODE_COMMENT_URL, new HttpEntity<Comment>(_comment, headers), vars);
+        log.debug("updateComment: " + comment);
     }
 
 
@@ -615,6 +629,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.COMMENT, commentId);
 
         getRestTemplate().delete(NODE_COMMENT_URL, vars);
+        log.debug("deleteComment: " + commentId);
     }
 
 
@@ -637,7 +652,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.NODE, node);
 
         String response = getRestTemplate().getForObject(NODE_TAGS_URL + generateQueryString(parameters), String.class, vars);
-        System.out.println("Node Tags: " + response);
+        log.debug("getNodeTafs: " + response);
         return mapper.readValue(response, entryResponseType(Tag.class));
     }
 
@@ -655,6 +670,7 @@ public class AlfrescoTemplate
         _tag.setTag(tag);
 
         String response = getRestTemplate().postForObject(NODE_TAG_URL, new HttpEntity<Tag>(_tag, headers), String.class, vars);
+        log.debug("addTagToNode: " + response);
         return mapper.readValue(response, entryResponseType(Tag.class));
     }
 
@@ -676,7 +692,8 @@ public class AlfrescoTemplate
             _tags.add(_tag);
         }
 
-        String response = getRestTemplate().postForObject(NODE_TAG_URL, new HttpEntity<List<Tag>>(_tags, headers), String.class, vars);
+        String response = getRestTemplate().postForObject(NODE_TAGS_URL, new HttpEntity<List<Tag>>(_tags, headers), String.class, vars);
+        log.debug("addTagsToNode: " + response);
         return mapper.readValue(response, entryResponseType(Tag.class));
     }
 
@@ -692,6 +709,7 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.TAG, tagId);
 
         getRestTemplate().delete(NODE_TAG_URL, vars);
+        log.debug("removeTagFromNode: " + tagId);
     }
 
 
@@ -713,9 +731,9 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.NODE, node);
 
-        String resposne = getRestTemplate().getForObject(NODE_RATINGS_URL + generateQueryString(parameters), String.class, vars);
-        System.out.println("Node Ratings: " + resposne);
-        return mapper.readValue(resposne, entryResponseType(Rating.class));
+        String response = getRestTemplate().getForObject(NODE_RATINGS_URL + generateQueryString(parameters), String.class, vars);
+        log.debug("getNodeRatings: " + response);
+        return mapper.readValue(response, entryResponseType(Rating.class));
     }
 
 
@@ -729,9 +747,9 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.NODE, node);
         vars.put(TemplateParams.RATING, rating);
 
-        String resposne = getRestTemplate().getForObject(NODE_RATING_URL, String.class, vars);
-        System.out.println("Node Rating: " + resposne);
-        return mapper.readValue(resposne, entryResponseType(Rating.class));
+        String response = getRestTemplate().getForObject(NODE_RATING_URL, String.class, vars);
+        log.debug("getNodeRatings: " + response);
+        return mapper.readValue(response, entryResponseType(Rating.class));
     }
 
 
@@ -746,10 +764,11 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.RATING, ratingId);
 
         getRestTemplate().delete(NODE_RATING_URL, vars);
+        log.debug("removeNodeRating: " + ratingId);
     }
 
 
-    public Response<Rating> rateNode(String network, String node, String rating)
+    public Response<Rating> rateNode(String network, String node, String ratingType, String rating)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -759,9 +778,11 @@ public class AlfrescoTemplate
         vars.put(TemplateParams.NODE, node);
 
         Rating _rating = new Rating();
+        _rating.setId(ratingType);
         _rating.setMyRating(rating);
 
         String response = getRestTemplate().postForObject(NODE_RATINGS_URL, new HttpEntity<Rating>(_rating, headers), String.class, vars);
+        log.debug("rateNode: " + response);
         return mapper.readValue(response, entryResponseType(Rating.class));
     }
 
@@ -836,58 +857,7 @@ public class AlfrescoTemplate
             }
         }
 
+        log.debug("queryString: " + queryString.toString());
         return queryString.toString();
     }
-
-
-    private static class TemplateParams
-    {
-        public final static String NETWORK    = "network";
-        public final static String SITE       = "site";
-        public final static String CONTAINER  = "container";
-        public final static String PREFERENCE = "preference";
-        public final static String TAG        = "tag";
-        public final static String RATING     = "rating";
-        public final static String COMMENT    = "comment";
-        public final static String NODE       = "node";
-        public final static String PERSON     = "person";
-        public final static String MEMBER     = "member";
-    }
-
-    public static class QueryParams
-    {
-        public final static String PROPERTIES = "properties";
-    }
-
-
-    private final int    VERSION_NO                = 1;
-    private final String VERSION                   = "/public/alfresco/versions/" + VERSION_NO + "/";
-    private final String BASE_URL                  = "https://api.alfresco.com/";
-    private final String NETWORKS_URL              = BASE_URL;
-    private final String NETWORK_URL               = BASE_URL + "{network}" + VERSION + "networks/{network}";
-    private final String SITES_URL                 = BASE_URL + "{network}" + VERSION + "sites";
-    private final String SITE_URL                  = SITES_URL + "/{site}";
-    private final String CONTAINERS_URL            = SITE_URL + "/containers";
-    private final String CONTAINER_URL             = CONTAINERS_URL + "/{container}";
-    private final String MEMBERS_URL               = SITE_URL + "/members";
-    private final String MEMBER_URL                = MEMBERS_URL + "/{member}";
-    private final String PEOPLE_URL                = BASE_URL + "{network}" + VERSION + "people/{person}";
-    private final String PEOPLE_SITES_URL          = PEOPLE_URL + "/sites";
-    private final String PEOPLE_SITE_URL           = PEOPLE_SITES_URL + "/{site}";
-    private final String PEOPLE_FAVORITE_SITES_URL = PEOPLE_URL + "/favorite-sites";
-    private final String PEOPLE_PREFERENCES_URL    = PEOPLE_URL + "/preferences";
-    private final String PEOPLE_PREFERENCE_URL     = PEOPLE_PREFERENCES_URL + "/{preference}";
-    private final String PEOPLE_NETWORKS_URL       = PEOPLE_URL + "/networks";
-    private final String PEOPLE_NETWORK_URL        = PEOPLE_NETWORKS_URL + "/{network}";
-    private final String PEOPLE_ACTIVITIES_URL     = PEOPLE_URL + "/activities";
-    private final String TAGS_URL                  = BASE_URL + "{network}" + VERSION + "tags";
-    private final String TAG_URL                   = TAGS_URL + "/{tag}";
-    private final String BASE_NODE_URL             = BASE_URL + "{network}" + VERSION + "nodes/{node}/";
-    private final String NODE_COMMENTS_URL         = BASE_NODE_URL + "comments";
-    private final String NODE_COMMENT_URL          = NODE_COMMENTS_URL + "/{comment}";
-    private final String NODE_TAGS_URL             = BASE_NODE_URL + "tags";
-    private final String NODE_TAG_URL              = NODE_TAGS_URL + "/{tag}";
-    private final String NODE_RATINGS_URL          = BASE_NODE_URL + "ratings";
-    private final String NODE_RATING_URL           = NODE_RATINGS_URL + "/{rating}";
-
 }

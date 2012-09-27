@@ -6,7 +6,8 @@ How to use
     AlfrescoConnectionFactory connectionFactory = new AlfrescoConnectionFactory(consumerKey, consumerSecret);
     
     OAuth2Parameters parameters = new OAuth2Parameters();
-    parameters.setRedirectUri("http://localhost:8080/alfoauthsample/mycallback.html");  parameters.setScope("public_api");
+    parameters.setRedirectUri("http://localhost:8080/alfoauthsample/mycallback.html");  
+    parameters.setScope(Alfresco.DEFAULT_SCOPE);
     parameters.setState("test");
     
     
