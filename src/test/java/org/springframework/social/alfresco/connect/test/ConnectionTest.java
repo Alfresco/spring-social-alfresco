@@ -6,18 +6,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.RewriteHandler;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
@@ -32,13 +38,11 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Parameters;
-import org.springframework.web.client.RestClientException;
 
 
 /**
  * 
  * @author jottley
- * 
  */
 public class ConnectionTest
 {
@@ -46,13 +50,15 @@ public class ConnectionTest
     private static final String              CONSUMER_KEY    = "l7xx16247a05ab7b46968625d4dda1f45aeb";
     private static final String              CONSUMER_SECRET = "3af3780039de4da5892519d2d6d856b9";
 
-    private static final String              REDIRECT_URI    = "http://localhost:8080/alfoauthsample/mycallback.html";
+    private static final String              REDIRECT_URI    = "http://localhost:9876";
     private static final String              STATE           = "test";
 
     private static AlfrescoConnectionFactory connectionFactory;
     private static AuthUrl                   authUrlObject;
 
     private static Alfresco                  alfresco;
+
+    private static Server                    server;
 
 
     private static final String              network         = "alfresco.com";
@@ -63,71 +69,19 @@ public class ConnectionTest
     private static final String              node            = "8c368b84-4a88-4d62-9e7e-8e7eabe39969";
     private static final String              rating          = "likes";
 
-    private static String                    commentId       = null;
 
-
-    @Test
-    public void test()
+    @BeforeClass
+    public static void setUp()
+        throws Exception
     {
-        connectionFactory = new AlfrescoConnectionFactory(CONSUMER_KEY, CONSUMER_SECRET);
+        Properties properties = new Properties();
+        properties.load(new FileReader(new File("src/test/resources/connectionTest.properties")));
 
-        assertEquals("alfresco", connectionFactory.getProviderId());
-    }
+        setupServer();
 
+        authenticate();
 
-    @Test
-    public void UrlTest()
-        throws MalformedURLException
-    {
-        OAuth2Parameters parameters = new OAuth2Parameters();
-        parameters.setRedirectUri(REDIRECT_URI);
-        parameters.setScope(Alfresco.DEFAULT_SCOPE);
-        parameters.setState(STATE);
-
-        String authUrl = connectionFactory.getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);
-
-        System.out.println(authUrl);
-
-
-        authUrlObject = new AuthUrl(authUrl);
-        assertEquals("https://api.alfresco.com/auth/oauth/versions/2/authorize", authUrlObject.getBase());
-    }
-
-
-    @Test
-    public void hasQueryParams()
-    {
-        assertNotNull(authUrlObject.getQuery());
-        assertNotNull(authUrlObject.getQueryMap().get(AuthUrl.CLIENT_ID));
-        assertEquals(CONSUMER_KEY, authUrlObject.getQueryMap().get(AuthUrl.CLIENT_ID));
-        assertNotNull(authUrlObject.getQueryMap().get(AuthUrl.REDIRECT_URI));
-        assertNotNull(authUrlObject.getQueryMap().get(AuthUrl.RESPONSE_TYPE));
-        assertNotNull(authUrlObject.getQueryMap().get(AuthUrl.SCOPE));
-        assertNotNull(authUrlObject.getQueryMap().get(AuthUrl.STATE));
-        assertEquals(STATE, authUrlObject.getQueryMap().get(AuthUrl.STATE));
-    }
-
-
-    @Test
-    public void GetAPI()
-        throws IOException
-    {
-        // Wait for the authorization code
-        System.out.println("Type the code you received here: ");
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        String accessToken = null;
-
-        accessToken = in.readLine();
-
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(accessToken, REDIRECT_URI, null);
-
-        System.out.println("Access: " + accessGrant.getAccessToken() + " Refresh: " + accessGrant.getRefreshToken() + " Scope: "
-                           + accessGrant.getScope() + " expires: " + accessGrant.getExpireTime());
-
-        Connection<Alfresco> connection = connectionFactory.createConnection(accessGrant);
-        alfresco = connection.getApi();
-
-
+        GetAPI(properties.getProperty("username"), properties.getProperty("password"));
     }
 
 
@@ -137,6 +91,7 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
+
         alfresco.getNetwork(network);
     }
 
@@ -225,34 +180,29 @@ public class ConnectionTest
 
 
     @Test
-    public void addMember()
+    public void memberOperations()
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        alfresco.addMember(network, site, "pmonks@alfresco.com", Role.SiteConsumer);
-    }
+        String pmonks = "pmonks@alfresco.com";
 
+        Response<Member> member = alfresco.addMember(network, site, pmonks, Role.SiteConsumer);
 
-    @Test
-    public void updateMember()
-        throws RestClientException,
-            JsonParseException,
-            JsonMappingException,
-            IOException
-    {
-        alfresco.updateMember(network, site, "pmonks@alfresco.com", Role.SiteContributor);
-        Response<Member> member = alfresco.getMember(network, site, "pmonks@alfresco.com");
+        assertNotNull(member);
+        assertEquals(pmonks, member.getEntry().getId());
+        assertEquals(Role.SiteConsumer, member.getEntry().getRole());
+
+        alfresco.updateMember(network, site, pmonks, Role.SiteContributor);
+        member = alfresco.getMember(network, site, pmonks);
 
         assertEquals(Role.SiteContributor, member.getEntry().getRole());
-    }
 
+        alfresco.deleteMember(network, site, pmonks);
 
-    @Test
-    public void deleteMember()
-        throws RestClientException
-    {
-        alfresco.deleteMember(network, site, "pmonks@alfresco.com");
+        member = alfresco.getMember(network, site, pmonks);
+
+        assertNull(member);
     }
 
 
@@ -448,19 +398,34 @@ public class ConnectionTest
 
 
     @Test
-    public void createComment()
+    public void commentOperations()
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        Response<Comment> comment = alfresco.createComment(network, node, "This is a comment created by spring-social-alfresco");
+        String commentId = null;
+        String firstComment = "This is a comment created by spring-social-alfresco";
+        String updatedComment = "This is an updated comment";
 
+        Response<Comment> comment = alfresco.createComment(network, node, firstComment);
+
+        assertEquals(firstComment, comment.getEntry().getContent());
         commentId = comment.getEntry().getId();
+
+        alfresco.updateComment(network, node, commentId, updatedComment);
+
+        // TODO Do we need an individual get Comment?
+
+        alfresco.deleteComment(network, node, commentId);
+
+        // TODO check to see if comment is there
+
+
     }
 
 
     @Test
-    public void createComments()
+    public void commentOperations2()
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -469,27 +434,12 @@ public class ConnectionTest
         comments.add("This is comment 1");
         comments.add("This is comment 2");
 
-        alfresco.createComments(network, node, comments);
-    }
+        Response<Comment> c = alfresco.createComments(network, node, comments);
 
-
-    @Test
-    public void updateComment()
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
-    {
-        alfresco.updateComment(network, node, commentId, "This is an updated comment");
-    }
-
-
-    @Test
-    public void deleteComment()
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
-    {
-        alfresco.deleteComment(network, node, commentId);
+        for (Comment comment : c.getList().getEntries())
+        {
+            alfresco.deleteComment(network, node, comment.getId());
+        }
     }
 
 
@@ -504,17 +454,23 @@ public class ConnectionTest
 
 
     @Test
-    public void addTagToNode()
+    public void nodeTagOperations()
         throws JsonParseException,
             JsonMappingException,
             IOException
     {
-        alfresco.addTagToNode(network, node, "test");
+        Response<Tag> tag = alfresco.addTagToNode(network, node, "test");
+
+        assertEquals("test", tag.getEntry().getTag());
+
+        alfresco.removeTagFromNode(network, node, tag.getEntry().getId());
+
+        // TODO test tag was removed from node
     }
 
 
     @Test
-    public void addTagsToNode()
+    public void nodeTagOperations2()
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -523,18 +479,12 @@ public class ConnectionTest
         tags.add("test1");
         tags.add("test2");
 
-        alfresco.addTagsToNode(network, node, tags);
-    }
+        Response<Tag> t = alfresco.addTagsToNode(network, node, tags);
 
-
-    @Test
-    public void removeTagFromNode()
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
-    {
-        Tag tag = alfresco.getTag(network, "test");
-        alfresco.removeTagFromNode(network, node, tag.getId());
+        for (Tag tag : t.getList().getEntries())
+        {
+            alfresco.removeTagFromNode(network, node, tag.getId());
+        }
     }
 
 
@@ -575,5 +525,53 @@ public class ConnectionTest
             IOException
     {
         alfresco.removeNodeRating(network, node, rating);
+    }
+
+
+    // =================================================//
+
+    private static void setupServer()
+        throws Exception
+    {
+        server = new Server(9876);
+        server.setHandler(new RewriteHandler());
+        server.start();
+    }
+
+
+    private static void authenticate()
+        throws MalformedURLException
+    {
+        connectionFactory = new AlfrescoConnectionFactory(CONSUMER_KEY, CONSUMER_SECRET);
+
+        OAuth2Parameters parameters = new OAuth2Parameters();
+        parameters.setRedirectUri(REDIRECT_URI);
+        parameters.setScope(Alfresco.DEFAULT_SCOPE);
+        parameters.setState(STATE);
+
+        authUrlObject = new AuthUrl(connectionFactory.getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters));
+    }
+
+
+    private static void GetAPI(String username, String password)
+        throws IOException
+    {
+        HtmlUnitDriver driver = new HtmlUnitDriver();
+        driver.get(authUrlObject.toString());
+
+        List<WebElement> webElements = driver.findElementsByTagName("form");
+
+        WebElement usernameElement = driver.findElementById("username");
+        usernameElement.sendKeys(username);
+        WebElement passwordElement = driver.findElementById("password");
+        passwordElement.sendKeys(password);
+        webElements.get(0).submit();
+
+        CodeUrl codeUrl = new CodeUrl(driver.getCurrentUrl());
+
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(codeUrl.getQueryMap().get(CodeUrl.CODE), REDIRECT_URI, null);
+
+        Connection<Alfresco> connection = connectionFactory.createConnection(accessGrant);
+        alfresco = connection.getApi();
     }
 }

@@ -34,7 +34,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Network> network = mapper.readValue(new File("src/test/resources/network.json"), mapper.getTypeFactory().constructParametricType(Response.class, Network.class));
+        Response<Network> network = mapper.readValue(new File("src/test/resources/json/network.json"), mapper.getTypeFactory().constructParametricType(Response.class, Network.class));
     }
 
 
@@ -44,7 +44,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Network> networks = mapper.readValue(new File("src/test/resources/networks.json"), mapper.getTypeFactory().constructParametricType(Response.class, Network.class));
+        Response<Network> networks = mapper.readValue(new File("src/test/resources/json/networks.json"), mapper.getTypeFactory().constructParametricType(Response.class, Network.class));
     }
 
 
@@ -54,7 +54,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Site> site = mapper.readValue(new File("src/test/resources/site.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
+        Response<Site> site = mapper.readValue(new File("src/test/resources/json/site.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
     }
 
 
@@ -64,7 +64,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Site> sites = mapper.readValue(new File("src/test/resources/sites.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
+        Response<Site> sites = mapper.readValue(new File("src/test/resources/json/sites.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
     }
 
 
@@ -74,7 +74,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Container> container = mapper.readValue(new File("src/test/resources/container.json"), mapper.getTypeFactory().constructParametricType(Response.class, Container.class));
+        Response<Container> container = mapper.readValue(new File("src/test/resources/json/container.json"), mapper.getTypeFactory().constructParametricType(Response.class, Container.class));
     }
 
 
@@ -84,7 +84,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Container> containers = mapper.readValue(new File("src/test/resources/containers.json"), mapper.getTypeFactory().constructParametricType(Response.class, Container.class));
+        Response<Container> containers = mapper.readValue(new File("src/test/resources/json/containers.json"), mapper.getTypeFactory().constructParametricType(Response.class, Container.class));
     }
 
 
@@ -94,7 +94,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Member> member = mapper.readValue(new File("src/test/resources/member.json"), mapper.getTypeFactory().constructParametricType(Response.class, Member.class));
+        Response<Member> member = mapper.readValue(new File("src/test/resources/json/member.json"), mapper.getTypeFactory().constructParametricType(Response.class, Member.class));
     }
 
 
@@ -104,7 +104,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Member> members = mapper.readValue(new File("src/test/resources/members.json"), mapper.getTypeFactory().constructParametricType(Response.class, Member.class));
+        Response<Member> members = mapper.readValue(new File("src/test/resources/json/members.json"), mapper.getTypeFactory().constructParametricType(Response.class, Member.class));
     }
 
 
@@ -114,7 +114,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Person> person = mapper.readValue(new File("src/test/resources/person.json"), mapper.getTypeFactory().constructParametricType(Response.class, Person.class));
+        Response<Person> person = mapper.readValue(new File("src/test/resources/json/person.json"), mapper.getTypeFactory().constructParametricType(Response.class, Person.class));
     }
 
 
@@ -124,7 +124,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Site> siteMembership = mapper.readValue(new File("src/test/resources/sitemembership.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
+        Response<Site> siteMembership = mapper.readValue(new File("src/test/resources/json/sitemembership.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
     }
 
 
@@ -134,7 +134,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Site> siteMemberships = mapper.readValue(new File("src/test/resources/sitememberships.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
+        Response<Site> siteMemberships = mapper.readValue(new File("src/test/resources/json/sitememberships.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
     }
 
 
@@ -144,7 +144,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Site> siteFavorites = mapper.readValue(new File("src/test/resources/sitefavorites.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
+        Response<Site> siteFavorites = mapper.readValue(new File("src/test/resources/json/sitefavorites.json"), mapper.getTypeFactory().constructParametricType(Response.class, Site.class));
     }
 
 
@@ -154,7 +154,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Preference> preference = mapper.readValue(new File("src/test/resources/preference.json"), mapper.getTypeFactory().constructParametricType(Response.class, Preference.class));
+        Response<Preference> preference = mapper.readValue(new File("src/test/resources/json/preference.json"), mapper.getTypeFactory().constructParametricType(Response.class, Preference.class));
     }
 
 
@@ -164,7 +164,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Preference> preferences = mapper.readValue(new File("src/test/resources/preferences.json"), mapper.getTypeFactory().constructParametricType(Response.class, Preference.class));
+        Response<Preference> preferences = mapper.readValue(new File("src/test/resources/json/preferences.json"), mapper.getTypeFactory().constructParametricType(Response.class, Preference.class));
     }
 
 
@@ -174,7 +174,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Activity> activities = mapper.readValue(new File("src/test/resources/activities.json"), mapper.getTypeFactory().constructParametricType(Response.class, Activity.class));
+        Response<Activity> activities = mapper.readValue(new File("src/test/resources/json/activities.json"), mapper.getTypeFactory().constructParametricType(Response.class, Activity.class));
     }
 
 
@@ -184,7 +184,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Tag> tags = mapper.readValue(new File("src/test/resources/tags.json"), mapper.getTypeFactory().constructParametricType(Response.class, Tag.class));
+        Response<Tag> tags = mapper.readValue(new File("src/test/resources/json/tags.json"), mapper.getTypeFactory().constructParametricType(Response.class, Tag.class));
     }
 
 
@@ -194,7 +194,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Comment> comments = mapper.readValue(new File("src/test/resources/comments.json"), mapper.getTypeFactory().constructParametricType(Response.class, Comment.class));
+        Response<Comment> comments = mapper.readValue(new File("src/test/resources/json/comments.json"), mapper.getTypeFactory().constructParametricType(Response.class, Comment.class));
     }
 
 
@@ -204,7 +204,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Rating> rating = mapper.readValue(new File("src/test/resources/rating.json"), mapper.getTypeFactory().constructParametricType(Response.class, Rating.class));
+        Response<Rating> rating = mapper.readValue(new File("src/test/resources/json/rating.json"), mapper.getTypeFactory().constructParametricType(Response.class, Rating.class));
     }
 
 
@@ -214,7 +214,7 @@ public class JsonValidator
             JsonMappingException,
             IOException
     {
-        Response<Rating> ratings = mapper.readValue(new File("src/test/resources/ratings.json"), mapper.getTypeFactory().constructParametricType(Response.class, Rating.class));
+        Response<Rating> ratings = mapper.readValue(new File("src/test/resources/json/ratings.json"), mapper.getTypeFactory().constructParametricType(Response.class, Rating.class));
     }
 
 }

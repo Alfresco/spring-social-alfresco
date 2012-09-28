@@ -6,35 +6,28 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
+
 /**
  * 
  * @author jottley
- *
+ * 
  */
-public class AuthUrl
+public class CodeUrl
 
 {
 
-    public static final String CLIENT_ID     = "client_id";
-    public static final String REDIRECT_URI  = "redirect_uri";
-    public static final String RESPONSE_TYPE = "response_type";
-    public static final String SCOPE         = "scope";
-    public static final String STATE         = "state";
+    public static final String CODE  = "code";
+    public static final String SCOPE = "scope";
+    public static final String STATE = "state";
 
 
     private URL                url;
 
 
-    public AuthUrl(String authUrl)
+    public CodeUrl(String authUrl)
         throws MalformedURLException
     {
         this.url = new URL(authUrl);
-    }
-
-
-    public String getBase()
-    {
-        return url.getProtocol() + "://" + url.getAuthority() + url.getPath();
     }
 
 
@@ -64,7 +57,8 @@ public class AuthUrl
 
         return queryMap;
     }
-    
+
+
     @Override
     public String toString()
     {

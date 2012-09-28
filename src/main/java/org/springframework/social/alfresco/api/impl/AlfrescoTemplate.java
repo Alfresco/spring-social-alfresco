@@ -570,7 +570,7 @@ public class AlfrescoTemplate
         Comment _comment = new Comment();
         _comment.setContent(comment);
 
-        String response = getRestTemplate().postForObject(NODE_COMMENT_URL, new HttpEntity<Comment>(_comment, headers), String.class, vars);
+        String response = getRestTemplate().postForObject(NODE_COMMENTS_URL, new HttpEntity<Comment>(_comment, headers), String.class, vars);
         log.debug("createComment: " + response);
         return mapper.readValue(response, entryResponseType(Comment.class));
 
@@ -594,7 +594,7 @@ public class AlfrescoTemplate
             _comments.add(_comment);
         }
 
-        String response = getRestTemplate().postForObject(NODE_COMMENT_URL, new HttpEntity<List<Comment>>(_comments, headers), String.class, vars);
+        String response = getRestTemplate().postForObject(NODE_COMMENTS_URL, new HttpEntity<List<Comment>>(_comments, headers), String.class, vars);
         log.debug("createComments: " + response);
         return mapper.readValue(response, entryResponseType(Comment.class));
     }
