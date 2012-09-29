@@ -31,9 +31,7 @@ Refreshing Tokens
     //Refresh AccessGrant & Connection 
     accessGrant = connectionFactory.getOAuthOperations().refreshAccess(accessGrant.getRefreshToken(), Alfresco.DEFAULT_SCOPE, null);
     alfresco = connectionFactory.createConnection(accessGrant).getApi();
-    
-  Note: Refresh tokens are only returned on the initial request.  When refreshing access, you will not receive a new refresh token.  Insure you persist your refresh token so it is not lost.
-=======
-````    
-    Note: Refresh tokens are only returned on the initial request.  When refreshing access, you will not receive a new refresh token.  Insure you persist your refresh token so it is not lost.
->>>>>>> a0d4d186cb46821c6abb140ad7186d386457ba1d
+ ````   
+Note: Refresh tokens are only returned on the initial request.  When refreshing access, you will not receive a new refresh token.  Insure you persist your refresh token so it is not lost.
+  
+
