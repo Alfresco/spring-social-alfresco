@@ -23,3 +23,12 @@ How to use
     Alfresco alfresco = connection.getApi();
     
     //Use Alfresco api here
+    
+    
+Refreshing Tokens
+    
+    //Refresh AccessGrant & Connection 
+    accessGrant = connectionFactory.getOAuthOperations().refreshAccess(accessGrant.getRefreshToken(), Alfresco.DEFAULT_SCOPE, null);
+    alfresco = connectionFactory.createConnection(accessGrant).getApi();
+    
+    Note: Refresh tokens are only returned on the initial request.  When refreshing access, you will not receive a new refresh token.  Insure you persist your refresh token so it is not lost.

@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -27,12 +26,12 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
+import org.springframework.social.alfresco.api.entities.List;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Pagination;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Tag;
-import org.springframework.social.alfresco.api.impl.Response;
 import org.springframework.social.alfresco.connect.AlfrescoConnectionFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.oauth2.AccessGrant;
@@ -55,6 +54,7 @@ public class ConnectionTest
 
     private static AlfrescoConnectionFactory connectionFactory;
     private static AuthUrl                   authUrlObject;
+    private static AccessGrant               accessGrant;
 
     private static Alfresco                  alfresco;
 
@@ -187,16 +187,16 @@ public class ConnectionTest
     {
         String pmonks = "pmonks@alfresco.com";
 
-        Response<Member> member = alfresco.addMember(network, site, pmonks, Role.SiteConsumer);
+        Member member = alfresco.addMember(network, site, pmonks, Role.SiteConsumer);
 
         assertNotNull(member);
-        assertEquals(pmonks, member.getEntry().getId());
-        assertEquals(Role.SiteConsumer, member.getEntry().getRole());
+        assertEquals(pmonks, member.getId());
+        assertEquals(Role.SiteConsumer, member.getRole());
 
         alfresco.updateMember(network, site, pmonks, Role.SiteContributor);
         member = alfresco.getMember(network, site, pmonks);
 
-        assertEquals(Role.SiteContributor, member.getEntry().getRole());
+        assertEquals(Role.SiteContributor, member.getRole());
 
         alfresco.deleteMember(network, site, pmonks);
 
@@ -348,9 +348,9 @@ public class ConnectionTest
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Pagination.MAXITEMS, "300");
 
-        Response<Tag> response = alfresco.getTags(network, parameters);
+        List<Tag> response = alfresco.getTags(network, parameters);
 
-        assertEquals(300, response.getList().getPagination().getCount());
+        assertEquals(300, response.getPagination().getCount());
     }
 
 
@@ -363,9 +363,9 @@ public class ConnectionTest
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Alfresco.QueryParams.PROPERTIES, "tag");
 
-        Response<Tag> response = alfresco.getTags(network, parameters);
+        List<Tag> response = alfresco.getTags(network, parameters);
 
-        assertNull(response.getList().getEntries().get(0).getId());
+        assertNull(response.getEntries().get(0).getId());
     }
 
 
@@ -407,10 +407,10 @@ public class ConnectionTest
         String firstComment = "This is a comment created by spring-social-alfresco";
         String updatedComment = "This is an updated comment";
 
-        Response<Comment> comment = alfresco.createComment(network, node, firstComment);
+        Comment comment = alfresco.createComment(network, node, firstComment);
 
-        assertEquals(firstComment, comment.getEntry().getContent());
-        commentId = comment.getEntry().getId();
+        assertEquals(firstComment, comment.getContent());
+        commentId = comment.getId();
 
         alfresco.updateComment(network, node, commentId, updatedComment);
 
@@ -430,13 +430,13 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        List<String> comments = new ArrayList<String>();
+        java.util.List<String> comments = new ArrayList<String>();
         comments.add("This is comment 1");
         comments.add("This is comment 2");
 
-        Response<Comment> c = alfresco.createComments(network, node, comments);
+        List<Comment> c = alfresco.createComments(network, node, comments);
 
-        for (Comment comment : c.getList().getEntries())
+        for (Comment comment : c.getEntries())
         {
             alfresco.deleteComment(network, node, comment.getId());
         }
@@ -459,11 +459,11 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        Response<Tag> tag = alfresco.addTagToNode(network, node, "test");
+        Tag tag = alfresco.addTagToNode(network, node, "test");
 
-        assertEquals("test", tag.getEntry().getTag());
+        assertEquals("test", tag.getTag());
 
-        alfresco.removeTagFromNode(network, node, tag.getEntry().getId());
+        alfresco.removeTagFromNode(network, node, tag.getId());
 
         // TODO test tag was removed from node
     }
@@ -475,13 +475,13 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        List<String> tags = new ArrayList<String>();
+        java.util.List<String> tags = new ArrayList<String>();
         tags.add("test1");
         tags.add("test2");
 
-        Response<Tag> t = alfresco.addTagsToNode(network, node, tags);
+        List<Tag> t = alfresco.addTagsToNode(network, node, tags);
 
-        for (Tag tag : t.getList().getEntries())
+        for (Tag tag : t.getEntries())
         {
             alfresco.removeTagFromNode(network, node, tag.getId());
         }
@@ -528,6 +528,26 @@ public class ConnectionTest
     }
 
 
+    @Test
+    public void refreshTicket()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        // Refresh AccessGrant & Connection
+        accessGrant = connectionFactory.getOAuthOperations().refreshAccess(accessGrant.getRefreshToken(), Alfresco.DEFAULT_SCOPE, null);
+        alfresco = connectionFactory.createConnection(accessGrant).getApi();
+
+        // quickTests
+        getNetwork();
+        getSite();
+        // getContainer();
+        // getActivities();
+        getHomeNetwork();
+
+    }
+
+
     // =================================================//
 
     private static void setupServer()
@@ -559,7 +579,7 @@ public class ConnectionTest
         HtmlUnitDriver driver = new HtmlUnitDriver();
         driver.get(authUrlObject.toString());
 
-        List<WebElement> webElements = driver.findElementsByTagName("form");
+        java.util.List<WebElement> webElements = driver.findElementsByTagName("form");
 
         WebElement usernameElement = driver.findElementById("username");
         usernameElement.sendKeys(username);
@@ -569,7 +589,7 @@ public class ConnectionTest
 
         CodeUrl codeUrl = new CodeUrl(driver.getCurrentUrl());
 
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(codeUrl.getQueryMap().get(CodeUrl.CODE), REDIRECT_URI, null);
+        accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(codeUrl.getQueryMap().get(CodeUrl.CODE), REDIRECT_URI, null);
 
         Connection<Alfresco> connection = connectionFactory.createConnection(accessGrant);
         alfresco = connection.getApi();
