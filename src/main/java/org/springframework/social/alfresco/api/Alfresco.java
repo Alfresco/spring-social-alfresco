@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.chemistry.opencmis.client.api.Session;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.social.alfresco.api.entities.Activity;
@@ -26,6 +27,8 @@ import org.springframework.web.client.RestClientException;
 
 public interface Alfresco
 {
+
+	public Session getCMISSession(String networkId);
 
     public Response<Network> getNetwork(String network)
         throws JsonParseException,
