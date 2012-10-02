@@ -15,7 +15,6 @@ public class Network
     private ArrayList<Quota> quotas;
     private boolean          paidNetwork;
     private String           subscriptionLevel;
-    private Network          network;
 
 
     public void setId(String id)
@@ -99,18 +98,6 @@ public class Network
     public String getSubscriptionLevel()
     {
         return subscriptionLevel;
-    }
-
-
-    public Network getNetwork()
-    {
-        return network;
-    }
-
-
-    public void setNetwork(Network network)
-    {
-        this.network = network;
     }
 
 
