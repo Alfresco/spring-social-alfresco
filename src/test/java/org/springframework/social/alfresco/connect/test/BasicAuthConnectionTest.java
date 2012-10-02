@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonParseException;
@@ -18,6 +17,7 @@ import org.junit.Test;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
+import org.springframework.social.alfresco.api.entities.List;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Pagination;
@@ -25,7 +25,6 @@ import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.impl.AlfrescoTemplate;
 import org.springframework.social.alfresco.api.impl.BasicAuthAlfrescoTemplate;
-import org.springframework.social.alfresco.api.impl.Response;
 import org.springframework.web.client.RestClientException;
 
 
@@ -160,9 +159,9 @@ public class BasicAuthConnectionTest
             IOException
     {
         alfresco.updateMember(network, site, memberId, Role.SiteContributor);
-        Response<Member> member = alfresco.getMember(network, site, memberId);
+        Member member = alfresco.getMember(network, site, memberId);
 
-        assertEquals(Role.SiteContributor, member.getEntry().getRole());
+        assertEquals(Role.SiteContributor, member.getRole());
     }
 
 
@@ -349,9 +348,9 @@ public class BasicAuthConnectionTest
             JsonMappingException,
             IOException
     {
-        Response<Comment> comment = alfresco.createComment(network, node, "This is a comment created by spring-social-alfresco");
+        Comment comment = alfresco.createComment(network, node, "This is a comment created by spring-social-alfresco");
 
-        commentId = comment.getEntry().getId();
+        commentId = comment.getId();
     }
 
 
@@ -361,7 +360,7 @@ public class BasicAuthConnectionTest
             JsonMappingException,
             IOException
     {
-        List<String> comments = new ArrayList<String>();
+        java.util.List<String> comments = new ArrayList<String>();
         comments.add("This is comment 1");
         comments.add("This is comment 2");
 
@@ -420,9 +419,9 @@ public class BasicAuthConnectionTest
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Pagination.MAXITEMS, "300");
 
-        Response<Tag> response = alfresco.getTags(network, parameters);
+        List<Tag> response = alfresco.getTags(network, parameters);
 
-        assertEquals(300, response.getList().getPagination().getCount());
+        assertEquals(300, response.getPagination().getCount());
     }
 
 
@@ -435,9 +434,9 @@ public class BasicAuthConnectionTest
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(AlfrescoTemplate.QueryParams.PROPERTIES, "tag");
 
-        Response<Tag> response = alfresco.getTags(network, parameters);
+        List<Tag> response = alfresco.getTags(network, parameters);
 
-        assertNull(response.getList().getEntries().get(0).getId());
+        assertNull(response.getEntries().get(0).getId());
     }
 
 

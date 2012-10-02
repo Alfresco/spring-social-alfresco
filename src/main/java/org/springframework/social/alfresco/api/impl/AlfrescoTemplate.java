@@ -4,7 +4,6 @@
 package org.springframework.social.alfresco.api.impl;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.opencmis.client.api.Repository;
@@ -12,6 +11,8 @@ import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.social.oauth2.AbstractOAuth2ApiBinding;
 
@@ -53,7 +54,7 @@ public class AlfrescoTemplate extends AbstractAlfrescoTemplate
 		return session;
 	}
     
-	protected List<Repository> getCMISNetworks()
+	protected java.util.List<Repository> getCMISNetworks()
 	{
 		// default factory implementation
 		SessionFactoryImpl sessionFactory = SessionFactoryImpl.newInstance();
@@ -97,4 +98,7 @@ public class AlfrescoTemplate extends AbstractAlfrescoTemplate
 //		}
 //	});
 //}
+
+    private final ObjectMapper mapper  = new ObjectMapper();
+    private final HttpHeaders  headers = new HttpHeaders();
 }

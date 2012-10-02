@@ -3,7 +3,6 @@ package org.springframework.social.alfresco.api;
 
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.opencmis.client.api.Session;
@@ -12,6 +11,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
+import org.springframework.social.alfresco.api.entities.List;
 import org.springframework.social.alfresco.api.entities.Metadata;
 import org.springframework.social.alfresco.api.entities.Person;
 import org.springframework.social.alfresco.api.entities.Preference;
@@ -21,88 +21,134 @@ import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Tag;
-import org.springframework.social.alfresco.api.impl.Response;
 import org.springframework.web.client.RestClientException;
 
 
 public interface Alfresco
 {
+    public static final String DEFAULT_SCOPE             = "public_api";
+
+    public final String        NETWORKS_URL              = "https://api.alfresco.com/";
+    public final String        NETWORK_URL               = "https://api.alfresco.com/{network}/public/alfresco/versions/1/networks/{network}";
+    public final String        SITES_URL                 = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites";
+    public final String        SITE_URL                  = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}";
+    public final String        CONTAINERS_URL            = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/containers";
+    public final String        CONTAINER_URL             = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/containers/{container}";
+    public final String        MEMBERS_URL               = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/members";
+    public final String        MEMBER_URL                = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/members/{member}";
+    public final String        PEOPLE_URL                = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}";
+    public final String        PEOPLE_SITES_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/sites";
+    public final String        PEOPLE_SITE_URL           = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/sites/{site}";
+    public final String        PEOPLE_FAVORITE_SITES_URL = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/favorite-sites";
+    public final String        PEOPLE_PREFERENCES_URL    = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/preferences";
+    public final String        PEOPLE_PREFERENCE_URL     = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/preferences/{preference}";
+    public final String        PEOPLE_NETWORKS_URL       = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/networks";
+    public final String        PEOPLE_NETWORK_URL        = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/networks/{network}";
+    public final String        PEOPLE_ACTIVITIES_URL     = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/activities";
+    public final String        TAGS_URL                  = "https://api.alfresco.com/{network}/public/alfresco/versions/1/tags";
+    public final String        TAG_URL                   = "https://api.alfresco.com/{network}/public/alfresco/versions/1/tags/{tag}";
+    public final String        NODE_COMMENTS_URL         = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/comments";
+    public final String        NODE_COMMENT_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/comments/{comment}";
+    public final String        NODE_TAGS_URL             = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/tags";
+    public final String        NODE_TAG_URL              = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/tags/{tag}";
+    public final String        NODE_RATINGS_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/ratings";
+    public final String        NODE_RATING_URL           = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}";
+
+
+    public static class QueryParams
+    {
+        public final static String PROPERTIES = "properties";
+    }
+
+    public static class TemplateParams
+    {
+        public final static String NETWORK    = "network";
+        public final static String SITE       = "site";
+        public final static String CONTAINER  = "container";
+        public final static String PREFERENCE = "preference";
+        public final static String TAG        = "tag";
+        public final static String RATING     = "rating";
+        public final static String COMMENT    = "comment";
+        public final static String NODE       = "node";
+        public final static String PERSON     = "person";
+        public final static String MEMBER     = "member";
+    }
 
 	public Session getCMISSession(String networkId);
 
-    public Response<Network> getNetwork(String network)
+    public Network getNetwork(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Network> getNetworks()
+    public List<Network> getNetworks()
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Network> getNetworks(Map<String, String> parameters)
+    public List<Network> getNetworks(Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Site> getSite(String site, String network)
+    public Site getSite(String site, String network)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Site> getSites(String network)
+    public List<Site> getSites(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Site> getSites(String network, Map<String, String> parameters)
+    public List<Site> getSites(String network, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Container> getContainer(String network, String site, String contatiner)
+    public Container getContainer(String network, String site, String contatiner)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Container> getContainers(String network, String site)
+    public List<Container> getContainers(String network, String site)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Container> getContainers(String network, String site, Map<String, String> parameters)
+    public List<Container> getContainers(String network, String site, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Member> getMember(String network, String site, String person)
+    public Member getMember(String network, String site, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Member> getMembers(String network, String site)
+    public List<Member> getMembers(String network, String site)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Member> getMembers(String network, String site, Map<String, String> parameters)
+    public List<Member> getMembers(String network, String site, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Member> addMember(String network, String site, String personId, Role role)
+    public Member addMember(String network, String site, String personId, Role role)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -116,85 +162,85 @@ public interface Alfresco
         throws RestClientException;
 
 
-    public Response<Person> getPerson(String network, String person)
+    public Person getPerson(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Site> getSites(String network, String person)
+    public List<Site> getSites(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Site> getSites(String network, String person, Map<String, String> parameters)
+    public List<Site> getSites(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Site> getSite(String network, String person, String site)
+    public Site getSite(String network, String person, String site)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Site> getFavoriteSites(String network, String person)
+    public List<Site> getFavoriteSites(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Site> getFavoriteSites(String network, String person, Map<String, String> parameters)
+    public List<Site> getFavoriteSites(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Preference> getPreference(String network, String person, String preference)
+    public Preference getPreference(String network, String person, String preference)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Preference> getPreferences(String network, String person)
+    public List<Preference> getPreferences(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Preference> getPreferences(String network, String person, Map<String, String> parameters)
+    public List<Preference> getPreferences(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Network> getNetwork(String network, String person)
+    public Network getNetwork(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Network> getNetworks(String network, String person)
+    public List<Network> getNetworks(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Network> getNetworks(String network, String person, Map<String, String> parameters)
+    public List<Network> getNetworks(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Activity> getActivities(String network, String person)
+    public List<Activity> getActivities(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Activity> getActivities(String network, String person, Map<String, String> parameters)
+    public List<Activity> getActivities(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -206,13 +252,13 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Tag> getTags(String network)
+    public List<Tag> getTags(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Tag> getTags(String network, Map<String, String> parameters)
+    public List<Tag> getTags(String network, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -222,25 +268,25 @@ public interface Alfresco
         throws RestClientException;
 
 
-    public Response<Comment> getComments(String network, String node)
+    public List<Comment> getComments(String network, String node)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Comment> getComments(String network, String node, Map<String, String> parameters)
+    public List<Comment> getComments(String network, String node, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Comment> createComment(String network, String node, String comment)
+    public Comment createComment(String network, String node, String comment)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Comment> createComments(String network, String node, List<String> comments)
+    public List<Comment> createComments(String network, String node, java.util.List<String> comments)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -258,25 +304,25 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Tag> getNodesTags(String network, String node)
+    public List<Tag> getNodesTags(String network, String node)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Tag> getNodesTags(String network, String node, Map<String, String> parameters)
+    public List<Tag> getNodesTags(String network, String node, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Tag> addTagToNode(String network, String node, String tag)
+    public Tag addTagToNode(String network, String node, String tag)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Tag> addTagsToNode(String network, String node, List<String> tags)
+    public List<Tag> addTagsToNode(String network, String node, java.util.List<String> tags)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -288,19 +334,19 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Rating> getNodeRatings(String network, String node)
+    public List<Rating> getNodeRatings(String network, String node)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Rating> getNodeRatings(String network, String node, Map<String, String> parameters)
+    public List<Rating> getNodeRatings(String network, String node, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException;
 
 
-    public Response<Rating> getNodeRating(String network, String node, String rating)
+    public Rating getNodeRating(String network, String node, String rating)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -312,7 +358,7 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Rating> rateNode(String network, String node, String rating)
+    public Rating rateNode(String network, String node, String ratingType, String rating)
         throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -324,7 +370,7 @@ public interface Alfresco
             IOException;
 
 
-    public Response<Metadata> networkOptions(String network)
+    public List<Metadata> networkOptions(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException;;
