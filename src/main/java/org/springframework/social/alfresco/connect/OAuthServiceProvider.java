@@ -7,7 +7,7 @@ package org.springframework.social.alfresco.connect;
 
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.impl.AlfrescoTemplate;
-import org.springframework.social.alfresco.api.impl.OAuthCMISAuthenticationProvider;
+import org.springframework.social.alfresco.api.impl.OAuthAuthenticationProvider;
 import org.springframework.social.oauth2.AbstractOAuth2ServiceProvider;
 import org.springframework.social.oauth2.OAuth2Template;
 

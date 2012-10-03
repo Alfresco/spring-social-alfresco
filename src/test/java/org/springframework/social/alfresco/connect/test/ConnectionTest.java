@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.chemistry.opencmis.client.api.Document;
-import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -43,7 +42,6 @@ import org.springframework.web.client.RestClientException;
 /**
  * 
  * @author jottley
- * @author sglover
  */
 public class ConnectionTest
 {
@@ -79,6 +77,14 @@ public class ConnectionTest
     private static final String 			 baseUrl         = "https://api.alfresco.com/";
     private static final String 			 baseAuthUrl     = baseUrl + "auth/oauth/versions/2/authorize";
     private static final String 			 tokenUrl        = baseUrl + "auth/oauth/versions/2/token";
+
+//    @Test
+//    public void test()
+//    {
+//        connectionFactory = new AlfrescoConnectionFactory(baseUrl, baseAuthUrl, tokenUrl, CONSUMER_KEY, CONSUMER_SECRET);
+//
+//        assertEquals("alfresco", connectionFactory.getProviderId());
+//    }
 
     public static String getPropertyValue(Properties properties, String propertyName, String defaultValue)
     {
@@ -124,6 +130,25 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
+//<<<<<<< HEAD
+//        // Wait for the authorization code
+//        System.out.println("Type the code you received here: ");
+//        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+//        String authCode = null;
+//
+//        authCode = in.readLine();
+//
+//        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(authCode, REDIRECT_URI, null);
+//
+//        System.out.println("Access: " + accessGrant.getAccessToken() + " Refresh: " + accessGrant.getRefreshToken() + " Scope: "
+//                           + accessGrant.getScope() + " expires: " + accessGrant.getExpireTime());
+//
+//        Connection<Alfresco> connection = connectionFactory.createConnection(accessGrant);
+//        alfresco = connection.getApi();
+//
+//=======
+//>>>>>>> 118beb307d59438b14612b6ca1bbf30c5b46b806
+
         alfresco.getNetwork(network);
     }
     
@@ -132,12 +157,8 @@ public class ConnectionTest
     		throws JsonParseException,
     		JsonMappingException,
     		IOException {
-    	java.util.List<Repository> cmisNetworks = alfresco.getCMISNetworks();
-
     	Session session = alfresco.getCMISSession(network);
 		Document doc = (Document) session.getObjectByPath(objectPath);
-
-		// TODO check responses
     }
     
     @Test
@@ -578,7 +599,7 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        alfresco.rateNode(network, node, rating, true);
+        alfresco.rateNode(network, node, rating, "true");
     }
 
 
@@ -627,6 +648,7 @@ public class ConnectionTest
         throws MalformedURLException
     {
         connectionFactory = new AlfrescoConnectionFactory(baseUrl, baseAuthUrl, tokenUrl, CONSUMER_KEY, CONSUMER_SECRET);
+//        connectionFactory = new AlfrescoConnectionFactory(baseUrl, CONSUMER_KEY, CONSUMER_SECRET);
 
         OAuth2Parameters parameters = new OAuth2Parameters();
         parameters.setRedirectUri(REDIRECT_URI);
