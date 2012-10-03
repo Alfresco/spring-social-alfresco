@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -85,10 +84,4 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 		return converter;
 	}
 
-	@Override
-	protected Session createCMISSession(String networkId)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

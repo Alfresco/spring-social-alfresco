@@ -1,13 +1,18 @@
 package org.springframework.social.alfresco.api.impl;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
+import org.apache.chemistry.opencmis.commons.SessionParameter;
+import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.spi.AuthenticationProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,11 +61,38 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		}
 	};
 
+	protected Session createCMISSession(String networkId)
+	{
+		// default factory implementation
+		SessionFactoryImpl sessionFactory = SessionFactoryImpl.newInstance();
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		// connection settings
+		parameters.put(SessionParameter.ATOMPUB_URL, getUrl(ATOMPUB_URL).replace("{network}", networkId));
+		parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+		parameters.put(SessionParameter.REPOSITORY_ID, networkId);
+
+		// create session
+		Session session = sessionFactory.createSession(parameters, null, authenticationProvider, null);
+		return session;
+	}
+    
+	public java.util.List<Repository> getCMISNetworks()
+	{
+		// default factory implementation
+		SessionFactoryImpl sessionFactory = SessionFactoryImpl.newInstance();
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		// connection settings
+		parameters.put(SessionParameter.ATOMPUB_URL, getUrl(ROOT_ATOMPUB_URL));
+		parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+
+		return sessionFactory.getRepositories(parameters, null, authenticationProvider, null);
+	}
+
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
-
-	protected abstract Session createCMISSession(String networkId);
 
 	public Session getCMISSession(String networkId) {
 		CMISSessions sessions = cmisSession.get();
@@ -597,7 +629,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		Comment _comment = new Comment();
 		_comment.setContent(comment);
 
-		getRestTemplate().put(NODE_COMMENT_URL, new HttpEntity<Comment>(_comment, headers), vars);
+		getRestTemplate().put(getUrl(NODE_COMMENT_URL), new HttpEntity<Comment>(_comment, headers), vars);
 		log.debug("updateComment: " + comment);
 	}
 
@@ -689,7 +721,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		vars.put(TemplateParams.NODE, node);
 		vars.put(TemplateParams.TAG, tagId);
 
-		getRestTemplate().delete(NODE_TAG_URL, vars);
+		getRestTemplate().delete(getUrl(NODE_TAG_URL), vars);
 		log.debug("removeTagFromNode: " + tagId);
 	}
 
@@ -747,7 +779,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	}
 
 
-	public Rating rateNode(String network, String node, String ratingType, String rating)
+	public Rating rateNode(String network, String node, String ratingType, Serializable rating)
 			throws JsonParseException,
 			JsonMappingException,
 			IOException {

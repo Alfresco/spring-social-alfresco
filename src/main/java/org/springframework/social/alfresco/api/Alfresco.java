@@ -3,8 +3,10 @@ package org.springframework.social.alfresco.api;
 
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -12,11 +14,11 @@ import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
 import org.springframework.social.alfresco.api.entities.List;
+import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
+import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Person;
 import org.springframework.social.alfresco.api.entities.Preference;
-import org.springframework.social.alfresco.api.entities.Member;
-import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
@@ -73,6 +75,8 @@ public interface Alfresco
         public final static String PERSON     = "person";
         public final static String MEMBER     = "member";
     }
+
+	public java.util.List<Repository> getCMISNetworks();
 
 	public Session getCMISSession(String networkId);
 
@@ -358,7 +362,7 @@ public interface Alfresco
             IOException;
 
 
-    public Rating rateNode(String network, String node, String ratingType, String rating)
+    public Rating rateNode(String network, String node, String ratingType, Serializable rating)
         throws JsonParseException,
             JsonMappingException,
             IOException;
