@@ -22,10 +22,15 @@ How to use
     Connection<Alfresco> connection = connectionFactory.createConnection(accessGrant);
     Alfresco alfresco = connection.getApi();
     
-    //Use Alfresco api here
+    //Use Alfresco public REST API here
+    
+    //Get CMIS Session
+    Session session = alfresco.getCMISSession(network);
+    
+    //Use Alfresco CMIS API here
+      
 ````
-    
-    
+        
 Refreshing Tokens
  ````java   
     //Refresh AccessGrant & Connection 

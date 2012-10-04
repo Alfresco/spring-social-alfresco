@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.Session;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.BeforeClass;
@@ -42,6 +44,7 @@ import org.springframework.social.oauth2.OAuth2Parameters;
 /**
  * 
  * @author jottley
+ * @author sglover
  */
 public class ConnectionTest
 {
@@ -61,13 +64,19 @@ public class ConnectionTest
     private static Server                    server;
 
 
-    private static final String              network         = "alfresco.com";
-    private static final String              person          = "jared.ottley@alfresco.com";
-    private static final String              site            = "spring-social-alfresco";
-    private static final String              container       = "documentLibrary";
-    private static final String              preference      = "org.alfresco.share.siteWelcome.spring-social-alfresco";
-    private static final String              node            = "8c368b84-4a88-4d62-9e7e-8e7eabe39969";
-    private static final String              rating          = "likes";
+    private static String                    network         = "alfresco.com";
+    private static String                    person          = "jared.ottley@alfresco.com";
+    private static String                    memberId        = "pmonks@alfresco.com";
+    private static String                    site            = "spring-social-alfresco";
+    private static String                    container       = "documentLibrary";
+    private static String                    preference      = "org.alfresco.share.siteWelcome.spring-social-alfresco";
+    private static String                    node            = "8c368b84-4a88-4d62-9e7e-8e7eabe39969";
+    private static String                    rating          = "likes";
+    private static String                    tag             = "spring-social-alfresco";
+    private static String                    testTag         = "test1";
+    private static String                    testTag1        = "test2";
+    private static String                    filename        = "full-codekit.pdf";
+    private static String                    objectPath      = "/Sites/" + site + "/documentLibrary/" + filename;
 
 
     @BeforeClass
@@ -81,7 +90,35 @@ public class ConnectionTest
 
         authenticate();
 
+        // overrides
+        node = getPropertyValue(properties, "node", node);
+        tag = getPropertyValue(properties, "tag", tag);
+        testTag = getPropertyValue(properties, "testTag", testTag);
+        testTag1 = getPropertyValue(properties, "testTag1", testTag1);
+        memberId = getPropertyValue(properties, "memberId", memberId);
+        person = getPropertyValue(properties, "person", person);
+        testTag = getPropertyValue(properties, "testTag", testTag);
+        site = getPropertyValue(properties, "site", site);
+        container = getPropertyValue(properties, "container", container);
+        preference = getPropertyValue(properties, "preference", preference);
+        rating = getPropertyValue(properties, "rating", rating);
+        filename = getPropertyValue(properties, "filename", filename);
+        objectPath = getPropertyValue(properties, "objectPath", objectPath);
+
         GetAPI(properties.getProperty("username"), properties.getProperty("password"));
+    }
+
+
+    @Test
+    public void CMIS()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Session session = alfresco.getCMISSession(network);
+        Document doc = (Document)session.getObjectByPath(objectPath);
+
+        assertEquals(filename, doc.getName());
     }
 
 
@@ -185,22 +222,21 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        String pmonks = "pmonks@alfresco.com";
 
-        Member member = alfresco.addMember(network, site, pmonks, Role.SiteConsumer);
+        Member member = alfresco.addMember(network, site, memberId, Role.SiteConsumer);
 
         assertNotNull(member);
-        assertEquals(pmonks, member.getId());
+        assertEquals(memberId, member.getId());
         assertEquals(Role.SiteConsumer, member.getRole());
 
-        alfresco.updateMember(network, site, pmonks, Role.SiteContributor);
-        member = alfresco.getMember(network, site, pmonks);
+        alfresco.updateMember(network, site, memberId, Role.SiteContributor);
+        member = alfresco.getMember(network, site, memberId);
 
         assertEquals(Role.SiteContributor, member.getRole());
 
-        alfresco.deleteMember(network, site, pmonks);
+        alfresco.deleteMember(network, site, memberId);
 
-        member = alfresco.getMember(network, site, pmonks);
+        member = alfresco.getMember(network, site, memberId);
 
         assertNull(member);
     }
@@ -375,15 +411,15 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        Tag tag = alfresco.getTag(network, "spring-social-alfresco");
+        Tag _tag = alfresco.getTag(network, tag);
 
-        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco-test");
+        alfresco.updateTag(network, _tag.getId(), tag + "-test");
 
-        tag = alfresco.getTag(network, "spring-social-alfresco-test");
+        _tag = alfresco.getTag(network, tag + "-test");
 
-        assertNotNull(tag);
+        assertNotNull(_tag);
 
-        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco");
+        alfresco.updateTag(network, _tag.getId(), tag);
     }
 
 
@@ -476,8 +512,8 @@ public class ConnectionTest
             IOException
     {
         java.util.List<String> tags = new ArrayList<String>();
-        tags.add("test1");
-        tags.add("test2");
+        tags.add(testTag);
+        tags.add(testTag1);
 
         List<Tag> t = alfresco.addTagsToNode(network, node, tags);
 
@@ -514,7 +550,7 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        alfresco.rateNode(network, node, rating, "true");
+        alfresco.rateNode(network, node, rating, true);
     }
 
 
@@ -593,5 +629,16 @@ public class ConnectionTest
 
         Connection<Alfresco> connection = connectionFactory.createConnection(accessGrant);
         alfresco = connection.getApi();
+    }
+
+
+    public static String getPropertyValue(Properties properties, String propertyName, String defaultValue)
+    {
+        String ret = (String)properties.getProperty(propertyName);
+        if (ret == null || ret.equals(""))
+        {
+            ret = defaultValue;
+        }
+        return ret;
     }
 }
