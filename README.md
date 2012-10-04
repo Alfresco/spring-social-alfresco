@@ -1,6 +1,17 @@
 spring-social-alfresco
 ======================
 
+Maven
+
+````xml
+    <dependency>
+      <groupId>org.springframework.social</groupId>
+      <artifactId>spring-social-alfresco</artifactId>
+      <version>0.2.1-RELEASE</version>
+    </dependency>
+````
+
+
 How to use
 ````java
     AlfrescoConnectionFactory connectionFactory = new AlfrescoConnectionFactory(consumerKey, consumerSecret);
