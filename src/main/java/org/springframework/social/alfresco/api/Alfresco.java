@@ -24,12 +24,11 @@ import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.web.client.RestClientException;
 
-
 /**
  * 
  * @author jottley
  * @author sglover
- * 
+ *
  */
 public interface Alfresco
 {
