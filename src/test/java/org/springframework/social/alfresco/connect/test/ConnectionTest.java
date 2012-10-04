@@ -42,6 +42,7 @@ import org.springframework.web.client.RestClientException;
 /**
  * 
  * @author jottley
+ * @author sglover
  */
 public class ConnectionTest
 {
@@ -61,6 +62,7 @@ public class ConnectionTest
     private static Server                    server;
 
 
+<<<<<<< HEAD
     private static String              testTag         = "testtag0";
     private static String              testTag1        = "newtesttag0";
 
@@ -95,6 +97,22 @@ public class ConnectionTest
         }
         return ret;
     }
+=======
+    private static String                    network         = "alfresco.com";
+    private static String                    person          = "jared.ottley@alfresco.com";
+    private static String                    memberId        = "pmonks@alfresco.com";
+    private static String                    site            = "spring-social-alfresco";
+    private static String                    container       = "documentLibrary";
+    private static String                    preference      = "org.alfresco.share.siteWelcome.spring-social-alfresco";
+    private static String                    node            = "8c368b84-4a88-4d62-9e7e-8e7eabe39969";
+    private static String                    rating          = "likes";
+    private static String                    tag             = "spring-social-alfresco";
+    private static String                    testTag         = "test1";
+    private static String                    testTag1        = "test2";
+    private static String                    filename        = "full-codekit.pdf";
+    private static String                    objectPath      = "/Sites/" + site + "/documentLibrary/" + filename;
+
+>>>>>>> pre-opencmis
 
     @BeforeClass
     public static void setUp()
@@ -109,6 +127,10 @@ public class ConnectionTest
 
         // overrides
         node = getPropertyValue(properties, "node", node);
+<<<<<<< HEAD
+=======
+        tag = getPropertyValue(properties, "tag", tag);
+>>>>>>> pre-opencmis
         testTag = getPropertyValue(properties, "testTag", testTag);
         testTag1 = getPropertyValue(properties, "testTag1", testTag1);
         memberId = getPropertyValue(properties, "memberId", memberId);
@@ -118,9 +140,27 @@ public class ConnectionTest
         container = getPropertyValue(properties, "container", container);
         preference = getPropertyValue(properties, "preference", preference);
         rating = getPropertyValue(properties, "rating", rating);
+<<<<<<< HEAD
         objectPath = "/Sites/" + site + "/documentLibrary/ReadMe - Alfresco in the Cloud.pdf";
+=======
+        filename = getPropertyValue(properties, "filename", filename);
+        objectPath = getPropertyValue(properties, "objectPath", objectPath);
+>>>>>>> pre-opencmis
 
         GetAPI(properties.getProperty("username"), properties.getProperty("password"));
+    }
+
+
+    @Test
+    public void CMIS()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Session session = alfresco.getCMISSession(network);
+        Document doc = (Document)session.getObjectByPath(objectPath);
+
+        assertEquals(filename, doc.getName());
     }
 
 
@@ -250,6 +290,7 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
+<<<<<<< HEAD
         Member member = alfresco.addMember(network, site, memberId, Role.SiteConsumer);
     }
 
@@ -265,9 +306,22 @@ public class ConnectionTest
 
         assertNotNull(member);
         assertEquals(memberId, member.getId());
+=======
+
+        Member member = alfresco.addMember(network, site, memberId, Role.SiteConsumer);
+
+        assertNotNull(member);
+        assertEquals(memberId, member.getId());
+        assertEquals(Role.SiteConsumer, member.getRole());
+
+        alfresco.updateMember(network, site, memberId, Role.SiteContributor);
+        member = alfresco.getMember(network, site, memberId);
+
+>>>>>>> pre-opencmis
         assertEquals(Role.SiteContributor, member.getRole());
     }
 
+<<<<<<< HEAD
     @Test
     public void deleteMember()
         throws RestClientException,
@@ -278,6 +332,11 @@ public class ConnectionTest
         alfresco.deleteMember(network, site, memberId);
 
         Member member = alfresco.getMember(network, site, memberId);
+=======
+        alfresco.deleteMember(network, site, memberId);
+
+        member = alfresco.getMember(network, site, memberId);
+>>>>>>> pre-opencmis
 
         assertNull(member);
     }
@@ -460,15 +519,23 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
+<<<<<<< HEAD
         Tag tag = alfresco.getTag(network, testTag);
 
         alfresco.updateTag(network, tag.getId(), testTag1);
 
         tag = alfresco.getTag(network, testTag1);
+=======
+        Tag _tag = alfresco.getTag(network, tag);
 
-        assertNotNull(tag);
+        alfresco.updateTag(network, _tag.getId(), tag + "-test");
 
-        alfresco.updateTag(network, tag.getId(), "spring-social-alfresco");
+        _tag = alfresco.getTag(network, tag + "-test");
+>>>>>>> pre-opencmis
+
+        assertNotNull(_tag);
+
+        alfresco.updateTag(network, _tag.getId(), tag);
     }
 
 
@@ -561,8 +628,8 @@ public class ConnectionTest
             IOException
     {
         java.util.List<String> tags = new ArrayList<String>();
-        tags.add("test1");
-        tags.add("test2");
+        tags.add(testTag);
+        tags.add(testTag1);
 
         List<Tag> t = alfresco.addTagsToNode(network, node, tags);
 
@@ -599,7 +666,7 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        alfresco.rateNode(network, node, rating, "true");
+        alfresco.rateNode(network, node, rating, true);
     }
 
 
@@ -681,4 +748,17 @@ public class ConnectionTest
         alfresco = connection.getApi();
     }
 
+<<<<<<< HEAD
+=======
+
+    public static String getPropertyValue(Properties properties, String propertyName, String defaultValue)
+    {
+        String ret = (String)properties.getProperty(propertyName);
+        if (ret == null || ret.equals(""))
+        {
+            ret = defaultValue;
+        }
+        return ret;
+    }
+>>>>>>> pre-opencmis
 }
