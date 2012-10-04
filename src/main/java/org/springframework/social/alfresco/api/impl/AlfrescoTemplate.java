@@ -6,12 +6,18 @@ package org.springframework.social.alfresco.api.impl;
 
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.chemistry.opencmis.client.api.Repository;
+import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
+import org.apache.chemistry.opencmis.commons.SessionParameter;
+import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonParseException;
@@ -37,28 +43,41 @@ import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Tag;
+import org.springframework.social.alfresco.connect.cmis.CMISOAuthAuthenticationProvider;
 import org.springframework.social.oauth2.AbstractOAuth2ApiBinding;
 import org.springframework.web.client.RestClientException;
 
 
 /**
  * @author jottley
+ * @author sglover
  * 
  */
 public class AlfrescoTemplate
     extends AbstractOAuth2ApiBinding
     implements Alfresco
 {
-    private static final Log   log     = LogFactory.getLog(AlfrescoTemplate.class);
+    private static final Log                log     = LogFactory.getLog(AlfrescoTemplate.class);
 
-    private final ObjectMapper mapper  = new ObjectMapper();
-    private final HttpHeaders  headers = new HttpHeaders();
+    private final ObjectMapper              mapper  = new ObjectMapper();
+    private final HttpHeaders               headers = new HttpHeaders();
+
+    private CMISOAuthAuthenticationProvider cmisOAuthAuthenticationProvider;
 
 
     public AlfrescoTemplate(String accessToken)
     {
         super(accessToken);
+        cmisOAuthAuthenticationProvider = new CMISOAuthAuthenticationProvider(accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
+    }
+
+
+    public Session getCMISSession(String networkId)
+    {
+        CMISSessions sessions = new CMISSessions();
+        Session session = sessions.getSession(networkId);
+        return session;
     }
 
 
@@ -794,7 +813,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Rating rateNode(String network, String node, String ratingType, String rating)
+    public Rating rateNode(String network, String node, String ratingType, Serializable rating)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -886,5 +905,54 @@ public class AlfrescoTemplate
 
         log.debug("queryString: " + queryString.toString());
         return queryString.toString();
+    }
+
+
+    protected Session createCMISSession(String networkId)
+    {
+        // default factory implementation
+        SessionFactoryImpl sessionFactory = SessionFactoryImpl.newInstance();
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        // connection settings
+        parameters.put(SessionParameter.ATOMPUB_URL, ATOMPUB_URL.replace("{network}", networkId));
+        parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+        parameters.put(SessionParameter.REPOSITORY_ID, networkId);
+
+        // create session
+        Session session = sessionFactory.createSession(parameters, null, cmisOAuthAuthenticationProvider, null);
+        return session;
+    }
+
+
+    protected java.util.List<Repository> getCMISNetworks()
+    {
+        // default factory implementation
+        SessionFactoryImpl sessionFactory = SessionFactoryImpl.newInstance();
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        // connection settings
+        parameters.put(SessionParameter.ATOMPUB_URL, ROOT_ATOMPUB_URL);
+        parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+
+        return sessionFactory.getRepositories(parameters, null, cmisOAuthAuthenticationProvider, null);
+    }
+
+
+    private class CMISSessions
+    {
+        private Map<String, Session> sessions = new HashMap<String, Session>();
+
+
+        Session getSession(String networkId)
+        {
+            Session session = sessions.get(networkId);
+            if (session == null)
+            {
+                session = createCMISSession(networkId);
+                sessions.put(networkId, session);
+            }
+            return session;
+        }
     }
 }

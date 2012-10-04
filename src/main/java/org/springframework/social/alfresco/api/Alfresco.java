@@ -3,8 +3,10 @@ package org.springframework.social.alfresco.api;
 
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.chemistry.opencmis.client.api.Session;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.social.alfresco.api.entities.Activity;
@@ -23,10 +25,18 @@ import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.web.client.RestClientException;
 
 
+/**
+ * 
+ * @author jottley
+ * @author sglover
+ * 
+ */
 public interface Alfresco
 {
     public static final String DEFAULT_SCOPE             = "public_api";
 
+    public final String        ROOT_ATOMPUB_URL          = "https://api.alfresco.com/cmis/versions/1.0/atom";
+    public final String        ATOMPUB_URL               = "https://api.alfresco.com/{network}/public/cmis/versions/1.0/atom";
     public final String        NETWORKS_URL              = "https://api.alfresco.com/";
     public final String        NETWORK_URL               = "https://api.alfresco.com/{network}/public/alfresco/versions/1/networks/{network}";
     public final String        SITES_URL                 = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites";
@@ -72,6 +82,9 @@ public interface Alfresco
         public final static String PERSON     = "person";
         public final static String MEMBER     = "member";
     }
+
+
+    public Session getCMISSession(String network);
 
 
     public Network getNetwork(String network)
@@ -356,7 +369,7 @@ public interface Alfresco
             IOException;
 
 
-    public Rating rateNode(String network, String node, String ratingType, String rating)
+    public Rating rateNode(String network, String node, String ratingType, Serializable rating)
         throws JsonParseException,
             JsonMappingException,
             IOException;
