@@ -1,20 +1,18 @@
 /*
  * Copyright 2012 Alfresco Software Limited.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  * 
  * This file is part of an unsupported extension to Alfresco.
  */
+
 package org.springframework.social.alfresco.api.impl;
 
 
@@ -45,7 +43,7 @@ import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
-import org.springframework.social.alfresco.api.entities.List;
+import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Metadata;
 import org.springframework.social.alfresco.api.entities.Pagination;
 import org.springframework.social.alfresco.api.entities.Person;
@@ -107,7 +105,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Network> getNetworks()
+    public AlfrescoList<Network> getNetworks()
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -116,7 +114,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Network> getNetworks(Map<String, String> parameters)
+    public AlfrescoList<Network> getNetworks(Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -145,7 +143,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Site> getSites(String network)
+    public AlfrescoList<Site> getSites(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -155,7 +153,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Site> getSites(String network, Map<String, String> parameters)
+    public AlfrescoList<Site> getSites(String network, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -185,7 +183,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Container> getContainers(String network, String site)
+    public AlfrescoList<Container> getContainers(String network, String site)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -194,7 +192,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Container> getContainers(String network, String site, Map<String, String> parameters)
+    public AlfrescoList<Container> getContainers(String network, String site, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -227,7 +225,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Member> getMembers(String network, String site)
+    public AlfrescoList<Member> getMembers(String network, String site)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -236,7 +234,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Member> getMembers(String network, String site, Map<String, String> parameters)
+    public AlfrescoList<Member> getMembers(String network, String site, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -321,7 +319,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Site> getSites(String network, String person)
+    public AlfrescoList<Site> getSites(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -330,7 +328,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Site> getSites(String network, String person, Map<String, String> parameters)
+    public AlfrescoList<Site> getSites(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -364,7 +362,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Site> getFavoriteSites(String network, String person)
+    public AlfrescoList<Site> getFavoriteSites(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -373,7 +371,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Site> getFavoriteSites(String network, String person, Map<String, String> parameters)
+    public AlfrescoList<Site> getFavoriteSites(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -406,7 +404,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Preference> getPreferences(String network, String person)
+    public AlfrescoList<Preference> getPreferences(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -415,7 +413,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Preference> getPreferences(String network, String person, Map<String, String> parameters)
+    public AlfrescoList<Preference> getPreferences(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -447,7 +445,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Network> getNetworks(String network, String person)
+    public AlfrescoList<Network> getNetworks(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -456,7 +454,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Network> getNetworks(String network, String person, Map<String, String> parameters)
+    public AlfrescoList<Network> getNetworks(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -472,7 +470,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Activity> getActivities(String network, String person)
+    public AlfrescoList<Activity> getActivities(String network, String person)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -481,7 +479,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Activity> getActivities(String network, String person, Map<String, String> parameters)
+    public AlfrescoList<Activity> getActivities(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -511,7 +509,7 @@ public class AlfrescoTemplate
         boolean found = false;
         Tag tagFound = null;
 
-        List<Tag> response = getTags(network, parameters);
+        AlfrescoList<Tag> response = getTags(network, parameters);
         while (!found)
         {
             for (Iterator<Tag> iterator = response.getEntries().iterator(); iterator.hasNext();)
@@ -545,7 +543,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Tag> getTags(String network)
+    public AlfrescoList<Tag> getTags(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -554,7 +552,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Tag> getTags(String network, Map<String, String> parameters)
+    public AlfrescoList<Tag> getTags(String network, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -584,7 +582,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Comment> getComments(String network, String node)
+    public AlfrescoList<Comment> getComments(String network, String node)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -593,7 +591,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Comment> getComments(String network, String node, Map<String, String> parameters)
+    public AlfrescoList<Comment> getComments(String network, String node, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -629,7 +627,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Comment> createComments(String network, String node, java.util.List<String> comments)
+    public AlfrescoList<Comment> createComments(String network, String node, java.util.List<String> comments)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -686,7 +684,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Tag> getNodesTags(String network, String node)
+    public AlfrescoList<Tag> getNodesTags(String network, String node)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -695,7 +693,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Tag> getNodesTags(String network, String node, Map<String, String> parameters)
+    public AlfrescoList<Tag> getNodesTags(String network, String node, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -730,7 +728,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Tag> addTagsToNode(String network, String node, java.util.List<String> tags)
+    public AlfrescoList<Tag> addTagsToNode(String network, String node, java.util.List<String> tags)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -769,7 +767,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Rating> getNodeRatings(String network, String node)
+    public AlfrescoList<Rating> getNodeRatings(String network, String node)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -778,7 +776,7 @@ public class AlfrescoTemplate
     }
 
 
-    public List<Rating> getNodeRatings(String network, String node, Map<String, String> parameters)
+    public AlfrescoList<Rating> getNodeRatings(String network, String node, Map<String, String> parameters)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -858,7 +856,7 @@ public class AlfrescoTemplate
             IOException
     {
         Network homeNetwork = null;
-        List<Network> response = getNetworks();
+        AlfrescoList<Network> response = getNetworks();
 
         for (Iterator<Network> iterator = response.getEntries().iterator(); iterator.hasNext();)
         {
@@ -875,7 +873,7 @@ public class AlfrescoTemplate
      * Not Implemented yet
      */
     @Deprecated
-    public List<Metadata> networkOptions(String network)
+    public AlfrescoList<Metadata> networkOptions(String network)
         throws JsonParseException,
             JsonMappingException,
             IOException

@@ -18,22 +18,22 @@
 package org.springframework.social.alfresco.connect.test;
 
 
-import org.springframework.social.alfresco.api.entities.List;
+import org.springframework.social.alfresco.api.entities.AlfrescoList;
 
 
 class Response<T>
 {
-    private List<T> list;
+    private AlfrescoList<T> list;
     private T       entry;
 
 
-    public void setList(List<T> list)
+    public void setList(AlfrescoList<T> list)
     {
         this.list = list;
     }
 
 
-    public List<T> getList()
+    public AlfrescoList<T> getList()
     {
         return list;
     }

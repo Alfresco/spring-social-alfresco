@@ -1,20 +1,18 @@
 /*
  * Copyright 2012 Alfresco Software Limited.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  * 
  * This file is part of an unsupported extension to Alfresco.
  */
+
 package org.springframework.social.alfresco.connect.test;
 
 
@@ -28,6 +26,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -43,8 +42,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
+import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
-import org.springframework.social.alfresco.api.entities.List;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Pagination;
@@ -400,7 +399,7 @@ public class ConnectionTest
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Pagination.MAXITEMS, "300");
 
-        List<Tag> response = alfresco.getTags(network, parameters);
+        AlfrescoList<Tag> response = alfresco.getTags(network, parameters);
 
         assertEquals(300, response.getPagination().getCount());
     }
@@ -415,7 +414,7 @@ public class ConnectionTest
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put(Alfresco.QueryParams.PROPERTIES, "tag");
 
-        List<Tag> response = alfresco.getTags(network, parameters);
+        AlfrescoList<Tag> response = alfresco.getTags(network, parameters);
 
         assertNull(response.getEntries().get(0).getId());
     }
@@ -482,11 +481,11 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        java.util.List<String> comments = new ArrayList<String>();
+        List<String> comments = new ArrayList<String>();
         comments.add("This is comment 1");
         comments.add("This is comment 2");
 
-        List<Comment> c = alfresco.createComments(network, node, comments);
+        AlfrescoList<Comment> c = alfresco.createComments(network, node, comments);
 
         for (Comment comment : c.getEntries())
         {
@@ -527,11 +526,11 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        java.util.List<String> tags = new ArrayList<String>();
+        List<String> tags = new ArrayList<String>();
         tags.add(testTag);
         tags.add(testTag1);
 
-        List<Tag> t = alfresco.addTagsToNode(network, node, tags);
+        AlfrescoList<Tag> t = alfresco.addTagsToNode(network, node, tags);
 
         for (Tag tag : t.getEntries())
         {
@@ -631,7 +630,7 @@ public class ConnectionTest
         HtmlUnitDriver driver = new HtmlUnitDriver();
         driver.get(authUrlObject.toString());
 
-        java.util.List<WebElement> webElements = driver.findElementsByTagName("form");
+        List<WebElement> webElements = driver.findElementsByTagName("form");
 
         WebElement usernameElement = driver.findElementById("username");
         usernameElement.sendKeys(username);
