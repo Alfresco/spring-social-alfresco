@@ -17,7 +17,6 @@ package org.springframework.social.alfresco.api.impl;
 
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -824,7 +823,7 @@ public class AlfrescoTemplate
     }
 
 
-    public Rating rateNode(String network, String node, String ratingType, Serializable rating)
+    /*public Rating rateNode(String network, String node, String ratingType, Serializable rating)
         throws JsonParseException,
             JsonMappingException,
             IOException
@@ -838,6 +837,44 @@ public class AlfrescoTemplate
         _rating.setMyRating(rating);
 
         String response = getRestTemplate().postForObject(NODE_RATINGS_URL, new HttpEntity<Rating>(_rating, headers), String.class, vars);
+        log.debug("rateNode: " + response);
+        Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
+        return r.getEntry();
+    }*/
+    
+    public Rating rateNode(String network, String node, boolean like)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+
+        Rating _like = new Rating();
+        _like.setId(Rating.LIKES);
+        _like.setMyRating(like);
+
+        String response = getRestTemplate().postForObject(NODE_RATINGS_URL, new HttpEntity<Rating>(_like, headers), String.class, vars);
+        log.debug("rateNode: " + response);
+        Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
+        return r.getEntry();
+    }
+    
+    public Rating rateNode(String network, String node, int stars)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.NODE, node);
+
+        Rating _stars = new Rating();
+        _stars.setId(Rating.STARS);
+        _stars.setMyRating(stars);
+
+        String response = getRestTemplate().postForObject(NODE_RATINGS_URL, new HttpEntity<Rating>(_stars, headers), String.class, vars);
         log.debug("rateNode: " + response);
         Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
         return r.getEntry();
