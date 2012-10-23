@@ -25,10 +25,12 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Network;
+import org.springframework.social.alfresco.api.entities.Person;
 import org.springframework.social.alfresco.connect.exception.AlfrescoException;
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.ConnectionValues;
 import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.UserProfileBuilder;
 
 
 /**
@@ -41,7 +43,27 @@ public class AlfrescoAdapter
 
     public UserProfile fetchUserProfile(Alfresco alfresco)
     {
-        throw new OperationNotPermittedException("updateStatus not implemented.");
+        UserProfileBuilder userProfile = new UserProfileBuilder();
+        try
+        {
+            Person currentUser = alfresco.getCurrentUser();
+            
+            userProfile.setEmail(currentUser.getEmail()).setFirstName(currentUser.getFirstName()).setLastName(currentUser.getLastName()).setUsername(currentUser.getId());
+        }
+        catch (JsonParseException e)
+        {
+            throw new AlfrescoException(e.getMessage(), e);
+        }
+        catch (JsonMappingException e)
+        {
+            throw new AlfrescoException(e.getMessage(), e);
+        }
+        catch (IOException e)
+        {
+            throw new AlfrescoException(e.getMessage(), e);
+        }
+        
+        return userProfile.build();
     }
 
 
@@ -54,23 +76,41 @@ public class AlfrescoAdapter
         }
         catch (JsonParseException e)
         {
-            throw new AlfrescoException("Unable to parse JSON Response: " + e.getMessage(), e.getCause());
+            throw new AlfrescoException(e.getMessage(), e);
         }
         catch (JsonMappingException e)
         {
-            throw new AlfrescoException("JSON Mapping Error: " + e.getMessage(), e.getCause());
+            throw new AlfrescoException(e.getMessage(), e);
         }
         catch (IOException e)
         {
-            throw new AlfrescoException("Error reading response" + e.getMessage(), e.getCause());
+            throw new AlfrescoException(e.getMessage(), e);
         }
+        
         return homeNetwork;
     }
 
 
     public void setConnectionValues(Alfresco alfresco, ConnectionValues values)
     {
-        //Not implemented at this time
+        try
+        {
+            Person currentUser = alfresco.getCurrentUser();
+            values.setDisplayName(currentUser.getFirstName() + " " + currentUser.getLastName());
+            values.setProviderUserId(currentUser.getId());
+        }
+        catch (JsonParseException e)
+        {
+            throw new AlfrescoException(e.getMessage(), e);
+        }
+        catch (JsonMappingException e)
+        {
+            throw new AlfrescoException(e.getMessage(), e);
+        }
+        catch (IOException e)
+        {
+            throw new AlfrescoException(e.getMessage(), e);
+        }  
     }
 
 

@@ -406,7 +406,12 @@ public interface Alfresco
             JsonMappingException,
             IOException;
 
-
+    public Person getCurrentUser()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException;
+    
+    @Deprecated
     public AlfrescoList<Metadata> networkOptions(String network)
         throws JsonParseException,
             JsonMappingException,

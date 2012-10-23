@@ -823,27 +823,20 @@ public class AlfrescoTemplate
     }
 
 
-    /*public Rating rateNode(String network, String node, String ratingType, Serializable rating)
-        throws JsonParseException,
-            JsonMappingException,
-            IOException
-    {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put(TemplateParams.NETWORK, network);
-        vars.put(TemplateParams.NODE, node);
+    /*
+     * public Rating rateNode(String network, String node, String ratingType, Serializable rating) throws JsonParseException,
+     * JsonMappingException, IOException { Map<String, String> vars = new HashMap<String, String>();
+     * vars.put(TemplateParams.NETWORK, network); vars.put(TemplateParams.NODE, node);
+     * 
+     * Rating _rating = new Rating(); _rating.setId(ratingType); _rating.setMyRating(rating);
+     * 
+     * String response = getRestTemplate().postForObject(NODE_RATINGS_URL, new HttpEntity<Rating>(_rating, headers), String.class,
+     * vars); log.debug("rateNode: " + response); Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
+     * return r.getEntry(); }
+     */
 
-        Rating _rating = new Rating();
-        _rating.setId(ratingType);
-        _rating.setMyRating(rating);
-
-        String response = getRestTemplate().postForObject(NODE_RATINGS_URL, new HttpEntity<Rating>(_rating, headers), String.class, vars);
-        log.debug("rateNode: " + response);
-        Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
-        return r.getEntry();
-    }*/
-    
     public Rating rateNode(String network, String node, boolean like)
-            throws JsonParseException,
+        throws JsonParseException,
             JsonMappingException,
             IOException
     {
@@ -860,9 +853,10 @@ public class AlfrescoTemplate
         Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
         return r.getEntry();
     }
-    
+
+
     public Rating rateNode(String network, String node, int stars)
-            throws JsonParseException,
+        throws JsonParseException,
             JsonMappingException,
             IOException
     {
@@ -903,6 +897,15 @@ public class AlfrescoTemplate
                 homeNetwork = network;
         }
         return homeNetwork;
+    }
+
+
+    public Person getCurrentUser()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {       
+        return getPerson(getHomeNetwork().getId(), "-me-");
     }
 
 
