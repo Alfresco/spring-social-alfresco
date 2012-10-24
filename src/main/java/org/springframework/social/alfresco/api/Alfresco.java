@@ -20,18 +20,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.social.alfresco.api.entities.Activity;
+import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
-import org.springframework.social.alfresco.api.entities.AlfrescoList;
+import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
+import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Person;
 import org.springframework.social.alfresco.api.entities.Preference;
-import org.springframework.social.alfresco.api.entities.Member;
-import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
@@ -49,33 +50,33 @@ public interface Alfresco
 {
     public static final String DEFAULT_SCOPE             = "public_api";
 
-    public final String        ROOT_ATOMPUB_URL          = "https://api.alfresco.com/cmis/versions/1.0/atom";
-    public final String        ATOMPUB_URL               = "https://api.alfresco.com/{network}/public/cmis/versions/1.0/atom";
-    public final String        NETWORKS_URL              = "https://api.alfresco.com/";
-    public final String        NETWORK_URL               = "https://api.alfresco.com/{network}/public/alfresco/versions/1/networks/{network}";
-    public final String        SITES_URL                 = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites";
-    public final String        SITE_URL                  = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}";
-    public final String        CONTAINERS_URL            = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/containers";
-    public final String        CONTAINER_URL             = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/containers/{container}";
-    public final String        MEMBERS_URL               = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/members";
-    public final String        MEMBER_URL                = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/members/{member}";
-    public final String        PEOPLE_URL                = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}";
-    public final String        PEOPLE_SITES_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/sites";
-    public final String        PEOPLE_SITE_URL           = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/sites/{site}";
-    public final String        PEOPLE_FAVORITE_SITES_URL = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/favorite-sites";
-    public final String        PEOPLE_PREFERENCES_URL    = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/preferences";
-    public final String        PEOPLE_PREFERENCE_URL     = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/preferences/{preference}";
-    public final String        PEOPLE_NETWORKS_URL       = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/networks";
-    public final String        PEOPLE_NETWORK_URL        = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/networks/{network}";
-    public final String        PEOPLE_ACTIVITIES_URL     = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/activities";
-    public final String        TAGS_URL                  = "https://api.alfresco.com/{network}/public/alfresco/versions/1/tags";
-    public final String        TAG_URL                   = "https://api.alfresco.com/{network}/public/alfresco/versions/1/tags/{tag}";
-    public final String        NODE_COMMENTS_URL         = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/comments";
-    public final String        NODE_COMMENT_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/comments/{comment}";
-    public final String        NODE_TAGS_URL             = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/tags";
-    public final String        NODE_TAG_URL              = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/tags/{tag}";
-    public final String        NODE_RATINGS_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/ratings";
-    public final String        NODE_RATING_URL           = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}";
+//    public final String        ROOT_ATOMPUB_URL          = "https://api.alfresco.com/cmis/versions/1.0/atom";
+//    public final String        ATOMPUB_URL               = "https://api.alfresco.com/{network}/public/cmis/versions/1.0/atom";
+//    public final String        NETWORKS_URL              = "https://api.alfresco.com/";
+//    public final String        NETWORK_URL               = "https://api.alfresco.com/{network}/public/alfresco/versions/1/networks/{network}";
+//    public final String        SITES_URL                 = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites";
+//    public final String        SITE_URL                  = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}";
+//    public final String        CONTAINERS_URL            = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/containers";
+//    public final String        CONTAINER_URL             = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/containers/{container}";
+//    public final String        MEMBERS_URL               = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/members";
+//    public final String        MEMBER_URL                = "https://api.alfresco.com/{network}/public/alfresco/versions/1/sites/{site}/members/{member}";
+//    public final String        PEOPLE_URL                = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}";
+//    public final String        PEOPLE_SITES_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/sites";
+//    public final String        PEOPLE_SITE_URL           = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/sites/{site}";
+//    public final String        PEOPLE_FAVORITE_SITES_URL = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/favorite-sites";
+//    public final String        PEOPLE_PREFERENCES_URL    = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/preferences";
+//    public final String        PEOPLE_PREFERENCE_URL     = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/preferences/{preference}";
+//    public final String        PEOPLE_NETWORKS_URL       = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/networks";
+//    public final String        PEOPLE_NETWORK_URL        = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/networks/{network}";
+//    public final String        PEOPLE_ACTIVITIES_URL     = "https://api.alfresco.com/{network}/public/alfresco/versions/1/people/{person}/activities";
+//    public final String        TAGS_URL                  = "https://api.alfresco.com/{network}/public/alfresco/versions/1/tags";
+//    public final String        TAG_URL                   = "https://api.alfresco.com/{network}/public/alfresco/versions/1/tags/{tag}";
+//    public final String        NODE_COMMENTS_URL         = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/comments";
+//    public final String        NODE_COMMENT_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/comments/{comment}";
+//    public final String        NODE_TAGS_URL             = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/tags";
+//    public final String        NODE_TAG_URL              = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/tags/{tag}";
+//    public final String        NODE_RATINGS_URL          = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/ratings";
+//    public final String        NODE_RATING_URL           = "https://api.alfresco.com/{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}";
 
 
     public static class QueryParams
@@ -97,9 +98,9 @@ public interface Alfresco
         public final static String MEMBER     = "member";
     }
 
+	public java.util.List<Repository> getCMISNetworks();
 
-    public Session getCMISSession(String network);
-
+	public Session getCMISSession(String networkId);
 
     public Network getNetwork(String network)
         throws JsonParseException,

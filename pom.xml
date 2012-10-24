@@ -2,10 +2,27 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.social</groupId>
-	<artifactId>spring-social-alfresco</artifactId>
+	<artifactId>spring-social-alfresco-extended</artifactId>
 	<version>0.2.5-SNAPSHOT</version>
 	<name>spring-social-alfresco</name>
 
+    <build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>attach-sources</id>
+                    <goals>
+                        <goal>jar</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+    </build>
+    
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.social</groupId>
@@ -66,6 +83,26 @@
 			<version>5.1.12</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.1</version>
+        </dependency>		
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.alfresco.cmis.client</groupId>
+            <artifactId>alfresco-opencmis-extension</artifactId>
+            <version>0.4-SNAPSHOT</version>
+        </dependency>
 	</dependencies>
 
 	<url>https://github.com/Alfresco/spring-social-alfresco</url>
