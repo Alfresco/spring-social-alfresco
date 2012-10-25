@@ -31,18 +31,18 @@ public class AlfrescoServiceProvider
 {
 	private String baseUrl;
 
-    public AlfrescoServiceProvider(String baseUrl, String authUrl, String tokenUrl, String consumerKey,
-    		String consumerSecret)
+    public AlfrescoServiceProvider(String baseUrl, String consumerKey, String consumerSecret)
     {
-        super(new OAuth2Template(consumerKey, consumerSecret, authUrl, tokenUrl));
+        super(AlfrescoServiceProvider.getOAuth2Template(baseUrl, consumerKey, consumerSecret));
         this.baseUrl = baseUrl;
     }
     
-    public AlfrescoServiceProvider(String consumerKey, String consumerSecret)
+    private static OAuth2Template getOAuth2Template(String baseUrl, String consumerKey, String consumerSecret)
     {
-        super(new OAuth2Template(consumerKey, consumerSecret, "https://api.alfresco.com/auth/oauth/versions/2/authorize", "https://api.alfresco.com/auth/oauth/versions/2/token"));
+    	String authUrl = baseUrl + "auth/oauth/versions/2/authorize";
+    	String tokenUrl = baseUrl + "auth/oauth/versions/2/token";
+    	return new OAuth2Template(consumerKey, consumerSecret, authUrl, tokenUrl);
     }
-
 
     @Override
     public Alfresco getApi(String accessToken)

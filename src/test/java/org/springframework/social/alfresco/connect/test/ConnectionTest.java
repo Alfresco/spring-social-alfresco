@@ -47,10 +47,12 @@ import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Pagination;
+import org.springframework.social.alfresco.api.entities.Person;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.connect.AlfrescoConnectionFactory;
 import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.UserProfile;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Parameters;
@@ -64,7 +66,6 @@ import org.springframework.web.client.HttpClientErrorException;
  */
 public class ConnectionTest
 {
-
     private static final String              CONSUMER_KEY    = "l7xx16247a05ab7b46968625d4dda1f45aeb";
     private static final String              CONSUMER_SECRET = "";
 
@@ -72,6 +73,7 @@ public class ConnectionTest
     private static final String              STATE           = "test";
 
     private static AlfrescoConnectionFactory connectionFactory;
+    private static Connection<Alfresco>      connection;
     private static AuthUrl                   authUrlObject;
     private static AccessGrant               accessGrant;
 
@@ -168,6 +170,38 @@ public class ConnectionTest
         Network homeNetwork = alfresco.getHomeNetwork();
 
         assertEquals(network, homeNetwork.getId());
+    }
+
+
+    @Test
+    public void getCurrentUser()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Person currentUser = alfresco.getCurrentUser();
+
+        assertEquals(person, currentUser.getId());
+    }
+
+
+    @Test
+    public void AdapterTest()
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Person currentUser = alfresco.getCurrentUser();
+        String displayName = connection.getDisplayName();
+        
+        assertEquals(currentUser.getFirstName() + " " + currentUser.getLastName(), displayName);
+        
+        UserProfile userProfile = connection.fetchUserProfile();
+        
+        assertEquals(currentUser.getEmail(), userProfile.getEmail());
+        assertEquals(currentUser.getFirstName(), userProfile.getFirstName());
+        assertEquals(currentUser.getLastName(), userProfile.getLastName());
+        assertEquals(currentUser.getId(), userProfile.getUsername());
     }
 
 
@@ -645,7 +679,7 @@ public class ConnectionTest
     private static void authenticate()
         throws MalformedURLException
     {
-        connectionFactory = new AlfrescoConnectionFactory(CONSUMER_KEY, CONSUMER_SECRET);
+        connectionFactory = new AlfrescoConnectionFactory("https://api.alfresco.com/", CONSUMER_KEY, CONSUMER_SECRET);
 
         OAuth2Parameters parameters = new OAuth2Parameters();
         parameters.setRedirectUri(REDIRECT_URI);
@@ -674,7 +708,7 @@ public class ConnectionTest
 
         accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(codeUrl.getQueryMap().get(CodeUrl.CODE), REDIRECT_URI, null);
 
-        Connection<Alfresco> connection = connectionFactory.createConnection(accessGrant);
+        connection = connectionFactory.createConnection(accessGrant);
         alfresco = connection.getApi();
     }
 
