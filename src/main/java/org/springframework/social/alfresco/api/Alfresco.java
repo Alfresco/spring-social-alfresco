@@ -19,15 +19,19 @@ package org.springframework.social.alfresco.api;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
+import org.springframework.social.alfresco.api.entities.FolderNode;
+import org.springframework.social.alfresco.api.entities.LegacySite;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
 import org.springframework.social.alfresco.api.entities.Network;
@@ -37,6 +41,7 @@ import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Tag;
+import org.springframework.social.alfresco.api.entities.Site.Visibility;
 import org.springframework.web.client.RestClientException;
 
 
@@ -412,4 +417,13 @@ public interface Alfresco
         throws JsonParseException,
             JsonMappingException,
             IOException;;
+            
+	public LegacySite createSite(String network, String siteId, String sitePreset, String title, String description, Visibility visibility)
+			throws IOException;
+	
+	public FolderNode getChildren(String networkId, String folderId, int skipCount, int maxItems, IncludeRelationships includeRelationships,
+			Boolean includeAcls, Set<String> propertyFilter, Boolean includePolicies);
+	
+	public FolderNode getDescendants(String networkId, String folderId, Integer depth, IncludeRelationships includeRelationships,
+			Boolean includeAcls, Set<String> propertyFilter, Boolean includePolicies);
 }

@@ -62,8 +62,8 @@ public class FolderNode extends Node implements Serializable
 	{
 		return documentNodes;
 	}
-	
-	public Node selectRandomFolderNode()
+
+	public FolderNode selectRandomFolderNode()
 	{
 		int idx = random.nextInt(folderNodes.size());
 		return folderNodes.get(idx);
