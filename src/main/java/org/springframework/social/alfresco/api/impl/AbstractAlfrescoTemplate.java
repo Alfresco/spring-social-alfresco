@@ -56,6 +56,7 @@ import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Site.Visibility;
 import org.springframework.social.alfresco.api.entities.Tag;
+import org.springframework.social.alfresco.api.entities.UserRegistration;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -102,6 +103,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
     protected String NODE_RATING_URL           = "{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}";
 //    protected String OLDBASEURL				   = "{network}/api/";
 	protected String CREATE_SITE_URL           = "{network}/api/sites/";
+	protected String CREATE_CLOUD_USER_URL     = "{network}/internal/cloud/accounts/signupqueue";
 	protected String BASE_NODE_URL             = "{network}" + VERSION + "nodes/{node}/";
 	
 	public AbstractAlfrescoTemplate(String baseUrl)
@@ -136,6 +138,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	    this.NODE_RATING_URL 		   = baseUrl + NODE_RATING_URL;
 	    this.CREATE_SITE_URL           = baseUrl + CREATE_SITE_URL;
 	    this.BASE_NODE_URL             = baseUrl + BASE_NODE_URL;
+	    this.CREATE_CLOUD_USER_URL     = baseUrl + CREATE_CLOUD_USER_URL;
 	}
 
 	private ThreadLocal<CMISSessions> cmisSession = new ThreadLocal<CMISSessions>() {
@@ -1033,6 +1036,32 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         // return mapper.readValue(response.getBody(), entryResponseType(Metadata.class));
 
     }
+    
+	public UserRegistration createUser(String email, String firstName, String lastName, String password, String source, String sourceUrl)
+			throws IOException
+	{
+		int idx = email.indexOf("@");
+		if(idx == -1)
+		{
+			throw new RuntimeException("Invalid user id");
+		}
+		String networkId = email.substring(idx + 1);
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put(TemplateParams.NETWORK, networkId);
+
+		UserRegistration userRegistration = new UserRegistration();
+		userRegistration.setEmail(email);
+		userRegistration.setFirstName(firstName);
+		userRegistration.setLastName(lastName);
+		userRegistration.setPassword(password);
+		userRegistration.setSource(source);
+		userRegistration.setSourceUrl(sourceUrl);
+
+		String response = getRestTemplate().postForObject(CREATE_CLOUD_USER_URL, new HttpEntity<UserRegistration>(userRegistration, headers), String.class, vars);
+		log.debug("createUser: " + response);
+		Response<UserRegistration> r = mapper.readValue(response, entryResponseType(UserRegistration.class));
+		return r.getEntry();
+	}
 
 	public LegacySite createSite(String network, String siteId, String sitePreset, String title, String description, Visibility visibility)
 			throws IOException

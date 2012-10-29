@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Alfresco Software Limited.
+\ * Copyright 2012 Alfresco Software Limited.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,8 +40,9 @@ import org.springframework.social.alfresco.api.entities.Preference;
 import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
-import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.entities.Site.Visibility;
+import org.springframework.social.alfresco.api.entities.Tag;
+import org.springframework.social.alfresco.api.entities.UserRegistration;
 import org.springframework.web.client.RestClientException;
 
 
@@ -421,7 +422,10 @@ public interface Alfresco
     public AlfrescoList<Metadata> networkOptions(String network)
         throws JsonParseException,
             JsonMappingException,
-            IOException;;
+            IOException;
+
+	public UserRegistration createUser(String email, String firstName, String lastName, String password, String source, String sourceUrl)
+			throws IOException;
             
 	public LegacySite createSite(String network, String siteId, String sitePreset, String title, String description, Visibility visibility)
 			throws IOException;
