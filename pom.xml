@@ -130,8 +130,8 @@
 
 	<distributionManagement>
 		<repository>
-			<id>localrepo</id>
-			<url>file:///Users/jottley/artifacts.alfresco.com/nexus/content/repositories/thirdparty</url>
+			<id>alfresco-3rd-party</id>
+			<url>https://artifacts.alfresco.com/nexus/content/repositories/thirdparty</url>
 		</repository>
 	</distributionManagement>
 
