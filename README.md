@@ -7,7 +7,7 @@ Maven
     <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-alfresco</artifactId>
-      <version>0.2.6-RELEASE</version>
+      <version>0.2.7-RELEASE</version>
     </dependency>
 ````
 

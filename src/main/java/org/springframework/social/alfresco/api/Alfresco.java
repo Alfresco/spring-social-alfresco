@@ -1003,6 +1003,4 @@ public interface Alfresco
         throws JsonParseException,
             JsonMappingException,
             IOException;
-    
-    public String getAccessToken();
 }

@@ -73,7 +73,7 @@ public class AlfrescoTemplate
     private final HttpHeaders               headers = new HttpHeaders();
 
     private CMISOAuthAuthenticationProvider cmisOAuthAuthenticationProvider;
-    private String accessToken;
+
 
     /**
      * @param accessToken
@@ -81,7 +81,6 @@ public class AlfrescoTemplate
     public AlfrescoTemplate(String accessToken)
     {
         super(accessToken);
-        this.accessToken = accessToken;
         cmisOAuthAuthenticationProvider = new CMISOAuthAuthenticationProvider(accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
     }
@@ -932,10 +931,6 @@ public class AlfrescoTemplate
 
     }
 
-    public String getAccessToken()
-    {
-    	return accessToken;
-    }
 
     /**
      * Build QueryString
