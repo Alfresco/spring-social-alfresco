@@ -75,6 +75,9 @@ public class AlfrescoTemplate
     private CMISOAuthAuthenticationProvider cmisOAuthAuthenticationProvider;
 
 
+    /**
+     * @param accessToken
+     */
     public AlfrescoTemplate(String accessToken)
     {
         super(accessToken);
@@ -904,7 +907,7 @@ public class AlfrescoTemplate
         throws JsonParseException,
             JsonMappingException,
             IOException
-    {       
+    {
         return getPerson(getHomeNetwork().getId(), "-me-");
     }
 
@@ -959,6 +962,10 @@ public class AlfrescoTemplate
     }
 
 
+    /**
+     * @param networkId
+     * @return
+     */
     protected Session createCMISSession(String networkId)
     {
         // default factory implementation
@@ -976,6 +983,9 @@ public class AlfrescoTemplate
     }
 
 
+    /**
+     * @return
+     */
     protected java.util.List<Repository> getCMISNetworks()
     {
         // default factory implementation
@@ -990,11 +1000,19 @@ public class AlfrescoTemplate
     }
 
 
+    /**
+     * @author jottley
+     * 
+     */
     private class CMISSessions
     {
         private Map<String, Session> sessions = new HashMap<String, Session>();
 
 
+        /**
+         * @param networkId
+         * @return
+         */
         Session getSession(String networkId)
         {
             Session session = sessions.get(networkId);
