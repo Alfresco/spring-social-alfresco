@@ -40,15 +40,15 @@ import org.springframework.http.MediaType;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.alfresco.api.Alfresco;
 import org.springframework.social.alfresco.api.entities.Activity;
+import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
-import org.springframework.social.alfresco.api.entities.AlfrescoList;
+import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
+import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Pagination;
 import org.springframework.social.alfresco.api.entities.Person;
 import org.springframework.social.alfresco.api.entities.Preference;
-import org.springframework.social.alfresco.api.entities.Member;
-import org.springframework.social.alfresco.api.entities.Network;
 import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
@@ -73,11 +73,12 @@ public class AlfrescoTemplate
     private final HttpHeaders               headers = new HttpHeaders();
 
     private CMISOAuthAuthenticationProvider cmisOAuthAuthenticationProvider;
-
+    private String accessToken;
 
     public AlfrescoTemplate(String accessToken)
     {
         super(accessToken);
+        this.accessToken = accessToken;
         cmisOAuthAuthenticationProvider = new CMISOAuthAuthenticationProvider(accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
     }
@@ -928,6 +929,10 @@ public class AlfrescoTemplate
 
     }
 
+    public String getAccessToken()
+    {
+    	return accessToken;
+    }
 
     /**
      * Build QueryString
@@ -969,6 +974,9 @@ public class AlfrescoTemplate
         parameters.put(SessionParameter.ATOMPUB_URL, ATOMPUB_URL.replace("{network}", networkId));
         parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
         parameters.put(SessionParameter.REPOSITORY_ID, networkId);
+
+        // Set the alfresco object factory
+        parameters.put(SessionParameter.OBJECT_FACTORY_CLASS, "org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
 
         // create session
         Session session = sessionFactory.createSession(parameters, null, cmisOAuthAuthenticationProvider, null);

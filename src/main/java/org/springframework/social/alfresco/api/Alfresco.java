@@ -415,5 +415,7 @@ public interface Alfresco
     public AlfrescoList<Metadata> networkOptions(String network)
         throws JsonParseException,
             JsonMappingException,
-            IOException;;
+            IOException;
+    
+    public String getAccessToken();
 }
