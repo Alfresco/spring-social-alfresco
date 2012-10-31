@@ -57,6 +57,11 @@ public class CMISOAuthAuthenticationProvider
 
     private String                    accessToken;
 
+    /**
+     * Create new Alfresco CMISAuthenticationProvider
+     * 
+     * @param accessToken - the Api access Token
+     */
     public CMISOAuthAuthenticationProvider(String accessToken)
     {
         this.accessToken = accessToken;

@@ -19,6 +19,13 @@ package org.springframework.social.alfresco.api.entities;
 import java.util.ArrayList;
 
 
+/**
+ * Has pagination information for a list of entities <T> available in this list
+ * 
+ * @author jottley
+ * 
+ * @param <T> - Entity Type
+ */
 public class AlfrescoList<T>
 {
 
@@ -27,24 +34,36 @@ public class AlfrescoList<T>
     private ArrayList<Entry<T>> entries;
 
 
+    /**
+     * @param pagination
+     */
     public void setPagination(Pagination pagination)
     {
         this.pagination = pagination;
     }
 
 
+    /**
+     * @return
+     */
     public Pagination getPagination()
     {
         return pagination;
     }
 
 
+    /**
+     * @param entries
+     */
     public void setEntries(ArrayList<Entry<T>> entries)
     {
         this.entries = entries;
     }
 
 
+    /**
+     * @return
+     */
     public ArrayList<T> getEntries()
     {
         ArrayList<T> t = new ArrayList<T>();
@@ -59,17 +78,30 @@ public class AlfrescoList<T>
     }
 
 
+    /**
+     * List entry
+     * 
+     * @author jottley
+     * 
+     * @param <T>
+     */
     public static class Entry<T>
     {
         private T entry;
 
 
+        /**
+         * @param entry
+         */
         public void setEntry(T entry)
         {
             this.entry = entry;
         }
 
 
+        /**
+         * @return
+         */
         public T getEntry()
         {
             return entry;

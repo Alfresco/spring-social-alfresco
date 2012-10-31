@@ -19,42 +19,68 @@ package org.springframework.social.alfresco.api.impl;
 import org.springframework.social.alfresco.api.entities.AlfrescoList;
 
 
+/**
+ * API Response Object
+ * @author jottley
+ *
+ * @param <T>
+ */
 class Response<T>
 {
     private AlfrescoList<T> list;
     private T               entry;
 
 
+    /**
+     * @param list
+     */
     public void setList(AlfrescoList<T> list)
     {
         this.list = list;
     }
 
 
+    /**
+     * @return
+     */
     public AlfrescoList<T> getList()
     {
         return list;
     }
 
 
+    /**
+     * @param entry
+     */
     public void setEntry(T entry)
     {
         this.entry = entry;
     }
 
 
+    /**
+     * @return
+     */
     public T getEntry()
     {
         return entry;
     }
 
 
+    /**
+     * Is the response an entry?
+     * @return
+     */
     public boolean isEntry()
     {
         return entry != null ? true : false;
     }
 
 
+    /**
+     * Is the response a list?
+     * @return
+     */
     public boolean isList()
     {
         return list != null ? true : false;
