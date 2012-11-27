@@ -2,51 +2,14 @@ package org.springframework.social.alfresco.api.entities;
 
 import java.util.List;
 
+/**
+ * Represents a site in the current (non-public) sites api.
+ * 
+ * @author steveglover
+ *
+ */
 public class LegacySite
 {
-	/*
-	<#if site.node?exists>
-	"node": "${url.serviceContext + "/api/node/" + site.node.storeType + "/" + site.node.storeId + "/" + site.node.id}",
-	"tagScope": "${url.serviceContext + "/api/tagscopes/" + site.node.storeType + "/" + site.node.storeId + "/" + site.node.id}",
-	</#if>
-	<#if site.customProperties?size != 0>
-	"customProperties":
-	{
-		<#list site.customProperties?keys as prop>
-		<#assign propDetails = site.customProperties[prop]>
-		"${prop}":
-		{
-			"name": "${prop}",
-			"value":
-			<#if propDetails.value?is_enumerable>
-			[
-			<#list propDetails.value as v>
-			"${v?string}"<#if v_has_next>,</#if>
-			</#list>
-			]
-			<#else>
-			"${propDetails.value?string}"
-			</#if>,
-			"type": <#if propDetails.type??>"${propDetails.type}"<#else>null</#if>, 
-			"title": <#if propDetails.title??>"${propDetails.title}"<#else>null</#if>
-		}
-		<#if prop_has_next>,</#if>
-		</#list>
-	},
-	</#if>
-	<#if roles = "user">
-	"siteRole": "${site.getMembersRole(userid)!""}",
-	<#elseif roles = "managers">
-	"siteManagers":
-	[
-		<#assign managers = site.listMembers(null, "SiteManager", 0, true)?keys />
-		<#list managers as manager>
-			"${manager}"<#if manager_has_next>,</#if>
-		</#list>
-	],
-	</#if>
-*/
-		
 	private String shortName;
 	private String sitePreset;
 	private String title;
@@ -151,6 +114,15 @@ public class LegacySite
 	public void setNode(String node) {
 		this.node = node;
 	}
-	
-	
+
+	@Override
+	public String toString()
+	{
+		return "LegacySite [shortName=" + shortName + ", sitePreset="
+				+ sitePreset + ", title=" + title + ", description="
+				+ description + ", visibility=" + visibility + ", url=" + url
+				+ ", isPublic=" + isPublic + ", siteRole=" + siteRole
+				+ ", siteManagers=" + siteManagers + ", tagScope=" + tagScope
+				+ ", node=" + node + "]";
+	}
 }

@@ -27,9 +27,9 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 	private String username;
 	private String password;
 	
-	public BasicAuthAlfrescoTemplate(String host, int port, String username, String password)
+	public BasicAuthAlfrescoTemplate(String host, int port, String username, String password, boolean production)
 	{
-		super(BasicAuthAlfrescoTemplate.getBaseUrl(host, port));
+		super(BasicAuthAlfrescoTemplate.getBaseUrl(host, port, production), production);
 
 		this.username = username;
 		this.password = password;
@@ -40,13 +40,11 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
                  new AuthScope(host, port),
                  new UsernamePasswordCredentials(username, password));
 
-//		UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("your_user","your_password");
-//		client.getState().setCredentials(new AuthScope("thehost", 9090, AuthScope.ANY_REALM), credentials);
 		HttpComponentsClientHttpRequestFactory commons = new HttpComponentsClientHttpRequestFactory(client);
 
 		restTemplate = new RestTemplate(commons);
 		restTemplate.setMessageConverters(getMessageConverters());
-		configureRestTemplate(restTemplate);
+		configureRestTemplate();
         headers.setContentType(MediaType.APPLICATION_JSON);
 	}
 	
@@ -58,17 +56,17 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 		return parameters;
 	}
 	
-	private static String getBaseUrl(String host, int port)
+	private static String getBaseUrl(String host, int port, boolean production)
 	{
 		StringBuilder sb = new StringBuilder("http://");
 		sb.append(host);
 		sb.append(":");
 		sb.append(String.valueOf(port));
-		sb.append("/alfresco/a/");
+		if(!production)
+		{
+			sb.append("/alfresco/");
+		}
 		return sb.toString();
-	}
-	
-	protected void configureRestTemplate(RestTemplate restTemplate) {
 	}
 
 	protected List<HttpMessageConverter<?>> getMessageConverters() {

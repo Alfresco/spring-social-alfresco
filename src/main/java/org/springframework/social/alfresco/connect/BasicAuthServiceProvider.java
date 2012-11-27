@@ -10,17 +10,19 @@ public class BasicAuthServiceProvider implements ServiceProvider<Alfresco>
 	private int port;
 	private String username;
 	private String password;
+	private boolean production;
 
-	public BasicAuthServiceProvider(String host, int port, String username, String password)
+	public BasicAuthServiceProvider(String host, int port, String username, String password, boolean production)
 	{
 		this.host = host;
 		this.port = port;
 		this.username = username;
 		this.password = password;
+		this.production = production;
 	}
 
 	public Alfresco getApi()
 	{
-        return new BasicAuthAlfrescoTemplate(host, port, username, password);
+        return new BasicAuthAlfrescoTemplate(host, port, username, password, production);
 	}
 }

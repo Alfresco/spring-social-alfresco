@@ -39,8 +39,7 @@ public class Pagination
         return count;
     }
 
-
-    public void setCount(int count)
+	public void setCount(int count)
     {
         this.count = count;
     }
@@ -92,4 +91,12 @@ public class Pagination
     {
         this.maxItems = maxItems;
     }
+    
+    @Override
+	public String toString()
+    {
+		return "Pagination [count=" + count + ", hasMoreItems=" + hasMoreItems
+				+ ", totalItems=" + totalItems + ", skipCount=" + skipCount
+				+ ", maxItems=" + maxItems + "]";
+	}
 }

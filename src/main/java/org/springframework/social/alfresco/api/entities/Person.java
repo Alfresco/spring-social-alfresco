@@ -41,7 +41,7 @@ public class Person
     private String  userStatus;
     private Date    createdAt;
     private boolean canEdit;
-    private boolean emailFeedDisabled;
+    private boolean emailNotificationsEnabled;
 
 
     public boolean isEnabled()
@@ -284,15 +284,15 @@ public class Person
     }
 
 
-    public boolean isEmailFeedDisabled()
+    public boolean isEmailNotificationsEnabled()
     {
-        return emailFeedDisabled;
+        return emailNotificationsEnabled;
     }
 
 
-    public void setEmailFeedDisabled(boolean emailFeedDisabled)
+    public void setEmailNotificationsEnabled(boolean emailNotificationsEnabled)
     {
-        this.emailFeedDisabled = emailFeedDisabled;
+        this.emailNotificationsEnabled = emailNotificationsEnabled;
     }
 
 

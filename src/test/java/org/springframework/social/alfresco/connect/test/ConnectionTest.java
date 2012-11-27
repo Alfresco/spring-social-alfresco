@@ -679,7 +679,7 @@ public class ConnectionTest
     private static void authenticate()
         throws MalformedURLException
     {
-        connectionFactory = new AlfrescoConnectionFactory("https://api.alfresco.com/", CONSUMER_KEY, CONSUMER_SECRET);
+        connectionFactory = new AlfrescoConnectionFactory("https://api.alfresco.com/", CONSUMER_KEY, CONSUMER_SECRET, true);
 
         OAuth2Parameters parameters = new OAuth2Parameters();
         parameters.setRedirectUri(REDIRECT_URI);

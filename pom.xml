@@ -2,9 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.social</groupId>
-	<artifactId>spring-social-alfresco-extended</artifactId>
-	<version>0.2.5-SNAPSHOT</version>
-	<name>spring-social-alfresco</name>
+	<artifactId>spring-social-alfresco-bm</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+	<name>spring-social-alfresco-bm</name>
+    <description>A version of spring-social-alfresco specifically for use by benchmarking, supports basic authentication and additional api calls</description>
 
     <build>
     <plugins>
@@ -101,7 +102,7 @@
         <dependency>
             <groupId>org.alfresco.cmis.client</groupId>
             <artifactId>alfresco-opencmis-extension</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
 	</dependencies>
 
@@ -117,4 +118,16 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
+	
+    <distributionManagement>
+<repository>
+<id>alfresco-internal</id>
+<url>https://artifacts.alfresco.com/nexus/content/repositories/internal-3rdparty/</url>
+</repository>
+<snapshotRepository>
+<id>alfresco-internal-snapshots</id>
+<url>https://artifacts.alfresco.com/nexus/content/repositories/internal-snapshots/</url>
+</snapshotRepository>
+    </distributionManagement>
+    
 </project>

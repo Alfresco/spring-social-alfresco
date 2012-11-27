@@ -47,5 +47,9 @@ public class Container
         this.id = id;
     }
 
-
+	@Override
+	public String toString()
+	{
+		return "Container [folderId=" + folderId + ", id=" + id + "]";
+	}
 }

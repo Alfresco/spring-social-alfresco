@@ -25,7 +25,6 @@ import java.util.List;
 import org.springframework.social.alfresco.api.entities.exceptions.UnknownActivityTypeException;
 import org.springframework.social.alfresco.api.entities.exceptions.UnknownRoleException;
 
-
 public class Activity
 {
     public static final String SITEID = "siteId";

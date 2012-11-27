@@ -27,7 +27,6 @@ public class BasicAuthConnection extends AbstractConnection<Alfresco>
 	private void initApi()
 	{
 		api = serviceProvider.getApi();
-//		api = new BasicAuthAlfrescoTemplate(baseUrl);
 	}
 
 	@Override

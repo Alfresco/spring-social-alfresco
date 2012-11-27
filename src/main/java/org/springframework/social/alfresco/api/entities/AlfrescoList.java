@@ -44,8 +44,14 @@ public class AlfrescoList<T>
         this.entries = entries;
     }
 
+    @Override
+	public String toString()
+    {
+		return "AlfrescoList [pagination=" + pagination + ", entries="
+				+ entries + "]";
+	}
 
-    public ArrayList<T> getEntries()
+	public ArrayList<T> getEntries()
     {
         ArrayList<T> t = new ArrayList<T>();
         if (!entries.isEmpty())
@@ -74,6 +80,12 @@ public class AlfrescoList<T>
         {
             return entry;
         }
+
+		@Override
+		public String toString()
+		{
+			return "Entry [entry=" + entry + "]";
+		}
     }
 
 

@@ -1,40 +1,34 @@
 package org.springframework.social.alfresco.api.entities;
 
-public class UserRegistration {
+public class UserRegistration
+{
 	private String email;
-	private String firstName;
-	private String lastName;
-	private String password;
-	private String source;
-	private String sourceUrl;
-
-	public UserRegistration()
-	{
+	private String registrationDate;
+	private String id;
+	private String key;
+	
+	public String getEmail() {
+		return email;
 	}
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public String getRegistrationDate() {
+		return registrationDate;
 	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setRegistrationDate(String registrationDate) {
+		this.registrationDate = registrationDate;
 	}
-
-	public void setPassword(String password) {
-		this.password = password;
+	public String getId() {
+		return id;
 	}
-
-	public void setSource(String source) {
-		this.source = source;
+	public void setId(String id) {
+		this.id = id;
 	}
-
-	public void setSourceUrl(String sourceUrl) {
-		this.sourceUrl = sourceUrl;
+	public String getKey() {
+		return key;
 	}
-	
-	
+	public void setKey(String key) {
+		this.key = key;
+	}
 }

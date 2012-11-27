@@ -30,11 +30,13 @@ public class AlfrescoServiceProvider
     extends AbstractOAuth2ServiceProvider<Alfresco>
 {
 	private String baseUrl;
+	private boolean production;
 
-    public AlfrescoServiceProvider(String baseUrl, String consumerKey, String consumerSecret)
+    public AlfrescoServiceProvider(String baseUrl, String consumerKey, String consumerSecret, boolean production)
     {
         super(AlfrescoServiceProvider.getOAuth2Template(baseUrl, consumerKey, consumerSecret));
         this.baseUrl = baseUrl;
+        this.production = production;
     }
     
     private static OAuth2Template getOAuth2Template(String baseUrl, String consumerKey, String consumerSecret)
@@ -47,7 +49,7 @@ public class AlfrescoServiceProvider
     @Override
     public Alfresco getApi(String accessToken)
     {
-        return new AlfrescoTemplate(baseUrl, accessToken);
+        return new AlfrescoTemplate(baseUrl, accessToken, production);
     }
 
 }

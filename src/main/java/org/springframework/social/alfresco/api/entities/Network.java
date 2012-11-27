@@ -116,8 +116,16 @@ public class Network
         return subscriptionLevel;
     }
 
+    @Override
+	public String toString()
+    {
+		return "Network [id=" + id + ", createdAt=" + createdAt
+				+ ", homeNetwork=" + homeNetwork + ", isEnabled=" + isEnabled
+				+ ", quotas=" + quotas + ", paidNetwork=" + paidNetwork
+				+ ", subscriptionLevel=" + subscriptionLevel + "]";
+	}
 
-    public static class Quota
+	public static class Quota
     {
         private long   limit;
         private long   usage;

@@ -17,9 +17,20 @@
  */
 package org.springframework.social.alfresco.api.entities;
 
+import java.util.Random;
+
 
 public enum Role
 {
     SiteManager, SiteContributor, SiteCollaborator, SiteConsumer;
 
+    private static Random random = new Random();
+
+	public static Role randomRole()
+	{
+		Role[] roles = Role.values();
+		int idx = random.nextInt(roles.length);
+		return roles[idx];
+	}
 }
+

@@ -17,22 +17,35 @@
  */
 package org.springframework.social.alfresco.connect.exception;
 
+import org.springframework.http.HttpStatus;
+
 
 public class AlfrescoException
     extends RuntimeException
 {
     private static final long serialVersionUID = 4856627580445924523L;
 
+    private HttpStatus statusCode = null;
+    
+    public AlfrescoException(HttpStatus statusCode, String message)
+    {
+        super(message);
+        this.statusCode = statusCode;
+    }
 
     public AlfrescoException(String message)
     {
         super(message);
     }
 
-
     public AlfrescoException(String message, Throwable cause)
     {
         super(message, cause);
     }
+
+	public HttpStatus getStatusCode()
+	{
+		return statusCode;
+	}
 
 }
