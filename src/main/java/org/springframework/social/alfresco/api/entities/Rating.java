@@ -16,6 +16,7 @@
 package org.springframework.social.alfresco.api.entities;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -30,9 +31,11 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
  */
 
 @JsonSerialize(include = Inclusion.NON_NULL)
-public class Rating
+public class Rating implements Serializable
 {
-    private String    id;
+	private static final long serialVersionUID = -8250261943595959771L;
+	
+	private String    id;
     private Aggregate aggregate;
     private Date      ratedAt;
     private Object    myRating;

@@ -17,10 +17,14 @@
  */
 package org.springframework.social.alfresco.api.entities;
 
+import java.io.Serializable;
 
-public class Preference
+
+public class Preference implements Serializable
 {
-    private String value;
+	private static final long serialVersionUID = 7816210100624533258L;
+	
+	private String value;
     private String id;
 
 

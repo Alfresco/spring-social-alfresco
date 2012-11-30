@@ -16,12 +16,15 @@
 package org.springframework.social.alfresco.api.entities;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 
-public class Person
+public class Person implements Serializable
 {
-    private boolean enabled;
+	private static final long serialVersionUID = -2587439224601020404L;
+	
+	private boolean enabled;
     private String  id;
     private String  firstName;
     private String  lastName;

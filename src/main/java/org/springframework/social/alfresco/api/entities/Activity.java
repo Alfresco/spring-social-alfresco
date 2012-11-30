@@ -18,6 +18,7 @@
 package org.springframework.social.alfresco.api.entities;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,9 +26,11 @@ import java.util.List;
 import org.springframework.social.alfresco.api.entities.exceptions.UnknownActivityTypeException;
 import org.springframework.social.alfresco.api.entities.exceptions.UnknownRoleException;
 
-public class Activity
+public class Activity implements Serializable
 {
-    public static final String SITEID = "siteId";
+	private static final long serialVersionUID = -2449930871213413810L;
+	
+	public static final String SITEID = "siteId";
     public static final String WHO    = "who";
 
 

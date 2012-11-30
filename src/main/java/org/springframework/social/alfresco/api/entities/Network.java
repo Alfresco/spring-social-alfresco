@@ -18,13 +18,16 @@
 package org.springframework.social.alfresco.api.entities;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
 
-public class Network
+public class Network implements Serializable
 {
-    private String           id;
+	private static final long serialVersionUID = -2800990982234368822L;
+	
+	private String           id;
     private Date             createdAt;
     private boolean          homeNetwork;
     private boolean          isEnabled;

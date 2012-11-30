@@ -17,13 +17,17 @@
  */
 package org.springframework.social.alfresco.api.entities;
 
+import java.io.Serializable;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 @JsonSerialize(include = Inclusion.NON_NULL)
-public class Site
+public class Site implements Serializable
 {
-    public enum Visibility
+	private static final long serialVersionUID = 4602335351320154553L;
+
+	public enum Visibility
     {
         PRIVATE, PUBLIC, MODERATED
     };
