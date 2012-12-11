@@ -40,6 +40,7 @@ public class Site implements Serializable
     private String     sitePreset;
     private Role       role;
     private Site       site;
+    private AlfrescoList<Container> containers;
 
 
     public String getTitle()
@@ -53,8 +54,18 @@ public class Site implements Serializable
         this.title = title;
     }
 
+    public AlfrescoList<Container> getContainers()
+	{
+		return containers;
+	}
 
-    public String getDescription()
+	public void setContainers(AlfrescoList<Container> containers)
+	{
+		this.containers = containers;
+	}
+
+
+	public String getDescription()
     {
         return description;
     }

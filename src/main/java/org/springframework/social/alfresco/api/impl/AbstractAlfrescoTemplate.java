@@ -818,8 +818,9 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         String response = getRestTemplate().postForObject(NODE_COMMENTS_URL.getUrl(), new HttpEntity<Comment>(_comment, headers), String.class, vars);
         log.debug("createComment: " + response);
         Response<Comment> c = mapper.readValue(response, entryResponseType(Comment.class));
-        return c.getEntry();
-
+        Comment ret = c.getEntry();
+        ret.setNodeId(node);
+        return ret;
     }
 
 
@@ -842,8 +843,13 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
         String response = getRestTemplate().postForObject(NODE_COMMENTS_URL.getUrl(network), new HttpEntity<java.util.List<Comment>>(_comments, headers), String.class, vars);
         log.debug("createComments: " + response);
-        Response<Comment> c = mapper.readValue(response, entryResponseType(Comment.class));
-        return c.getList();
+        Response<Comment> createdComments = mapper.readValue(response, entryResponseType(Comment.class));
+        AlfrescoList<Comment> al = createdComments.getList();
+        for(Comment comment : al.getEntries())
+        {
+        	comment.setNodeId(node);
+        }
+        return al;
     }
 
 

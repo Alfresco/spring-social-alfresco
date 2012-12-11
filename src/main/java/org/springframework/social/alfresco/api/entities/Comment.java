@@ -30,6 +30,7 @@ public class Comment implements Serializable
 {
 	private static final long serialVersionUID = 3632024523401196115L;
 	
+	private String nodeId;
 	private boolean edited;
     private String  content;
     private String  id;
@@ -41,7 +42,19 @@ public class Comment implements Serializable
     private boolean canEdit;
 
 
-    public boolean isEdited()
+    public String getNodeId()
+	{
+		return nodeId;
+	}
+
+
+	public void setNodeId(String nodeId)
+	{
+		this.nodeId = nodeId;
+	}
+
+
+	public boolean isEdited()
     {
         return edited;
     }
