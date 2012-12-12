@@ -185,27 +185,28 @@ public class Activity
      * @return The type of activity.
      * 
      * The following are the possible values:<br/>
-     * ¥ org.alfresco.comments.comment-created<br/>
-     * ¥ org.alfresco.comments.comment-updated<br/>
-     * ¥ org.alfresco.comments.comment-deleted<br/>
-     * ¥ org.alfresco.documentlibrary.files-added<br/>
-     * ¥ org.alfresco.documentlibrary.files-updated <br/>
-     * ¥ org.alfresco.documentlibrary.files-deleted <br/>
-     * ¥ org.alfresco.documentlibrary.file-added <br/>
-     * ¥ org.alfresco.documentlibrary.file-created <br/>
-     * ¥ org.alfresco.documentlibrary.file-deleted <br/>
-     * ¥ org.alfresco.documentlibrary.file-liked <br/>
-     * ¥ org.alfresco.documentlibrary.inline-edit <br/>
-     * ¥ org.alfresco.documentlibrary.folder-liked <br/>
-     * ¥ org.alfresco.site.user-joined <br/>
-     * ¥ org.alfresco.site.user-left <br/>
-     * ¥ org.alfresco.site.user-role-changed <br/>
-     * ¥ org.alfresco.site.group-added <br/>
-     * ¥ org.alfresco.site.group-removed <br/>
-     * ¥ org.alfresco.site.group-role-changed <br/>
-     * ¥ org.alfresco.discussions.reply-created <br/>
-     * ¥ org.alfresco.subscriptions.followed <br/>
-     * ¥ org.alfresco.subscriptions.subscribed<br/>
+     * ï¿½ org.alfresco.comments.comment-created<br/>
+     * ï¿½ org.alfresco.comments.comment-updated<br/>
+     * ï¿½ org.alfresco.comments.comment-deleted<br/>
+     * ï¿½ org.alfresco.documentlibrary.files-added<br/>
+     * ï¿½ org.alfresco.documentlibrary.files-updated <br/>
+     * ï¿½ org.alfresco.documentlibrary.files-deleted <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-added <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-created <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-deleted <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-liked <br/>
+     * ï¿½ org.alfresco.documentlibrary.inline-edit <br/>
+     * ï¿½ org.alfresco.documentlibrary.folder-liked <br/>
+     * ï¿½ org.alfresco.documentlibrary.folder-added
+     * ï¿½ org.alfresco.site.user-joined <br/>
+     * ï¿½ org.alfresco.site.user-left <br/>
+     * ï¿½ org.alfresco.site.user-role-changed <br/>
+     * ï¿½ org.alfresco.site.group-added <br/>
+     * ï¿½ org.alfresco.site.group-removed <br/>
+     * ï¿½ org.alfresco.site.group-role-changed <br/>
+     * ï¿½ org.alfresco.discussions.reply-created <br/>
+     * ï¿½ org.alfresco.subscriptions.followed <br/>
+     * ï¿½ org.alfresco.subscriptions.subscribed<br/>
      */
     public String getActivityType()
     {
@@ -217,27 +218,27 @@ public class Activity
      * Set the Activity type<br/>
      * <br/>
      * The following are the possible values:<br/>
-     * ¥ org.alfresco.comments.comment-created<br/>
-     * ¥ org.alfresco.comments.comment-updated<br/>
-     * ¥ org.alfresco.comments.comment-deleted<br/>
-     * ¥ org.alfresco.documentlibrary.files-added<br/>
-     * ¥ org.alfresco.documentlibrary.files-updated <br/>
-     * ¥ org.alfresco.documentlibrary.files-deleted <br/>
-     * ¥ org.alfresco.documentlibrary.file-added <br/>
-     * ¥ org.alfresco.documentlibrary.file-created <br/>
-     * ¥ org.alfresco.documentlibrary.file-deleted <br/>
-     * ¥ org.alfresco.documentlibrary.file-liked <br/>
-     * ¥ org.alfresco.documentlibrary.inline-edit <br/>
-     * ¥ org.alfresco.documentlibrary.folder-liked <br/>
-     * ¥ org.alfresco.site.user-joined <br/>
-     * ¥ org.alfresco.site.user-left <br/>
-     * ¥ org.alfresco.site.user-role-changed <br/>
-     * ¥ org.alfresco.site.group-added <br/>
-     * ¥ org.alfresco.site.group-removed <br/>
-     * ¥ org.alfresco.site.group-role-changed <br/>
-     * ¥ org.alfresco.discussions.reply-created <br/>
-     * ¥ org.alfresco.subscriptions.followed <br/>
-     * ¥ org.alfresco.subscriptions.subscribed<br/>
+     * ï¿½ org.alfresco.comments.comment-created<br/>
+     * ï¿½ org.alfresco.comments.comment-updated<br/>
+     * ï¿½ org.alfresco.comments.comment-deleted<br/>
+     * ï¿½ org.alfresco.documentlibrary.files-added<br/>
+     * ï¿½ org.alfresco.documentlibrary.files-updated <br/>
+     * ï¿½ org.alfresco.documentlibrary.files-deleted <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-added <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-created <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-deleted <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-liked <br/>
+     * ï¿½ org.alfresco.documentlibrary.inline-edit <br/>
+     * ï¿½ org.alfresco.documentlibrary.folder-liked <br/>
+     * ï¿½ org.alfresco.site.user-joined <br/>
+     * ï¿½ org.alfresco.site.user-left <br/>
+     * ï¿½ org.alfresco.site.user-role-changed <br/>
+     * ï¿½ org.alfresco.site.group-added <br/>
+     * ï¿½ org.alfresco.site.group-removed <br/>
+     * ï¿½ org.alfresco.site.group-role-changed <br/>
+     * ï¿½ org.alfresco.discussions.reply-created <br/>
+     * ï¿½ org.alfresco.subscriptions.followed <br/>
+     * ï¿½ org.alfresco.subscriptions.subscribed<br/>
      * 
      * @param activityType
      */
@@ -285,6 +286,7 @@ public class Activity
         private String memberPersonId;
         private String memberFirstName;
         private String memberLastName;
+        private String parentObjectId;
         private String role;
 
 
@@ -338,7 +340,7 @@ public class Activity
 
 
         /**
-         * Set te title of the user performing the activity
+         * Set the title of the user performing the activity
          * 
          * @param title
          */
@@ -442,6 +444,23 @@ public class Activity
         {
             this.memberLastName = memberLastName;
         }
+        
+        
+        /**
+         * @return
+         */
+        public String getParentObjectId()
+        {
+            return parentObjectId;
+        }
+        
+        /**
+         * @param parentObjectId
+         */
+        public void setParentObjectId(String parentObjectId)
+        {
+            this.parentObjectId = parentObjectId;
+        }
 
 
         /**
@@ -483,27 +502,28 @@ public class Activity
      * Validate the activity type.<br/>
      * <br/>
      * The following are the possible values:<br/>
-     * ¥ org.alfresco.comments.comment-created<br/>
-     * ¥ org.alfresco.comments.comment-updated<br/>
-     * ¥ org.alfresco.comments.comment-deleted<br/>
-     * ¥ org.alfresco.documentlibrary.files-added<br/>
-     * ¥ org.alfresco.documentlibrary.files-updated <br/>
-     * ¥ org.alfresco.documentlibrary.files-deleted <br/>
-     * ¥ org.alfresco.documentlibrary.file-added <br/>
-     * ¥ org.alfresco.documentlibrary.file-created <br/>
-     * ¥ org.alfresco.documentlibrary.file-deleted <br/>
-     * ¥ org.alfresco.documentlibrary.file-liked <br/>
-     * ¥ org.alfresco.documentlibrary.inline-edit <br/>
-     * ¥ org.alfresco.documentlibrary.folder-liked <br/>
-     * ¥ org.alfresco.site.user-joined <br/>
-     * ¥ org.alfresco.site.user-left <br/>
-     * ¥ org.alfresco.site.user-role-changed <br/>
-     * ¥ org.alfresco.site.group-added <br/>
-     * ¥ org.alfresco.site.group-removed <br/>
-     * ¥ org.alfresco.site.group-role-changed <br/>
-     * ¥ org.alfresco.discussions.reply-created <br/>
-     * ¥ org.alfresco.subscriptions.followed <br/>
-     * ¥ org.alfresco.subscriptions.subscribed<br/>
+     * ï¿½ org.alfresco.comments.comment-created<br/>
+     * ï¿½ org.alfresco.comments.comment-updated<br/>
+     * ï¿½ org.alfresco.comments.comment-deleted<br/>
+     * ï¿½ org.alfresco.documentlibrary.files-added<br/>
+     * ï¿½ org.alfresco.documentlibrary.files-updated <br/>
+     * ï¿½ org.alfresco.documentlibrary.files-deleted <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-added <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-created <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-deleted <br/>
+     * ï¿½ org.alfresco.documentlibrary.file-liked <br/>
+     * ï¿½ org.alfresco.documentlibrary.inline-edit <br/>
+     * ï¿½ org.alfresco.documentlibrary.folder-liked <br/>
+     * ï¿½ org.alfresco.documentlibrary.folder-added <br/>
+     * ï¿½ org.alfresco.site.user-joined <br/>
+     * ï¿½ org.alfresco.site.user-left <br/>
+     * ï¿½ org.alfresco.site.user-role-changed <br/>
+     * ï¿½ org.alfresco.site.group-added <br/>
+     * ï¿½ org.alfresco.site.group-removed <br/>
+     * ï¿½ org.alfresco.site.group-role-changed <br/>
+     * ï¿½ org.alfresco.discussions.reply-created <br/>
+     * ï¿½ org.alfresco.subscriptions.followed <br/>
+     * ï¿½ org.alfresco.subscriptions.subscribed<br/>
      * 
      * @param activityType
      * @return
@@ -524,6 +544,7 @@ public class Activity
         activityTypes.add("org.alfresco.documentlibrary.file-updated");
         activityTypes.add("org.alfresco.documentlibrary.inline-edit");
         activityTypes.add("org.alfresco.documentlibrary.folder-liked");
+        activityTypes.add("org.alfresco.documentlibrary.folder-added");
         activityTypes.add("org.alfresco.site.user-joined");
         activityTypes.add("org.alfresco.site.user-left");
         activityTypes.add("org.alfresco.site.user-role-changed");
@@ -543,10 +564,10 @@ public class Activity
      * <br/>
      * Role must be of type<br/>
      * <br/>
-     * ¥ SiteContributor<br/>
-     * ¥ SiteManger<br/>
-     * ¥ SiteCollaborator<br/>
-     * ¥ SiteConsumer<br/>
+     * ï¿½ SiteContributor<br/>
+     * ï¿½ SiteManger<br/>
+     * ï¿½ SiteCollaborator<br/>
+     * ï¿½ SiteConsumer<br/>
      * <br/>
      * An empty string is also valid...but will be set as null
      * 
