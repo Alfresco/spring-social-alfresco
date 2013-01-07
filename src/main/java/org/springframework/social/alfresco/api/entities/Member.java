@@ -17,18 +17,12 @@
  */
 package org.springframework.social.alfresco.api.entities;
 
-
-import java.io.Serializable;
-
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-
 @JsonSerialize(include = Inclusion.NON_NULL)
-public class Member implements Serializable
+public class Member
 {
-	private static final long serialVersionUID = -6906365307760728007L;
-	
 	private Role   role;
     private String id;
     private Person person;

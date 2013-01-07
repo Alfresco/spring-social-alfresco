@@ -15,15 +15,10 @@
 
 package org.springframework.social.alfresco.api.entities;
 
-
-import java.io.Serializable;
 import java.util.ArrayList;
 
-
-public class AlfrescoList<T> implements Serializable
+public class AlfrescoList<T>
 {
-	private static final long serialVersionUID = -269317744537073313L;
-	
 	private Pagination          pagination;
     private ArrayList<Entry<T>> entries;
 

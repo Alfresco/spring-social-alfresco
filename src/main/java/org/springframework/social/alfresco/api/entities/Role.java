@@ -19,7 +19,6 @@ package org.springframework.social.alfresco.api.entities;
 
 import java.util.Random;
 
-
 public enum Role
 {
     SiteManager, SiteContributor, SiteCollaborator, SiteConsumer;

@@ -17,19 +17,14 @@
  */
 package org.springframework.social.alfresco.api.entities;
 
-
-import java.io.Serializable;
 import java.util.Date;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-
 @JsonSerialize(include = Inclusion.NON_NULL)
-public class Comment implements Serializable
+public class Comment
 {
-	private static final long serialVersionUID = 3632024523401196115L;
-	
 	private String nodeId;
 	private boolean edited;
     private String  content;

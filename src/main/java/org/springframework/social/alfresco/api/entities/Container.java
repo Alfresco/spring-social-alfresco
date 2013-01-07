@@ -17,13 +17,8 @@
  */
 package org.springframework.social.alfresco.api.entities;
 
-import java.io.Serializable;
-
-
-public class Container implements Serializable
+public class Container
 {
-	private static final long serialVersionUID = -8271356667415914057L;
-	
 	private String folderId;
     private String id;
 

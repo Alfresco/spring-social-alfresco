@@ -1,6 +1,5 @@
 package org.springframework.social.alfresco.api.entities;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -9,10 +8,8 @@ import java.util.List;
  * @author steveglover
  *
  */
-public class LegacySite implements Serializable
+public class LegacySite
 {
-	private static final long serialVersionUID = 898681834063158366L;
-	
 	private String shortName;
 	private String sitePreset;
 	private String title;
