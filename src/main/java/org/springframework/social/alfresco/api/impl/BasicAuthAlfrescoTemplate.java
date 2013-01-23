@@ -1,17 +1,29 @@
 package org.springframework.social.alfresco.api.impl;
 
 import java.nio.charset.Charset;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -24,21 +36,63 @@ import org.springframework.web.client.RestTemplate;
 
 public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 {
+    private final PoolingClientConnectionManager httpClientCM;
+
 	private String username;
 	private String password;
 	
-	public BasicAuthAlfrescoTemplate(String host, int port, String username, String password, boolean production)
+	public BasicAuthAlfrescoTemplate(String scheme, String host, int port, String username, String password, boolean production,
+			int maxNumberOfConnections, int connectionTimeoutMs, int socketTimeoutMs, int socketTtlMs)
 	{
-		super(BasicAuthAlfrescoTemplate.getBaseUrl(host, port, production), production);
+		super(BasicAuthAlfrescoTemplate.getBaseUrl(scheme, host, port, production), production);
 
 		this.username = username;
 		this.password = password;
 
-		HttpParams params = new BasicHttpParams();
-		DefaultHttpClient client = new DefaultHttpClient(params);
-		client.getCredentialsProvider().setCredentials(
-                 new AuthScope(host, port),
-                 new UsernamePasswordCredentials(username, password));
+        SSLSocketFactory sslSf = null;
+        try
+        {
+            TrustStrategy sslTs = new TrustAnyTrustStrategy();
+            sslSf = new SSLSocketFactory(sslTs, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        }
+        catch (Throwable e)
+        {
+            throw new RuntimeException("Unable to construct HttpClientProvider.", e);
+        }
+
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(
+                 new Scheme("http", 8080, PlainSocketFactory.getSocketFactory()));
+        schemeRegistry.register(
+                new Scheme("https", 443, sslSf));
+        schemeRegistry.register(
+                new Scheme("https", 80, sslSf));
+
+        this.httpClientCM = new PoolingClientConnectionManager(schemeRegistry, (long) socketTtlMs, TimeUnit.MILLISECONDS);
+        // Increase max total connections
+        this.httpClientCM.setMaxTotal(maxNumberOfConnections);
+        // Ensure that we don't throttle on a per-scheme basis (BENCH-45)
+        this.httpClientCM.setDefaultMaxPerRoute(maxNumberOfConnections);
+
+		HttpParams httpParams = new BasicHttpParams();
+		
+        HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeoutMs);
+        HttpConnectionParams.setSoTimeout(httpParams, socketTimeoutMs);
+        HttpConnectionParams.setTcpNoDelay(httpParams, true);
+        HttpConnectionParams.setStaleCheckingEnabled(httpParams, true);
+        HttpConnectionParams.setSoKeepalive(httpParams, true);
+
+		DefaultHttpClient client = new DefaultHttpClient(httpClientCM, httpParams);
+		
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(
+                new AuthScope(AuthScope.ANY),
+                new UsernamePasswordCredentials(username, password));
+        client.setCredentialsProvider(credentialsProvider);
+		
+//		client.getCredentialsProvider().setCredentials(
+//                 new AuthScope(host, port),
+//                 new UsernamePasswordCredentials(username, password));
 
 		HttpComponentsClientHttpRequestFactory commons = new HttpComponentsClientHttpRequestFactory(client);
 
@@ -56,9 +110,10 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 		return parameters;
 	}
 	
-	private static String getBaseUrl(String host, int port, boolean production)
+	private static String getBaseUrl(String scheme, String host, int port, boolean production)
 	{
-		StringBuilder sb = new StringBuilder("http://");
+		StringBuilder sb = new StringBuilder(scheme);
+		sb.append("://");
 		sb.append(host);
 		sb.append(":");
 		sb.append(String.valueOf(port));
@@ -111,4 +166,21 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 		return converter;
 	}
 
+    /**
+     * A {@link TrustStrategy} that trusts any certificate.
+     * 
+     * @author Derek Hulley
+     * @since 1.0
+     */
+    private class TrustAnyTrustStrategy implements TrustStrategy
+    {
+        /**
+         * @return          Returns <tt>true</tt> always
+         */
+//        @Override
+        public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException
+        {
+            return true;
+        }
+    }
 }
