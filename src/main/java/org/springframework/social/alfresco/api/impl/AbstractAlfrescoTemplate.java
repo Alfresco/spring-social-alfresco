@@ -8,11 +8,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
@@ -26,14 +28,24 @@ import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
+import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParser;
 import org.apache.chemistry.opencmis.commons.spi.AuthenticationProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.Version;
+import org.codehaus.jackson.map.BeanProperty;
+import org.codehaus.jackson.map.BeanProperty.Std;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.module.SimpleModule;
+import org.codehaus.jackson.map.type.SimpleType;
 import org.codehaus.jackson.type.JavaType;
-import org.json.simple.parser.JSONParser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,6 +58,10 @@ import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
+import org.springframework.social.alfresco.api.entities.DocumentFavouriteTarget;
+import org.springframework.social.alfresco.api.entities.Favourite;
+import org.springframework.social.alfresco.api.entities.FavouriteTarget;
+import org.springframework.social.alfresco.api.entities.FolderFavouriteTarget;
 import org.springframework.social.alfresco.api.entities.LegacySite;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
@@ -57,6 +73,8 @@ import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Site.Visibility;
+import org.springframework.social.alfresco.api.entities.SiteFavouriteTarget;
+import org.springframework.social.alfresco.api.entities.SiteMembershipRequest;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.entities.UserActivationRequest;
 import org.springframework.social.alfresco.api.entities.UserActivationResponse;
@@ -97,7 +115,11 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
     protected PublicApiUrl PEOPLE_URL;
     protected PublicApiUrl PEOPLE_SITES_URL;
     protected PublicApiUrl PEOPLE_SITE_URL;
+    protected PublicApiUrl PEOPLE_FAVORITES_URL;
+    protected PublicApiUrl PEOPLE_FAVORITE_URL;
     protected PublicApiUrl PEOPLE_FAVORITE_SITES_URL;
+    protected PublicApiUrl PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL;
+    protected PublicApiUrl PEOPLE_SITE_MEMBERSHIP_REQUEST_URL;
     protected PublicApiUrl PEOPLE_PREFERENCES_URL;
     protected PublicApiUrl PEOPLE_PREFERENCE_URL;
     protected PublicApiUrl PEOPLE_NETWORKS_URL;
@@ -133,6 +155,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		this.PEOPLE_URL                = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}");
 		this.PEOPLE_SITES_URL          = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/sites");
 		this.PEOPLE_SITE_URL           = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/sites/{site}");
+		this.PEOPLE_FAVORITES_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorites");
+		this.PEOPLE_FAVORITE_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorites/{favouriteId}");
 		this.PEOPLE_FAVORITE_SITES_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorite-sites");
 		this.PEOPLE_PREFERENCES_URL    = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/preferences");
 		this.PEOPLE_PREFERENCE_URL     = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/preferences/{preference}");
@@ -147,19 +171,228 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	    this.NODE_TAG_URL              = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/tags/{tag}");
 	    this.NODE_RATINGS_URL          = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/ratings");
 	    this.NODE_RATING_URL 		   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}");
+	    this.PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests");
+	    this.PEOPLE_SITE_MEMBERSHIP_REQUEST_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests/{siteId}");
 	    this.CREATE_SITE_URL           = new PublicApiNetworkUrl(baseUrl, "{network}/api/sites");
 	    this.BASE_NODE_URL             = new PublicApiNetworkUrl(baseUrl, "{network}" + VERSION + "nodes/{node}/");
 	    this.REGISTER_USER_URL     	   = new PublicApiServiceUrl(baseUrl, "internal/cloud/accounts/signupqueue");
 	    this.ACTIVATE_USER_URL         = new PublicApiServiceUrl(baseUrl, "internal/cloud/account-activations");
+	    
+	    SimpleModule module = new SimpleModule("", new Version(1, 0, 0, null));
+		module.addDeserializer(FavouriteTarget.class, new FavouriteTargetDeserializer());
+//		module.addDeserializer(ObjectData.class, new NodeDeserializer());
+//		module.addSerializer(ObjectData.class, new NodeSerializer());
+		
+		mapper.registerModule(module);
 	}
 
-	private ThreadLocal<CMISSessions> cmisSession = new ThreadLocal<CMISSessions>() {
+//	private class NodeSerializer extends SerializerBase<ObjectData>
+//	{
+//	    protected NodeSerializer()
+//	    {
+//	        super(ObjectData.class);
+//	    }
+//
+//	    @Override
+//	    public void serialize(ObjectData object, JsonGenerator jgen, SerializerProvider provider)
+//	                throws IOException, JsonGenerationException
+//	    {
+//	    	TypeCache typeCache = getTypeCache();
+//	    	JSONObject json = JSONConverter.convert(object, typeCache, false, true);
+//	    	jgen.writeRaw(json.toString());
+//	    }
+//
+//		@Override
+//		public JsonNode getSchema(SerializerProvider provider,
+//				java.lang.reflect.Type typeHint) throws JsonMappingException
+//		{
+//			// TODO
+//			return null;
+//		}
+//	}
+
+//	private static class FavouriteTargetDeserializer extends JsonDeserializer<FavouriteTarget>
+//	{
+//	    public static enum Type
+//	    {
+//	    	// Note: ordered
+//	    	FILE, FOLDER, SITE;
+//	    }
+//	    
+//		@Override
+//		public FavouriteTarget deserialize(JsonParser jp, DeserializationContext ctxt)
+//				throws IOException, JsonProcessingException
+//		{
+//			FavouriteTarget target = null;
+//	        JsonToken curr = jp.getCurrentToken();
+//	        
+//	        if (curr == JsonToken.START_OBJECT)
+//	        {
+//	            while(jp.nextToken() != JsonToken.END_OBJECT)
+//	            {
+//	        		String fieldname = jp.getCurrentName();
+//	        		if(Type.SITE.toString().equals(fieldname.toUpperCase()))
+//	        		{
+//	        			jp.nextToken();
+//	        			try
+//	        			{
+//	        		        JavaType t = SimpleType.construct(Site.class);
+//	        		        BeanProperty p = new Std("", t, null, null);
+//	        		        JsonDeserializer<?> siteDeserializer = ctxt.getDeserializerProvider().findValueDeserializer(ctxt.getConfig(), t, p);
+//
+//	        				Site site = (Site)siteDeserializer.deserialize(jp, ctxt);
+//	                    	target = new SiteFavouriteTarget(site);
+//	        			}
+//	        			catch(JsonMappingException e)
+//	        			{
+//	        				throw new IllegalArgumentException("Target body is invalid for target type");
+//	        			}
+//	        		}
+//	        		else if(Type.FILE.toString().equals(fieldname.toUpperCase()))
+//	        		{
+//	        			jp.nextToken();
+//	        			try
+//	        			{
+//	        				JavaType t = SimpleType.construct(ObjectData.class);
+//	        				BeanProperty p = new Std("", t, null, null);
+//	        		        JsonDeserializer<?> nodeDeserializer = ctxt.getDeserializerProvider().findValueDeserializer(ctxt.getConfig(), t, p);
+//
+//	        		        ObjectData node = (ObjectData)nodeDeserializer.deserialize(jp, ctxt);;
+//		                	target = new DocumentFavouriteTarget(node);
+//	        			}
+//	        			catch(JsonMappingException e)
+//	        			{
+//	        				throw new IllegalArgumentException("Target body is invalid for target type");
+//	        			}
+//	        		}
+//	        		else if(Type.FOLDER.toString().equals(fieldname.toUpperCase()))
+//	        		{
+//	        			jp.nextToken();
+//	        			try
+//	        			{
+//	        				JavaType t = SimpleType.construct(Folder.class);
+//	        				BeanProperty p = new Std("", t, null, null);
+//	        		        JsonDeserializer<?> nodeDeserializer = ctxt.getDeserializerProvider().findValueDeserializer(ctxt.getConfig(), t, p);
+//
+//	        		        ObjectData node = (ObjectData)nodeDeserializer.deserialize(jp, ctxt);
+//		        			target = new FolderFavouriteTarget(node);
+//	        			}
+//	        			catch(JsonMappingException e)
+//	        			{
+//	        				throw new IllegalArgumentException("Target body is invalid for target type");
+//	        			}
+//	        		}
+//	            }
+//
+//	        	return target;
+//	        }
+//	        else
+//	        {
+//	        	throw new IOException("Unable to deserialize favourite: " + curr.asString());
+//	        }
+//		}
+//	}
+	
+//	private static class NodeDeserializer extends JsonDeserializer<ObjectData>
+//	{
+//		@Override
+//		public ObjectData deserialize(JsonParser jp, DeserializationContext ctxt)
+//				throws IOException, JsonProcessingException
+//		{
+//			ObjectData ret = new ObjectDataImpl();
+//	        JsonToken curr = jp.getCurrentToken();
+//	        
+//	        if (curr == JsonToken.START_OBJECT)
+//	        {
+//	            while(jp.nextToken() != JsonToken.END_OBJECT)
+//	            {
+//
+//	            }
+//
+//	        	return ret;
+//	        }
+//	        else
+//	        {
+//	        	throw new IOException("Unable to deserialize node: " + curr.asString());
+//	        }
+//		}
+//	}
+
+	private static class FavouriteTargetDeserializer extends JsonDeserializer<FavouriteTarget>
+	{
 		@Override
-		protected CMISSessions initialValue()
+		public FavouriteTarget deserialize(JsonParser jp, DeserializationContext ctxt)
+				throws IOException, JsonProcessingException
 		{
-			return new CMISSessions();
+			FavouriteTarget target = null;
+	        JsonToken curr = jp.getCurrentToken();
+	        
+	        if (curr == JsonToken.START_OBJECT)
+	        {
+	            while(jp.nextToken() != JsonToken.END_OBJECT)
+	            {
+	        		String fieldname = jp.getCurrentName();
+	        		if("SITE".equals(fieldname.toUpperCase()))
+	        		{
+	        			jp.nextToken();
+	        			try
+	        			{
+	        		        JavaType t = SimpleType.construct(Site.class);
+	        		        BeanProperty p = new Std("", t, null, null);
+	        		        JsonDeserializer<?> siteDeserializer = ctxt.getDeserializerProvider().findValueDeserializer(ctxt.getConfig(), t, p);
+
+	        				Site site = (Site)siteDeserializer.deserialize(jp, ctxt);
+	                    	target = new SiteFavouriteTarget(site);
+	        			}
+	        			catch(JsonMappingException e)
+	        			{
+	        				throw new IllegalArgumentException("Target body is invalid for target type");
+	        			}
+	        		}
+	        		else if("FILE".equals(fieldname.toUpperCase()))
+	        		{
+	        			jp.nextToken();
+	        			try
+	        			{
+	        				JavaType t = SimpleType.construct(Document.class);
+	        				BeanProperty p = new Std("", t, null, null);
+	        		        JsonDeserializer<?> documentDeserializer = ctxt.getDeserializerProvider().findValueDeserializer(ctxt.getConfig(), t, p);
+
+		        			org.springframework.social.alfresco.api.entities.Document document = (org.springframework.social.alfresco.api.entities.Document)documentDeserializer.deserialize(jp, ctxt);
+		                	target = new DocumentFavouriteTarget(document);
+	        			}
+	        			catch(JsonMappingException e)
+	        			{
+	        				throw new IllegalArgumentException("Target body is invalid for target type");
+	        			}
+	        		}
+	        		else if("FOLDER".equals(fieldname.toUpperCase()))
+	        		{
+	        			jp.nextToken();
+	        			try
+	        			{
+	        				JavaType t = SimpleType.construct(Folder.class);
+	        				BeanProperty p = new Std("", t, null, null);
+	        		        JsonDeserializer<?> folderDeserializer = ctxt.getDeserializerProvider().findValueDeserializer(ctxt.getConfig(), t, p);
+	        		        
+	        		        org.springframework.social.alfresco.api.entities.Folder folder = (org.springframework.social.alfresco.api.entities.Folder)folderDeserializer.deserialize(jp, ctxt);
+		        			target = new FolderFavouriteTarget(folder);
+	        			}
+	        			catch(JsonMappingException e)
+	        			{
+	        				throw new IllegalArgumentException("Target body is invalid for target type");
+	        			}
+	        		}
+	            }
+
+	        	return target;
+	        }
+	        else
+	        {
+	        	throw new IOException("Unable to deserialize favourite: " + curr.asString());
+	        }
 		}
-	};
+	}
 	
 	protected abstract Map<String, String> getCMISParameters();
 
@@ -189,8 +422,52 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		
 		return session;
 	}
+	
+//	private ThreadLocal<Context> context = new ThreadLocal<Context>();
+//
+//	private static class Context
+//	{
+//		private String networkId;
+//
+//		public Context(String networkId)
+//		{
+//			super();
+//			this.networkId = networkId;
+//		}
+//
+//		public String getNetworkId()
+//		{
+//			return networkId;
+//		}
+//	}
+//
+//	private TypeCache getTypeCache()
+//	{
+//		Context currentContext = context.get();
+//		String networkId = currentContext.getNetworkId();
+//		return getTypeCache(networkId);
+//	}
+//
+//	private TypeCache getTypeCache(String networkId)
+//	{
+//		final Session session = createCMISSession(networkId);
+//		TypeCache typeCache = new TypeCache()
+//		{
+//			public TypeDefinition getTypeDefinition(String typeId)
+//			{
+//				return session.getTypeDefinition(typeId);
+//			}
+//
+//			public TypeDefinition getTypeDefinitionForObject(String objectId)
+//			{
+//				// not used
+//				return null;
+//			}
+//		};
+//		return typeCache;
+//	}
     
-	public java.util.List<Repository> getCMISNetworks()
+	public List<Repository> getCMISNetworks()
 	{
 		// default factory implementation
 		SessionFactoryImpl sessionFactory = SessionFactoryImpl.newInstance();
@@ -262,9 +539,9 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		return restTemplate;
 	}
 
-	public Session getCMISSession(String networkId) {
-		CMISSessions sessions = cmisSession.get();
-		Session session = sessions.getSession(networkId);
+	public Session getCMISSession(String networkId)
+	{
+		Session session = createCMISSession(networkId);
 		return session;
 	}
 
@@ -334,8 +611,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
             JsonMappingException,
             IOException
     {
-        Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK + generateQueryString(parameters), networkId);
-        String response = getRestTemplate().getForObject(SITES_URL.getUrl(networkId), String.class, vars);
+        Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK, networkId);
+        String response = getRestTemplate().getForObject(SITES_URL.getUrl(networkId) + generateQueryString(parameters), String.class, vars);
         log.debug("getSites: " + response);
         Response<Site> s = mapper.readValue(response, entryResponseType(Site.class));
         return s.getList();
@@ -419,7 +696,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.SITE, site);
 
-        String response = getRestTemplate().getForObject(MEMBERS_URL + generateQueryString(parameters), String.class, vars);
+        String response = getRestTemplate().getForObject(MEMBERS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getMembers: " + response);
         Response<Member> m = mapper.readValue(response, entryResponseType(Member.class));
         return m.getList();
@@ -555,8 +832,114 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         Response<Site> c = mapper.readValue(response, entryResponseType(Site.class));
         return c.getEntry();
     }
-    
 
+    public AlfrescoList<Favourite> getFavorites(String network, String person)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+        return getFavorites(network, person, null);
+    }
+
+
+    public AlfrescoList<Favourite> getFavorites(String network, String person, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
+
+//        context.set(new Context(network));
+
+        String response = getRestTemplate().getForObject(PEOPLE_FAVORITES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        log.debug("getFavorites: " + response);
+        Response<Favourite> s = mapper.readValue(response, entryResponseType(Favourite.class));
+        return s.getList();
+    }
+
+    public Favourite addFavorite(String network, String personId, Favourite favourite)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, personId);
+
+        String response = getRestTemplate().postForObject(PEOPLE_FAVORITES_URL.getUrl(), new HttpEntity<Favourite>(favourite, headers), String.class, vars);
+        log.debug("addFavorite: " + response);
+        Response<Favourite> c = mapper.readValue(response, entryResponseType(Favourite.class));
+        return c.getEntry();
+    }
+    
+    public void removeFavourite(String network, String personId, String favouriteId)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, personId);
+        vars.put(TemplateParams.FAVOURITE, favouriteId);
+
+        getRestTemplate().delete(PEOPLE_FAVORITE_URL.getUrl(network), vars);
+        log.debug("removefavourite: " + favouriteId);
+    }
+
+    public AlfrescoList<SiteMembershipRequest> getPersonSiteMembershipRequests(String network, String personId)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+    	return getPersonSiteMembershipRequests(network, personId, null);
+    }
+
+    public AlfrescoList<SiteMembershipRequest> getPersonSiteMembershipRequests(String network, String personId, Map<String, String> parameters)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, personId);
+
+        String response = getRestTemplate().getForObject(PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        log.debug("getPersonSiteMemberhsipRequests: " + response);
+        Response<SiteMembershipRequest> s = mapper.readValue(response, entryResponseType(SiteMembershipRequest.class));
+        return s.getList();
+    }
+
+    public SiteMembershipRequest createPersonSiteMembershipRequest(String network, String personId, SiteMembershipRequest siteMembershipRequest)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, personId);
+
+        String response = getRestTemplate().postForObject(PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL.getUrl(), new HttpEntity<SiteMembershipRequest>(siteMembershipRequest, headers), String.class, vars);
+        log.debug("addPersonSiteMembershipRequest: " + response);
+        Response<SiteMembershipRequest> c = mapper.readValue(response, entryResponseType(Favourite.class));
+        return c.getEntry();
+    }
+    
+    public void cancelPersonSiteMembershipRequest(String network, String personId, String siteId)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, personId);
+        vars.put(TemplateParams.SITE, siteId);
+
+        getRestTemplate().delete(PEOPLE_SITE_MEMBERSHIP_REQUEST_URL.getUrl(network), vars);
+        log.debug("cancelPersonSiteMembershipRequest: " + personId + ", " + siteId);
+    }
+    
     public AlfrescoList<Site> getFavoriteSites(String network, String person)
         throws JsonParseException,
             JsonMappingException,
@@ -1347,29 +1730,14 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		public final static String NODE       = "node";
 		public final static String PERSON     = "person";
 		public final static String MEMBER     = "member";
+		public final static String FAVOURITE  = "favourite";
 	}
 
 	public static class QueryParams
 	{
 		public final static String PROPERTIES = "properties";
 	}
-
-	private class CMISSessions
-	{
-		private Map<String, Session> sessions = new HashMap<String, Session>();
-
-		Session getSession(String networkId)
-		{
-			Session session = sessions.get(networkId);
-			if(session == null)
-			{
-				session = createCMISSession(networkId);
-				sessions.put(networkId, session);
-			}
-			return session;
-		}
-	}
-
+	
 	protected interface PublicApiUrl
 	{
 		String getUrl();

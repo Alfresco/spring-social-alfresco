@@ -66,10 +66,11 @@ import org.springframework.web.client.HttpClientErrorException;
  */
 public class ConnectionTest
 {
-    private static final String              CONSUMER_KEY    = "l7xx16247a05ab7b46968625d4dda1f45aeb";
-    private static final String              CONSUMER_SECRET = "";
+    private static final String              CONSUMER_KEY    = "32527f06-1acd-488c-a844-036629e91127";
+    private static final String              CONSUMER_SECRET = "990b6e41-2e91-490b-824b-4ed2cee10cd8";
 
-    private static final String              REDIRECT_URI    = "http://localhost:9876";
+    //    private static final String              REDIRECT_URI    = "http://localhost:9876";
+    private static final String              REDIRECT_URI    = "http://localhost:8181/oauthsample/mycallback.html";
     private static final String              STATE           = "test";
 
     private static AlfrescoConnectionFactory connectionFactory;
@@ -679,7 +680,7 @@ public class ConnectionTest
     private static void authenticate()
         throws MalformedURLException
     {
-        connectionFactory = new AlfrescoConnectionFactory("https://api.alfresco.com/", CONSUMER_KEY, CONSUMER_SECRET, true);
+        connectionFactory = new AlfrescoConnectionFactory("https://sgpublicapi1api.alfresco.me/", CONSUMER_KEY, CONSUMER_SECRET, true);
 
         OAuth2Parameters parameters = new OAuth2Parameters();
         parameters.setRedirectUri(REDIRECT_URI);

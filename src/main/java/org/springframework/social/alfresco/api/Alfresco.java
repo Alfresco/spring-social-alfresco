@@ -34,6 +34,7 @@ import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
+import org.springframework.social.alfresco.api.entities.Favourite;
 import org.springframework.social.alfresco.api.entities.LegacySite;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
@@ -44,6 +45,7 @@ import org.springframework.social.alfresco.api.entities.Rating;
 import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Site.Visibility;
+import org.springframework.social.alfresco.api.entities.SiteMembershipRequest;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.entities.UserActivationResponse;
 import org.springframework.social.alfresco.api.entities.UserRegistration;
@@ -417,4 +419,44 @@ public interface Alfresco
 	
 	public java.util.List<Tree<FileableCmisObject>> getDescendants(String networkId, String folderId, Integer depth, IncludeRelationships includeRelationships,
 			Boolean includeAcls, Set<String> propertyFilter, Boolean includePolicies);
+
+	public AlfrescoList<Favourite> getFavorites(String network, String person)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
+
+    public AlfrescoList<Favourite> getFavorites(String network, String person, Map<String, String> parameters)
+        throws JsonParseException,
+            JsonMappingException,
+            IOException;
+
+    public Favourite addFavorite(String network, String personId, Favourite favourite)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
+    
+    public void removeFavourite(String network, String personId, String favouriteId)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
+
+    public AlfrescoList<SiteMembershipRequest> getPersonSiteMembershipRequests(String network, String personId)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
+
+    public AlfrescoList<SiteMembershipRequest> getPersonSiteMembershipRequests(String network, String person, Map<String, String> parameters)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
+
+    public SiteMembershipRequest createPersonSiteMembershipRequest(String network, String personId, SiteMembershipRequest siteMembershipRequest)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
+    
+    public void cancelPersonSiteMembershipRequest(String network, String personId, String siteId)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
 }

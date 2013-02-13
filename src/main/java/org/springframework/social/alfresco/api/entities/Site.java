@@ -33,6 +33,7 @@ public class Site
     private String     description;
     private Visibility visibility;
     private String     id;
+    private String     guid;
     private String     sitePreset;
     private Role       role;
     private Site       site;
@@ -49,8 +50,18 @@ public class Site
     {
         this.title = title;
     }
+    
+    public String getGuid()
+	{
+		return guid;
+	}
 
-    public AlfrescoList<Container> getContainers()
+	public void setGuid(String guid)
+	{
+		this.guid = guid;
+	}
+
+	public AlfrescoList<Container> getContainers()
 	{
 		return containers;
 	}

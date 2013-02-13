@@ -47,8 +47,8 @@ import org.w3c.dom.Element;
  */
 public class OAuthCMISAuthenticationProvider extends AbstractAuthenticationProvider
 {
-	public static final String ALFRESCO_ACCESS_TOKEN_URL = "https://api.alfresco.com/auth/oauth/versions/2/token";
-	public static final String ALFRESCO_REFRESH_TOKEN_URL = "https://api.alfresco.com/auth/oauth/versions/2/token";
+	public static final String ALFRESCO_ACCESS_TOKEN_URL = "https://sgpublicapi1api.alfresco.me/auth/oauth/versions/2/token";
+	public static final String ALFRESCO_REFRESH_TOKEN_URL = "https://sgpublicapi1api.alfresco.me/auth/oauth/versions/2/token";
 
     private static final long serialVersionUID = 1L;
 

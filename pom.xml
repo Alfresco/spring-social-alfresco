@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.social</groupId>
 	<artifactId>spring-social-alfresco-bm</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
+	<version>0.3.0</version>
 	<name>spring-social-alfresco-bm</name>
     <description>A version of spring-social-alfresco specifically for use by benchmarking, supports basic authentication and additional api calls</description>
 
@@ -43,22 +43,27 @@
 		<dependency>
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-client-impl</artifactId>
-			<version>0.7.0</version>
+			<version>0.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-client-api</artifactId>
-			<version>0.7.0</version>
+			<version>0.8.0</version>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-client-bindings</artifactId>
+            <version>0.8.0</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-commons-impl</artifactId>
-			<version>0.7.0</version>
+			<version>0.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-commons-api</artifactId>
-			<version>0.7.0</version>
+			<version>0.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -120,14 +125,13 @@
 	</licenses>
 	
     <distributionManagement>
-<repository>
-<id>alfresco-internal</id>
-<url>https://artifacts.alfresco.com/nexus/content/repositories/internal-3rdparty/</url>
-</repository>
-<snapshotRepository>
-<id>alfresco-internal-snapshots</id>
-<url>https://artifacts.alfresco.com/nexus/content/repositories/internal-snapshots/</url>
-</snapshotRepository>
+        <repository>
+            <id>alfresco-internal</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>alfresco-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
-    
 </project>

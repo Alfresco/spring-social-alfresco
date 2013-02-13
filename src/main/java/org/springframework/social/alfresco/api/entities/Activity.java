@@ -153,7 +153,7 @@ public class Activity
         private String lastName;
         private String title;
         private String objectId;
-        private String parentNodeRef;
+        private String parentObjectId;
         private String memberPersonId;
         private String memberFirstName;
         private String memberLastName;
@@ -208,15 +208,15 @@ public class Activity
         }
 
 
-        public String getParentNodeRef()
+        public String getParentObjectId()
         {
-            return parentNodeRef;
+            return parentObjectId;
         }
 
 
-        public void setParentNodeRef(String parentNodeRef)
+        public void setParentObjectId(String parentObjectId)
         {
-            this.parentNodeRef = parentNodeRef;
+            this.parentObjectId = parentObjectId;
         }
 
 
