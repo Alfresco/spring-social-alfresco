@@ -104,6 +104,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 	protected PublicApiUrl ROOT_ATOMPUB_URL;
 	protected PublicApiUrl ATOMPUB_URL;
+	protected PublicApiUrl BROWSER_BINDING_URL;
 	protected PublicApiUrl NETWORKS_URL;
 	protected PublicApiUrl NETWORK_URL;
 	protected PublicApiUrl SITES_URL;
@@ -144,7 +145,9 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		this.production = production;
 		this.ROOT_ATOMPUB_URL          = new PublicApiServiceUrl(baseUrl, "cmis/versions/1.0/atom");
 		this.ATOMPUB_URL               = new PublicApiNetworkUrl(baseUrl, "{network}/public/cmis/versions/1.0/atom");
-		this.NETWORKS_URL              = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/networks");
+		this.BROWSER_BINDING_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/cmis/versions/1.0/browser");
+//		this.NETWORKS_URL              = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/networks");
+		this.NETWORKS_URL              = new PublicApiNetworkUrl(baseUrl, "");
 		this.NETWORK_URL               = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/networks/{network}");
 		this.SITES_URL                 = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/sites");
 		this.SITE_URL                  = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/sites/{site}");
@@ -156,7 +159,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		this.PEOPLE_SITES_URL          = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/sites");
 		this.PEOPLE_SITE_URL           = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/sites/{site}");
 		this.PEOPLE_FAVORITES_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorites");
-		this.PEOPLE_FAVORITE_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorites/{favouriteId}");
+		this.PEOPLE_FAVORITE_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorites/{targetGuid}");
 		this.PEOPLE_FAVORITE_SITES_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorite-sites");
 		this.PEOPLE_PREFERENCES_URL    = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/preferences");
 		this.PEOPLE_PREFERENCE_URL     = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/preferences/{preference}");
@@ -184,6 +187,9 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 //		module.addSerializer(ObjectData.class, new NodeSerializer());
 		
 		mapper.registerModule(module);
+		
+		cmisServiceUrls.put(BindingType.ATOMPUB, ATOMPUB_URL);
+		cmisServiceUrls.put(BindingType.BROWSER, BROWSER_BINDING_URL);
 	}
 
 //	private class NodeSerializer extends SerializerBase<ObjectData>
@@ -393,20 +399,32 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	        }
 		}
 	}
-	
+
+	private Map<BindingType, PublicApiUrl> cmisServiceUrls = new HashMap<BindingType, PublicApiUrl>();
 	protected abstract Map<String, String> getCMISParameters();
 
 	protected Session createCMISSession(String networkId)
+	{
+		return createCMISSession(networkId, BindingType.ATOMPUB);
+	}
+
+	private String getCMISUrl(BindingType bindingType, String networkId)
+	{
+		PublicApiUrl url = cmisServiceUrls.get(bindingType);
+		return url.getUrl(networkId);
+	}
+
+	protected Session createCMISSession(String networkId, BindingType bindingType)
 	{
 		// default factory implementation
 		SessionFactoryImpl sessionFactory = SessionFactoryImpl.newInstance();
 		Map<String, String> parameters = new HashMap<String, String>();
 
 		// connection settings
-		parameters.put(SessionParameter.ATOMPUB_URL, ATOMPUB_URL.getUrl(networkId));
-		parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+		parameters.put(SessionParameter.ATOMPUB_URL, getCMISUrl(bindingType, networkId));
+		parameters.put(SessionParameter.BINDING_TYPE, bindingType.value());
 		parameters.put(SessionParameter.REPOSITORY_ID, networkId);
-		
+
 		Map<String, String> parameterOverrides = getCMISParameters();
 		if(parameterOverrides != null)
 		{
@@ -422,7 +440,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		
 		return session;
 	}
-	
+
 //	private ThreadLocal<Context> context = new ThreadLocal<Context>();
 //
 //	private static class Context
@@ -494,7 +512,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 			private String getResponseBody(ClientHttpResponse response)
 			{
 				MediaType contentType = response.getHeaders().getContentType();
-				Charset charset = contentType != null ? contentType.getCharSet() : null;
+				Charset charset = contentType != null ? contentType.getCharSet() : Charset.forName("UTF-8");
 				
 				String ret = null;
 				try
@@ -858,7 +876,25 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         Response<Favourite> s = mapper.readValue(response, entryResponseType(Favourite.class));
         return s.getList();
     }
+    
+    public Favourite getFavorite(String network, String person, String targetGuid)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.PERSON, person);
+        vars.put(TemplateParams.TARGET_GUID, targetGuid);
 
+//            context.set(new Context(network));
+
+        String response = getRestTemplate().getForObject(PEOPLE_FAVORITE_URL.getUrl(network), String.class, vars);
+        log.debug("getFavorites: " + response);
+        Response<Favourite> s = mapper.readValue(response, entryResponseType(Favourite.class));
+        return s.getEntry();
+    }
+    
     public Favourite addFavorite(String network, String personId, Favourite favourite)
             throws JsonParseException,
                 JsonMappingException,
@@ -1731,6 +1767,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		public final static String PERSON     = "person";
 		public final static String MEMBER     = "member";
 		public final static String FAVOURITE  = "favourite";
+		public final static String TARGET_GUID  = "targetGuid";
 	}
 
 	public static class QueryParams

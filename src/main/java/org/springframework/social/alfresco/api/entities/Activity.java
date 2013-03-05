@@ -127,10 +127,10 @@ public class Activity
 
     public void setActivityType(String activityType)
     {
-        if (!validateActivityType(activityType))
-        {
-            throw new UnknownActivityTypeException(activityType);
-        }
+//        if (!validateActivityType(activityType))
+//        {
+//            throw new UnknownActivityTypeException(activityType);
+//        }
         this.activityType = activityType;
     }
 

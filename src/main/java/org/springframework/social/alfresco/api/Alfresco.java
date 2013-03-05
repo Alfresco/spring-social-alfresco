@@ -424,6 +424,11 @@ public interface Alfresco
             throws JsonParseException,
                 JsonMappingException,
                 IOException;
+	
+    public Favourite getFavorite(String network, String person, String targetGuid)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
 
     public AlfrescoList<Favourite> getFavorites(String network, String person, Map<String, String> parameters)
         throws JsonParseException,
