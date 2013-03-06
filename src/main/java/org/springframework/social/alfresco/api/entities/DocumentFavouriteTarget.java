@@ -3,27 +3,27 @@ package org.springframework.social.alfresco.api.entities;
 
 public class DocumentFavouriteTarget implements FavouriteTarget
 {
-	private Document document;
+	private Document file;
 
-	public DocumentFavouriteTarget(Document document)
+	public DocumentFavouriteTarget(Document file)
 	{
 		super();
-		this.document = document;
+		this.file = file;
 	}
 
 	public Document getDocument()
 	{
-		return document;
+		return file;
 	}
 	
 	public String getGuid()
 	{
-		return document.getId();
+		return file.getId();
 	}
 
 	@Override
 	public String toString()
 	{
-		return "DocumentFavouriteTarget [document=" + document + "]";
+		return "DocumentFavouriteTarget [file=" + file + "]";
 	}
 }
