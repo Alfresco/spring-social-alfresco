@@ -11,7 +11,7 @@ public class DocumentFavouriteTarget implements FavouriteTarget
 		this.file = file;
 	}
 
-	public Document getDocument()
+	public Document getFile()
 	{
 		return file;
 	}

@@ -18,6 +18,21 @@ public class Document extends Node
 	{
 	}
 
+	public void setMimeType(String mimeType)
+	{
+		this.mimeType = mimeType;
+	}
+
+	public void setSizeInBytes(BigInteger sizeInBytes)
+	{
+		this.sizeInBytes = sizeInBytes;
+	}
+
+	public void setVersionLabel(String versionLabel)
+	{
+		this.versionLabel = versionLabel;
+	}
+
 	public String getMimeType()
 	{
 		return mimeType;

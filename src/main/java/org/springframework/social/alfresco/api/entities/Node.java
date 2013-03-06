@@ -22,7 +22,32 @@ public class Node
     {
     }
     
-    public String getGuid()
+    public void setTitle(String title)
+	{
+		this.title = title;
+	}
+
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+
+	public void setCreatedAt(Date createdAt)
+	{
+		this.createdAt = createdAt;
+	}
+
+	public void setModifiedAt(Date modifiedAt)
+	{
+		this.modifiedAt = modifiedAt;
+	}
+
+	public void setModifiedBy(String modifiedBy)
+	{
+		this.modifiedBy = modifiedBy;
+	}
+
+	public String getGuid()
 	{
 		return guid;
 	}

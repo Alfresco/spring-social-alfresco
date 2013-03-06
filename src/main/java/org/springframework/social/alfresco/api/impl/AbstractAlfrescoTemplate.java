@@ -324,7 +324,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 //		}
 //	}
 
-	private static class FavouriteTargetDeserializer extends JsonDeserializer<FavouriteTarget>
+	public static class FavouriteTargetDeserializer extends JsonDeserializer<FavouriteTarget>
 	{
 		@Override
 		public FavouriteTarget deserialize(JsonParser jp, DeserializationContext ctxt)
@@ -360,7 +360,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	        			jp.nextToken();
 	        			try
 	        			{
-	        				JavaType t = SimpleType.construct(Document.class);
+	        				JavaType t = SimpleType.construct(org.springframework.social.alfresco.api.entities.Document.class);
 	        				BeanProperty p = new Std("", t, null, null);
 	        		        JsonDeserializer<?> documentDeserializer = ctxt.getDeserializerProvider().findValueDeserializer(ctxt.getConfig(), t, p);
 
@@ -377,7 +377,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	        			jp.nextToken();
 	        			try
 	        			{
-	        				JavaType t = SimpleType.construct(Folder.class);
+	        				JavaType t = SimpleType.construct(org.springframework.social.alfresco.api.entities.Folder.class);
 	        				BeanProperty p = new Std("", t, null, null);
 	        		        JsonDeserializer<?> folderDeserializer = ctxt.getDeserializerProvider().findValueDeserializer(ctxt.getConfig(), t, p);
 	        		        
