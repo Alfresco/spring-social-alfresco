@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
-import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
@@ -139,6 +138,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	protected PublicApiUrl ACTIVATE_USER_URL;
 	protected PublicApiUrl BASE_NODE_URL;
 	
+	private OperationContext cmisOperationContext = new OperationContextImpl();;
+	
 	public AbstractAlfrescoTemplate(String baseUrl, boolean production)
 	{
 		this.baseUrl = baseUrl + "/";
@@ -146,7 +147,6 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		this.ROOT_ATOMPUB_URL          = new PublicApiServiceUrl(baseUrl, "cmis/versions/1.0/atom");
 		this.ATOMPUB_URL               = new PublicApiNetworkUrl(baseUrl, "{network}/public/cmis/versions/1.0/atom");
 		this.BROWSER_BINDING_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/cmis/versions/1.0/browser");
-//		this.NETWORKS_URL              = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/networks");
 		this.NETWORKS_URL              = new PublicApiNetworkUrl(baseUrl, "");
 		this.NETWORK_URL               = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/networks/{network}");
 		this.SITES_URL                 = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/sites");
@@ -190,6 +190,11 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		
 		cmisServiceUrls.put(BindingType.ATOMPUB, ATOMPUB_URL);
 		cmisServiceUrls.put(BindingType.BROWSER, BROWSER_BINDING_URL);
+	}
+	
+	public void setCmisOperationContext(OperationContext cmisOperationContext)
+	{
+		this.cmisOperationContext = cmisOperationContext;
 	}
 
 //	private class NodeSerializer extends SerializerBase<ObjectData>
@@ -1651,15 +1656,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		if(o instanceof Folder)
 		{
 			Folder f = (Folder)o;
-
-			OperationContext ctx = new OperationContextImpl();
-			ctx.setIncludeAcls(false);
-			ctx.setIncludeRelationships(includeRelationships);
-			ctx.setIncludeAcls(includeAcls);
-			ctx.setFilter(propertyFilter);
-			ctx.setIncludePolicies(includePolicies);
-
-			java.util.List<Tree<FileableCmisObject>> ret = f.getDescendants(depth, ctx);
+			java.util.List<Tree<FileableCmisObject>> ret = f.getDescendants(depth, cmisOperationContext);
 			return ret;
 		}
 		else
@@ -1667,7 +1664,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 			throw new IllegalArgumentException("Folder does not exist or is not a folder");
 		}
 	}
-	
+
 	public ItemIterable<CmisObject> getChildren(String networkId, String folderId, int skipCount, int maxItems, IncludeRelationships includeRelationships,
 			Boolean includeAcls, Set<String> propertyFilter, Boolean includePolicies)
 	{
@@ -1677,15 +1674,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		if(o instanceof Folder)
 		{
 			Folder f = (Folder)o;
-			
-			OperationContext ctx = new OperationContextImpl();
-			ctx.setIncludeAcls(false);
-			ctx.setIncludeRelationships(includeRelationships);
-			ctx.setIncludeAcls(includeAcls);
-			ctx.setFilter(propertyFilter);
-			ctx.setIncludePolicies(includePolicies);
-			
-			ItemIterable<CmisObject> res = f.getChildren(ctx);
+
+			ItemIterable<CmisObject> res = f.getChildren(cmisOperationContext);
 			res.skipTo(skipCount);
 			ItemIterable<CmisObject> ret = res.getPage(maxItems);
 			return ret;

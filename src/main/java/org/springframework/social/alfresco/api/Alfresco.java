@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
+import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.Tree;
@@ -464,4 +465,6 @@ public interface Alfresco
             throws JsonParseException,
                 JsonMappingException,
                 IOException;
+    
+    void setCmisOperationContext(OperationContext cmisOperationContext);
 }
