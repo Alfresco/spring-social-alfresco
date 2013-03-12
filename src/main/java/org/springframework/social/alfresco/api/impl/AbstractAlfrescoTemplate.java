@@ -963,7 +963,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
         String response = getRestTemplate().postForObject(PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL.getUrl(), new HttpEntity<SiteMembershipRequest>(siteMembershipRequest, headers), String.class, vars);
         log.debug("addPersonSiteMembershipRequest: " + response);
-        Response<SiteMembershipRequest> c = mapper.readValue(response, entryResponseType(Favourite.class));
+        Response<SiteMembershipRequest> c = mapper.readValue(response, entryResponseType(SiteMembershipRequest.class));
         return c.getEntry();
     }
     

@@ -2,18 +2,33 @@ package org.springframework.social.alfresco.api.entities;
 
 import java.util.Date;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+
+@JsonSerialize(include = Inclusion.NON_NULL)
 public class SiteMembershipRequest
 {
     private String id; // site id
     private String message;
     private Date createdAt;
     private Date modifiedAt;
+    private Site site;
     
     public SiteMembershipRequest()
     {
     }
 
-    public String getId()
+    public Site getSite()
+	{
+		return site;
+	}
+
+	public void setSite(Site site)
+	{
+		this.site = site;
+	}
+
+	public String getId()
     {
 		return id;
     }
