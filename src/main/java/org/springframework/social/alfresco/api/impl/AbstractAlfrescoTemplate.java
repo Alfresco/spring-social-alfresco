@@ -175,7 +175,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	    this.NODE_RATINGS_URL          = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/ratings");
 	    this.NODE_RATING_URL 		   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}");
 	    this.PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests");
-	    this.PEOPLE_SITE_MEMBERSHIP_REQUEST_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests/{siteId}");
+	    this.PEOPLE_SITE_MEMBERSHIP_REQUEST_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests/{site}");
 	    this.CREATE_SITE_URL           = new PublicApiNetworkUrl(baseUrl, "{network}/api/sites");
 	    this.BASE_NODE_URL             = new PublicApiNetworkUrl(baseUrl, "{network}" + VERSION + "nodes/{node}/");
 	    this.REGISTER_USER_URL     	   = new PublicApiServiceUrl(baseUrl, "internal/cloud/accounts/signupqueue");
@@ -915,7 +915,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         return c.getEntry();
     }
     
-    public void removeFavourite(String network, String personId, String favouriteId)
+    public void removeFavourite(String network, String personId, String targetGuid)
             throws JsonParseException,
                 JsonMappingException,
                 IOException
@@ -923,10 +923,10 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, personId);
-        vars.put(TemplateParams.FAVOURITE, favouriteId);
+        vars.put(TemplateParams.TARGET_GUID, targetGuid);
 
         getRestTemplate().delete(PEOPLE_FAVORITE_URL.getUrl(network), vars);
-        log.debug("removefavourite: " + favouriteId);
+        log.debug("removefavourite: " + targetGuid);
     }
 
     public AlfrescoList<SiteMembershipRequest> getPersonSiteMembershipRequests(String network, String personId)
