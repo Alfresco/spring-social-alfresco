@@ -40,6 +40,7 @@ public class Site
     private String     description;
     private Visibility visibility;
     private String     id;
+    private String     guid;
     private String     sitePreset;
     private Role       role;
     private Site       site;
@@ -122,6 +123,26 @@ public class Site
     public void setId(String id)
     {
         this.id = id;
+    }
+    
+    
+    /**
+     * @return The site GUID
+     */
+    public String getGuid()
+    {
+        return guid;
+    }
+    
+    
+    /**
+     * Set the sites GUID.
+     * 
+     * @param guid
+     */
+    public void setGuid(String guid)
+    {
+        this.guid = guid;
     }
 
 
