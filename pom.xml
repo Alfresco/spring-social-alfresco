@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.social</groupId>
 	<artifactId>spring-social-alfresco-bm</artifactId>
-	<version>0.3.9</version>
+	<version>0.4.0</version>
 	<name>spring-social-alfresco-bm</name>
     <description>A version of spring-social-alfresco specifically for use by benchmarking, supports basic authentication and additional api calls</description>
 
@@ -43,27 +43,27 @@
 		<dependency>
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-client-impl</artifactId>
-			<version>0.8.0</version>
+			<version>0.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-client-api</artifactId>
-			<version>0.8.0</version>
+			<version>0.9.0</version>
 		</dependency>
         <dependency>
             <groupId>org.apache.chemistry.opencmis</groupId>
             <artifactId>chemistry-opencmis-client-bindings</artifactId>
-            <version>0.8.0</version>
+            <version>0.9.0</version>
         </dependency>
 		<dependency>
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-commons-impl</artifactId>
-			<version>0.8.0</version>
+			<version>0.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-commons-api</artifactId>
-			<version>0.8.0</version>
+			<version>0.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -107,7 +107,7 @@
         <dependency>
             <groupId>org.alfresco.cmis.client</groupId>
             <artifactId>alfresco-opencmis-extension</artifactId>
-            <version>0.4</version>
+            <version>0.6</version>
         </dependency>
 	</dependencies>
 
