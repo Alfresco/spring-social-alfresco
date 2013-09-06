@@ -21,7 +21,9 @@ public class ConnectionDetails
 	private int port;
 	private String username;
 	private String password;
-	private boolean production;
+	private String context;
+	private String publicApiServletName;
+	private String serviceServletName;
 	private int maxNumberOfConnections;
 	private int connectionTimeoutMs;
 	private int socketTimeoutMs;
@@ -31,7 +33,15 @@ public class ConnectionDetails
 	private HttpParams params;
 
 	public ConnectionDetails(String scheme, String host, int port,
-			String username, String password, boolean production,
+			String username, String password, int maxNumberOfConnections, int connectionTimeoutMs,
+			int socketTimeoutMs, int socketTtlMs)
+	{
+		this(scheme, host, port, username, password, "alfresco", "api", "service", maxNumberOfConnections, connectionTimeoutMs, socketTimeoutMs, socketTtlMs);
+	}
+
+	public ConnectionDetails(String scheme, String host, int port,
+			String username, String password, String context,
+			String publicApiServletName, String serviceServletName,
 			int maxNumberOfConnections, int connectionTimeoutMs,
 			int socketTimeoutMs, int socketTtlMs)
 	{
@@ -41,7 +51,9 @@ public class ConnectionDetails
 		this.port = port;
 		this.username = username;
 		this.password = password;
-		this.production = production;
+		this.publicApiServletName = publicApiServletName;
+		this.serviceServletName = serviceServletName;
+		this.context = context;
 		this.maxNumberOfConnections = maxNumberOfConnections;
 		this.connectionTimeoutMs = connectionTimeoutMs;
 		this.socketTimeoutMs = socketTimeoutMs;
@@ -111,10 +123,20 @@ public class ConnectionDetails
 	{
 		return password;
 	}
-
-	public boolean isProduction()
+	
+	public String getContext()
 	{
-		return production;
+		return context;
+	}
+
+	public String getPublicApiServletName()
+	{
+		return publicApiServletName;
+	}
+
+	public String getServiceServletName()
+	{
+		return serviceServletName;
 	}
 
 	public int getMaxNumberOfConnections()
@@ -152,7 +174,9 @@ public class ConnectionDetails
 	{
 		return "ConnectionData [scheme=" + scheme + ", host=" + host
 				+ ", port=" + port + ", username=" + username + ", password="
-				+ password + ", production=" + production
+				+ password + ", context=" + context
+				+ ", publicApiServletName=" + publicApiServletName
+				+ ", serviceServletName=" + serviceServletName
 				+ ", maxNumberOfConnections=" + maxNumberOfConnections
 				+ ", connectionTimeoutMs=" + connectionTimeoutMs
 				+ ", socketTimeoutMs=" + socketTimeoutMs + ", socketTtlMs="

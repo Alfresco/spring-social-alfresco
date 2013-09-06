@@ -96,7 +96,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	protected String baseUrl;
 	protected JSONParser parser = new JSONParser();
 	protected AuthenticationProvider authenticationProvider;
-	protected boolean production;
+	protected String publicApiServletName;
+	protected String serviceServletName;
 
 	protected int    VERSION_NO                = 1;
 	protected String VERSION                   = "/public/alfresco/versions/" + VERSION_NO + "/";
@@ -134,16 +135,19 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
     protected PublicApiUrl NODE_RATINGS_URL;
     protected PublicApiUrl NODE_RATING_URL;
 	protected PublicApiUrl CREATE_SITE_URL;
+	protected PublicApiUrl ADM_CREATE_MULTI_URL;
+	protected PublicApiUrl ACCESS_DOC_LIB_URL;
 	protected PublicApiUrl REGISTER_USER_URL;
 	protected PublicApiUrl ACTIVATE_USER_URL;
 	protected PublicApiUrl BASE_NODE_URL;
 	
 	private OperationContext cmisOperationContext = new OperationContextImpl();;
 	
-	public AbstractAlfrescoTemplate(String baseUrl, boolean production)
+	public AbstractAlfrescoTemplate(String baseUrl, String publicApiServletName, String serviceServletName)
 	{
 		this.baseUrl = baseUrl + "/";
-		this.production = production;
+		this.publicApiServletName = publicApiServletName;
+		this.serviceServletName = serviceServletName;
 		this.ROOT_ATOMPUB_URL          = new PublicApiServiceUrl(baseUrl, "cmis/versions/1.0/atom");
 		this.ATOMPUB_URL               = new PublicApiNetworkUrl(baseUrl, "{network}/public/cmis/versions/1.0/atom");
 		this.BROWSER_BINDING_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/cmis/versions/1.0/browser");
@@ -176,11 +180,13 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	    this.NODE_RATING_URL 		   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}");
 	    this.PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests");
 	    this.PEOPLE_SITE_MEMBERSHIP_REQUEST_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests/{site}");
-	    this.CREATE_SITE_URL           = new PublicApiNetworkUrl(baseUrl, "{network}/api/sites");
+	    this.CREATE_SITE_URL           = new PublicApiServiceUrl(baseUrl, "api/sites");
+	    this.ADM_CREATE_MULTI_URL      = new PublicApiServiceUrl(baseUrl, "remoteadm/createmulti");
+	    this.ACCESS_DOC_LIB_URL        = new PublicApiServiceUrl(baseUrl, "slingshot/doclib2/doclist/all/site/<siteId>/documentLibrary/");
 	    this.BASE_NODE_URL             = new PublicApiNetworkUrl(baseUrl, "{network}" + VERSION + "nodes/{node}/");
 	    this.REGISTER_USER_URL     	   = new PublicApiServiceUrl(baseUrl, "internal/cloud/accounts/signupqueue");
 	    this.ACTIVATE_USER_URL         = new PublicApiServiceUrl(baseUrl, "internal/cloud/account-activations");
-	    
+
 	    SimpleModule module = new SimpleModule("", new Version(1, 0, 0, null));
 		module.addDeserializer(FavouriteTarget.class, new FavouriteTargetDeserializer());
 //		module.addDeserializer(ObjectData.class, new NodeDeserializer());
@@ -1616,11 +1622,91 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 	}
 	
-	public LegacySite createSite(String network, String siteId, String sitePreset, String title, String description, Visibility visibility)
+	private String content = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+		"<master>" +
+		  "<document path=\"/alfresco/site-data/components/page.title.site~" + "<shortName>" + "~dashboard.xml\">" +
+		    "<component>"+
+		      "<guid>page.title.site~" + "<shortName>" + "~dashboard</guid>"+
+		      "<scope>page</scope>"+
+		      "<region-id>title</region-id>"+
+		      "<source-id>site/" + "<shortName>" + "/dashboard</source-id>"+
+		      "<url>/components/title/collaboration-title</url>"+
+		    "</component>"+
+		  "</document>"+
+		  "<document path=\"/alfresco/site-data/components/page.navigation.site~" + "<shortName>" + "~dashboard.xml\">"+
+		    "<component>"+
+		"      <guid>page.navigation.site~" + "<shortName>" + "~dashboard</guid> "+
+		 "     <scope>page</scope> "+
+		 "     <region-id>navigation</region-id>"+
+		 "     <source-id>site/" + "<shortName>" + "/dashboard</source-id>"+
+		 "     <url>/components/navigation/collaboration-navigation</url>"+
+		 "   </component>"+
+		 " </document>"+
+		 " <document path=\"/alfresco/site-data/components/page.full-width-dashlet.site~" + "<shortName>" + "~dashboard.xml\">"+
+		 "   <component>"+
+		 "     <guid>page.full-width-dashlet.site~" + "<shortName>" + "~dashboard</guid>"+
+		 "     <scope>page</scope>"+
+		 "     <region-id>full-width-dashlet</region-id>"+
+		 "     <source-id>site/" + "<shortName>" + "/dashboard</source-id>"+
+		 "     <url>/components/dashlets/dynamic-welcome</url>"+
+		 "     <properties>"+
+		 "       <dashboardType>site</dashboardType>"+
+		 "     </properties> "+
+		 "   </component>"+
+		 " </document>"+
+		 " <document path=\"/alfresco/site-data/components/page.component-1-1.site~" + "<shortName>" + "~dashboard.xml\">"+
+"		    <component>"+
+	"	      <guid>page.component-1-1.site~" + "<shortName>" + "~dashboard</guid>"+
+	"	      <scope>page</scope>"+
+	"	      <region-id>component-1-1</region-id>"+
+	"	      <source-id>site/" + "<shortName>" + "/dashboard</source-id>"+
+	"	      <url>/components/dashlets/colleagues</url>"+
+	"	      <properties>"+
+	"	        <height>504</height>"+
+	"	      </properties>"+
+	"	    </component>"+
+	"	  </document>"+
+	"	  <document path=\"/alfresco/site-data/components/page.component-2-1.site~" + "<shortName>" + "~dashboard.xml\">"+
+	"	    <component>"+
+	"	      <guid>page.component-2-1.site~" + "<shortName>" + "~dashboard</guid>"+
+	"	      <scope>page</scope>"+
+	"	      <region-id>component-2-1</region-id>"+
+	"	      <source-id>site/" + "<shortName>" + "/dashboard</source-id>"+
+	"	      <url>/components/dashlets/docsummary</url>"+
+	"	    </component>"+
+	"	  </document>"+
+	"	  <document path=\"/alfresco/site-data/components/page.component-2-2.site~" + "<shortName>" + "~dashboard.xml\">"+
+	"	    <component>"+
+	"	      <guid>page.component-2-2.site~" + "<shortName>" + "~dashboard</guid>"+
+	"	      <scope>page</scope>"+
+	"	      <region-id>component-2-2</region-id>"+
+	"	      <source-id>site/" + "<shortName>" + "/dashboard</source-id>"+
+	"	      <url>/components/dashlets/activityfeed</url>"+
+	"	    </component>"+
+	"	  </document>"+
+	"	  <document path=\"/alfresco/site-data/pages/site/" + "<shortName>" + "/dashboard.xml\">"+
+	"	    <page>"+
+	"	      <title>Collaboration Site Dashboard</title>"+
+	"	      <title-id>page.siteDashboard.title</title-id>"+
+	"	      <description>Collaboration site's dashboard page</description>"+
+	"	      <description-id>page.siteDashboard.description</description-id>"+
+	"	      <authentication>user</authentication>"+
+	"	      <template-instance>dashboard-2-columns-wide-right</template-instance>"+
+	"	      <properties>"+
+	"	        <sitePages>[{\"pageId\":\"documentlibrary\"}]</sitePages>"+
+	"	      </properties>"+
+	"	    </page>"+
+	"	  </document>"+
+	"	</master>";
+
+	public LegacySite createSite(String networkId, String siteId, String sitePreset, String title, String description, Visibility visibility)
 			throws IOException
 	{
+        RestTemplate rest = getRestTemplate();
+
 		Map<String, String> vars = new HashMap<String, String>();
-		vars.put(TemplateParams.NETWORK, network);
+		vars.put(TemplateParams.NETWORK, networkId);
 
 		LegacySite _site = new LegacySite();
 		_site.setShortName(siteId);
@@ -1629,9 +1715,35 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		_site.setDescription(description);
         _site.setVisibility(visibility.toString());
 
-		String response = getRestTemplate().postForObject(CREATE_SITE_URL.getUrl(network), new HttpEntity<LegacySite>(_site, headers), String.class, vars);
+		String response = rest.postForObject(CREATE_SITE_URL.getUrl(networkId), new HttpEntity<LegacySite>(_site, headers), String.class, vars);
 		log.debug("createSite: " + response);
 		LegacySite resp = mapper.readValue(response, LegacySite.class);
+		
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("s", "sitestore");
+
+		String body = new String(content).replaceAll("<shortName>", siteId);
+		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Content-Type", "application/octet-stream");
+//		headers.add("Expect", "100-continue");
+		HttpEntity<String> post = new HttpEntity<String>(body, headers);
+		response = rest.postForObject(ADM_CREATE_MULTI_URL.getUrl(networkId) + generateQueryString(parameters), post, String.class, vars);
+
+        vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, networkId);
+        String url = ACCESS_DOC_LIB_URL.getUrl(networkId).replace("<siteId>", siteId);
+		try
+		{
+	        response = rest.getForObject(url, String.class, vars);
+		}
+		catch(AlfrescoException e)
+		{
+			// sometimes get a 410, so try again
+			response = rest.getForObject(url, String.class, vars);
+		}
+
+		System.out.println("Create site " + siteId + ":" + url + ":" + response);
+
 		return resp;
 	}
 	
@@ -1792,12 +1904,12 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 		public String getUrl()
 		{
-			return baseUrl + (production ? "" : "a/") + url;
+			return baseUrl + publicApiServletName + "/" + url;
 		}
 
 		public String getUrl(String networkId)
 		{
-			return baseUrl + (production ? "" : "a/") + url.replaceAll("\\{network\\}", networkId);
+			return baseUrl + publicApiServletName + "/" + url.replaceAll("\\{network\\}", networkId);
 		}
 	}
 	
@@ -1810,12 +1922,13 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 		public String getUrl()
 		{
-			return baseUrl + (production ? "" : "service/") + url;
+			return baseUrl + serviceServletName + "/" + url;
 		}
 
 		public String getUrl(String networkId)
 		{
-			throw new UnsupportedOperationException();
+			// networkId ignored
+			return baseUrl + serviceServletName + "/" + url;
 		}
 	}
 }

@@ -34,7 +34,7 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 	public BasicAuthAlfrescoTemplate(ConnectionDetails connectionData)
 	{
 		super(BasicAuthAlfrescoTemplate.getBaseUrl(connectionData.getScheme(), connectionData.getHost(),
-				connectionData.getPort(), connectionData.isProduction()), connectionData.isProduction());
+				connectionData.getPort(), connectionData.getContext()), connectionData.getPublicApiServletName(), connectionData.getServiceServletName());
 
 		this.username = connectionData.getUsername();
 		this.password = connectionData.getPassword();
@@ -65,21 +65,17 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 		return parameters;
 	}
 	
-	private static String getBaseUrl(String scheme, String host, int port, boolean production)
+	private static String getBaseUrl(String scheme, String host, int port, String context)
 	{
 		StringBuilder sb = new StringBuilder(scheme);
 		sb.append("://");
 		sb.append(host);
 		sb.append(":");
 		sb.append(String.valueOf(port));
-		if(!production)
-		{
-			sb.append("/alfresco/");
-		}
-		else
-		{
-			sb.append("/");	
-		}
+		sb.append("/");
+		sb.append(context);
+		sb.append("/");
+
 		return sb.toString();
 	}
 
