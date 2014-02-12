@@ -31,15 +31,19 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 	private final String password;
 	private final String username;
 	
-	public BasicAuthAlfrescoTemplate(ConnectionDetails connectionData)
+	public BasicAuthAlfrescoTemplate(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData)
 	{
-		super(BasicAuthAlfrescoTemplate.getBaseUrl(connectionData.getScheme(), connectionData.getHost(),
-				connectionData.getPort(), connectionData.getContext()), connectionData.getPublicApiServletName(), connectionData.getServiceServletName());
+		super(BasicAuthAlfrescoTemplate.getBaseUrl(repoConnectionData.getScheme(), repoConnectionData.getHost(),
+		        repoConnectionData.getPort(), repoConnectionData.getContext()),
+				BasicAuthAlfrescoTemplate.getBaseUrl(syncConnectionData.getScheme(), syncConnectionData.getHost(),
+				        syncConnectionData.getPort(), syncConnectionData.getContext()),
+				        repoConnectionData.getPublicApiServletName(),
+				        repoConnectionData.getServiceServletName());
 
-		this.username = connectionData.getUsername();
-		this.password = connectionData.getPassword();
-		this.httpClientCM = connectionData.getHttpClientCM();
-		this.httpParams = connectionData.getParams();
+		this.username = repoConnectionData.getUsername();
+		this.password = repoConnectionData.getPassword();
+		this.httpClientCM = repoConnectionData.getHttpClientCM();
+		this.httpParams = repoConnectionData.getParams();
 
 		DefaultHttpClient client = new DefaultHttpClient(httpClientCM, httpParams);
 

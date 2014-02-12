@@ -32,6 +32,7 @@ import java.util.Properties;
 
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.BeforeClass;
@@ -134,7 +135,7 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        Session session = alfresco.getCMISSession(network);
+        Session session = alfresco.getCMISSession(network, BindingType.ATOMPUB, "1.0");
         Document doc = (Document)session.getObjectByPath(objectPath);
 
         assertEquals(filename, doc.getName());
@@ -680,7 +681,7 @@ public class ConnectionTest
     private static void authenticate()
         throws MalformedURLException
     {
-        connectionFactory = new AlfrescoConnectionFactory("https://sgpublicapi1api.alfresco.me/", CONSUMER_KEY, CONSUMER_SECRET, "api", "service");
+        connectionFactory = new AlfrescoConnectionFactory("https://sgpublicapi1api.alfresco.me/", null, CONSUMER_KEY, CONSUMER_SECRET, "api", "service");
 
         OAuth2Parameters parameters = new OAuth2Parameters();
         parameters.setRedirectUri(REDIRECT_URI);

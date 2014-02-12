@@ -30,14 +30,14 @@ public class AlfrescoConnectionFactory
     extends OAuth2ConnectionFactory<Alfresco>
 {
 
-    public AlfrescoConnectionFactory(String baseUrl, String consumerKey, String consumerSecret)
+    public AlfrescoConnectionFactory(String repoBaseUrl, String syncBaseUrl, String consumerKey, String consumerSecret)
     {
-    	this(baseUrl, consumerKey, consumerSecret, "api", "service");
+    	this(repoBaseUrl, syncBaseUrl, consumerKey, consumerSecret, "api", "service");
     }
 
-    public AlfrescoConnectionFactory(String baseUrl, String consumerKey, String consumerSecret, String publicApiServletName, String serviceServletName)
+    public AlfrescoConnectionFactory(String repoBaseUrl, String syncBaseUrl, String consumerKey, String consumerSecret, String publicApiServletName, String serviceServletName)
     {
-        super("alfresco", new AlfrescoServiceProvider(baseUrl, consumerKey, consumerSecret, publicApiServletName, serviceServletName), new AlfrescoAdapter());
+        super("alfresco", new AlfrescoServiceProvider(repoBaseUrl, syncBaseUrl, consumerKey, consumerSecret, publicApiServletName, serviceServletName), new AlfrescoAdapter());
     }
 
 }

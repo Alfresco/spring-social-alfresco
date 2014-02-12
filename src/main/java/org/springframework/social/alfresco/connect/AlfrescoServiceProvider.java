@@ -29,14 +29,16 @@ import org.springframework.social.oauth2.OAuth2Template;
 public class AlfrescoServiceProvider
     extends AbstractOAuth2ServiceProvider<Alfresco>
 {
-	private String baseUrl;
+	private String repoBaseUrl;
+	private String syncBaseUrl;
 	private String publicApiServletName;
 	private String serviceServletName;
 
-    public AlfrescoServiceProvider(String baseUrl, String consumerKey, String consumerSecret, String publicApiServletName, String serviceServletName)
+    public AlfrescoServiceProvider(String repoBaseUrl, String syncBaseUrl, String consumerKey, String consumerSecret, String publicApiServletName, String serviceServletName)
     {
-        super(AlfrescoServiceProvider.getOAuth2Template(baseUrl, consumerKey, consumerSecret));
-        this.baseUrl = baseUrl;
+        super(AlfrescoServiceProvider.getOAuth2Template(repoBaseUrl, consumerKey, consumerSecret));
+        this.repoBaseUrl = repoBaseUrl;
+        this.syncBaseUrl = syncBaseUrl;
         this.publicApiServletName = publicApiServletName;
         this.serviceServletName = serviceServletName;
     }
@@ -51,7 +53,7 @@ public class AlfrescoServiceProvider
     @Override
     public Alfresco getApi(String accessToken)
     {
-        return new AlfrescoTemplate(baseUrl, accessToken, publicApiServletName, serviceServletName);
+        return new AlfrescoTemplate(repoBaseUrl, syncBaseUrl, accessToken, publicApiServletName, serviceServletName);
     }
 
 }

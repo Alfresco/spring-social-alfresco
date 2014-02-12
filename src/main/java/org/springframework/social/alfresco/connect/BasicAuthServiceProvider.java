@@ -7,15 +7,17 @@ import org.springframework.social.alfresco.api.impl.ConnectionDetails;
 
 public class BasicAuthServiceProvider implements ServiceProvider<Alfresco>
 {
-	private ConnectionDetails connectionData;
-	
-	public BasicAuthServiceProvider(ConnectionDetails connectionData)
+	private ConnectionDetails repoConnectionData;
+	private ConnectionDetails syncConnectionData;
+
+	public BasicAuthServiceProvider(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData)
 	{
-		this.connectionData = connectionData;
+		this.repoConnectionData = repoConnectionData;
+		this.syncConnectionData = syncConnectionData;
 	}
 
 	public Alfresco getApi()
 	{
-        return new BasicAuthAlfrescoTemplate(connectionData);
+        return new BasicAuthAlfrescoTemplate(repoConnectionData, syncConnectionData);
 	}
 }

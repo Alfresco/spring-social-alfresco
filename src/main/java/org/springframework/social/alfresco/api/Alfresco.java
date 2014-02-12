@@ -28,6 +28,7 @@ import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.Tree;
+import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -36,6 +37,7 @@ import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
 import org.springframework.social.alfresco.api.entities.Favourite;
+import org.springframework.social.alfresco.api.entities.GetChangesResponse;
 import org.springframework.social.alfresco.api.entities.LegacySite;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
@@ -47,6 +49,11 @@ import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Site.Visibility;
 import org.springframework.social.alfresco.api.entities.SiteMembershipRequest;
+import org.springframework.social.alfresco.api.entities.StartSyncRequest;
+import org.springframework.social.alfresco.api.entities.StartSyncResponse;
+import org.springframework.social.alfresco.api.entities.Subscriber;
+import org.springframework.social.alfresco.api.entities.Subscription;
+import org.springframework.social.alfresco.api.entities.SubscriptionType;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.entities.UserActivationResponse;
 import org.springframework.social.alfresco.api.entities.UserRegistration;
@@ -84,7 +91,7 @@ public interface Alfresco
 
 	public java.util.List<Repository> getCMISNetworks();
 
-	public Session getCMISSession(String networkId);
+	public Session getCMISSession(String networkId, BindingType binding, String version);
 
     public Network getNetwork(String network)
         throws JsonParseException,
@@ -415,6 +422,8 @@ public interface Alfresco
 	public LegacySite createSite(String network, String siteId, String sitePreset, String title, String description, Visibility visibility)
 			throws IOException;
 	
+	void removeSite(String networkId, String siteId);
+
 	public ItemIterable<CmisObject> getChildren(String networkId, String folderId, int skipCount, int maxItems, IncludeRelationships includeRelationships,
 			Boolean includeAcls, Set<String> propertyFilter, Boolean includePolicies);
 	
@@ -465,6 +474,41 @@ public interface Alfresco
             throws JsonParseException,
                 JsonMappingException,
                 IOException;
-    
+
+    Subscriber createSubscriber(String networkId)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException;
+
+    Subscription createSubscription(String network, String subscriberId, SubscriptionType subscriptionType, String targetPath)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
+
+    void removeSubscriber(String network, String subscriberId)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException;
+
+    void removeSubscription(String network, String subscriberId, String subscriptionId)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
+
+    StartSyncResponse start(StartSyncRequest req, String networkId, String subscriberId, String subscriptionsQuery)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException;
+
+    GetChangesResponse getSync(String networkId, String subscriberId, String subscriptionsQuery, String syncId)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException;
+
+    void endSync(String networkId, String subscriberId, String subscriptionsQuery, String syncId)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException;
+
     void setCmisOperationContext(OperationContext cmisOperationContext);
 }

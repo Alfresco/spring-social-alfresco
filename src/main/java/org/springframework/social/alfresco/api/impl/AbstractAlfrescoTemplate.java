@@ -61,6 +61,7 @@ import org.springframework.social.alfresco.api.entities.DocumentFavouriteTarget;
 import org.springframework.social.alfresco.api.entities.Favourite;
 import org.springframework.social.alfresco.api.entities.FavouriteTarget;
 import org.springframework.social.alfresco.api.entities.FolderFavouriteTarget;
+import org.springframework.social.alfresco.api.entities.GetChangesResponse;
 import org.springframework.social.alfresco.api.entities.LegacySite;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
@@ -74,6 +75,11 @@ import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Site.Visibility;
 import org.springframework.social.alfresco.api.entities.SiteFavouriteTarget;
 import org.springframework.social.alfresco.api.entities.SiteMembershipRequest;
+import org.springframework.social.alfresco.api.entities.StartSyncRequest;
+import org.springframework.social.alfresco.api.entities.StartSyncResponse;
+import org.springframework.social.alfresco.api.entities.Subscriber;
+import org.springframework.social.alfresco.api.entities.Subscription;
+import org.springframework.social.alfresco.api.entities.SubscriptionType;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.entities.UserActivationRequest;
 import org.springframework.social.alfresco.api.entities.UserActivationResponse;
@@ -93,7 +99,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	protected ObjectMapper mapper  = new ObjectMapper();
 	protected HttpHeaders  headers = new HttpHeaders();
 	protected RestTemplate restTemplate;
-	protected String baseUrl;
+	protected String repoBaseUrl;
+	protected String syncBaseUrl;
 	protected JSONParser parser = new JSONParser();
 	protected AuthenticationProvider authenticationProvider;
 	protected String publicApiServletName;
@@ -103,8 +110,9 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	protected String VERSION                   = "/public/alfresco/versions/" + VERSION_NO + "/";
 
 	protected PublicApiUrl ROOT_ATOMPUB_URL;
-	protected PublicApiUrl ATOMPUB_URL;
-	protected PublicApiUrl BROWSER_BINDING_URL;
+	protected PublicApiUrl ATOMPUB_1_0_URL;
+	protected PublicApiUrl ATOMPUB_1_1_URL;
+	protected PublicApiUrl BROWSER_BINDING_1_1_URL;
 	protected PublicApiUrl NETWORKS_URL;
 	protected PublicApiUrl NETWORK_URL;
 	protected PublicApiUrl SITES_URL;
@@ -135,57 +143,154 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
     protected PublicApiUrl NODE_RATINGS_URL;
     protected PublicApiUrl NODE_RATING_URL;
 	protected PublicApiUrl CREATE_SITE_URL;
+	protected PublicApiUrl DELETE_SITE_URL;
 	protected PublicApiUrl ADM_CREATE_MULTI_URL;
 	protected PublicApiUrl ACCESS_DOC_LIB_URL;
 	protected PublicApiUrl REGISTER_USER_URL;
 	protected PublicApiUrl ACTIVATE_USER_URL;
 	protected PublicApiUrl BASE_NODE_URL;
+	protected PublicApiUrl SUBSCRIBERS_PATH;
+	protected PublicApiUrl SUBSCRIBER_PATH;
+	protected PublicApiUrl SUBSCRIPTIONS_PATH;
+	protected PublicApiUrl SUBSCRIPTION_PATH;
+	protected PublicApiUrl SYNCS_PATH;
+	protected PublicApiUrl SYNC_PATH;
+
+	private OperationContext cmisOperationContext = new OperationContextImpl();
+	private Map<CMISEndpoint, PublicApiUrl> cmisServiceUrls = new HashMap<CMISEndpoint, PublicApiUrl>();
 	
-	private OperationContext cmisOperationContext = new OperationContextImpl();;
-	
-	public AbstractAlfrescoTemplate(String baseUrl, String publicApiServletName, String serviceServletName)
+	private static class CMISEndpoint
 	{
-		this.baseUrl = baseUrl + "/";
+		private BindingType bindingType;
+		private String cmisVersion;
+
+		public CMISEndpoint(BindingType bindingType, String cmisVersion)
+		{
+			super();
+			if(bindingType.equals(BindingType.BROWSER) && cmisVersion.equals("1.0"))
+			{
+				throw new IllegalArgumentException("Browser binding not supported for CMIS version 1.0");
+			}
+			this.bindingType = bindingType;
+			this.cmisVersion = cmisVersion;
+		}
+
+		public BindingType getBindingType()
+		{
+			return bindingType;
+		}
+
+		public String getCmisVersion()
+		{
+			return cmisVersion;
+		}
+
+		@Override
+		public String toString()
+		{
+			return "CMISEndpoint [bindingType=" + bindingType
+					+ ", cmisVersion=" + cmisVersion + "]";
+		}
+
+		@Override
+		public int hashCode()
+		{
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((bindingType == null) ? 0 : bindingType.hashCode());
+			result = prime * result
+					+ ((cmisVersion == null) ? 0 : cmisVersion.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			CMISEndpoint other = (CMISEndpoint) obj;
+			if (bindingType != other.bindingType)
+				return false;
+			if (cmisVersion == null) {
+				if (other.cmisVersion != null)
+					return false;
+			} else if (!cmisVersion.equals(other.cmisVersion))
+				return false;
+			return true;
+		}
+	}
+	
+	public AbstractAlfrescoTemplate(String repoBaseUrl, String syncBaseUrl, String publicApiServletName, String serviceServletName)
+	{
+		if(!repoBaseUrl.endsWith("/"))
+		{
+		    this.repoBaseUrl = repoBaseUrl + "/";
+		}
+		else
+		{
+		      this.repoBaseUrl = repoBaseUrl;
+		}
+		if(!syncBaseUrl.endsWith("/"))
+		{
+		    this.syncBaseUrl = syncBaseUrl + "/";
+		}
+		else
+		{
+		    this.syncBaseUrl = syncBaseUrl;
+		}
 		this.publicApiServletName = publicApiServletName;
 		this.serviceServletName = serviceServletName;
-		this.ROOT_ATOMPUB_URL          = new PublicApiServiceUrl(baseUrl, "cmis/versions/1.0/atom");
-		this.ATOMPUB_URL               = new PublicApiNetworkUrl(baseUrl, "{network}/public/cmis/versions/1.0/atom");
-		this.BROWSER_BINDING_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/cmis/versions/1.0/browser");
-		this.NETWORKS_URL              = new PublicApiNetworkUrl(baseUrl, "");
-		this.NETWORK_URL               = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/networks/{network}");
-		this.SITES_URL                 = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/sites");
-		this.SITE_URL                  = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/sites/{site}");
-		this.CONTAINERS_URL            = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/sites/{site}/containers");
-		this.CONTAINER_URL             = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/sites/{site}/containers/{container}");
-		this.MEMBERS_URL               = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/sites/{site}/members");
-		this.MEMBER_URL                = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/sites/{site}/members/{member}");
-		this.PEOPLE_URL                = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}");
-		this.PEOPLE_SITES_URL          = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/sites");
-		this.PEOPLE_SITE_URL           = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/sites/{site}");
-		this.PEOPLE_FAVORITES_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorites");
-		this.PEOPLE_FAVORITE_URL 	   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorites/{targetGuid}");
-		this.PEOPLE_FAVORITE_SITES_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorite-sites");
-		this.PEOPLE_PREFERENCES_URL    = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/preferences");
-		this.PEOPLE_PREFERENCE_URL     = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/preferences/{preference}");
-		this.PEOPLE_NETWORKS_URL       = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/networks");
-		this.PEOPLE_NETWORK_URL        = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/networks/{network}");
-		this.PEOPLE_ACTIVITIES_URL     = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/activities");
-		this.TAGS_URL                  = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/tags");
-		this.TAG_URL                   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/tags/{tag}");
-		this.NODE_COMMENTS_URL         = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/comments");
-		this.NODE_COMMENT_URL          = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/comments/{comment}");
-	    this.NODE_TAGS_URL             = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/tags/");
-	    this.NODE_TAG_URL              = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/tags/{tag}");
-	    this.NODE_RATINGS_URL          = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/ratings");
-	    this.NODE_RATING_URL 		   = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}");
-	    this.PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests");
-	    this.PEOPLE_SITE_MEMBERSHIP_REQUEST_URL = new PublicApiNetworkUrl(baseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests/{site}");
-	    this.CREATE_SITE_URL           = new PublicApiServiceUrl(baseUrl, "api/sites");
-	    this.ADM_CREATE_MULTI_URL      = new PublicApiServiceUrl(baseUrl, "remoteadm/createmulti");
-	    this.ACCESS_DOC_LIB_URL        = new PublicApiServiceUrl(baseUrl, "slingshot/doclib2/doclist/all/site/<siteId>/documentLibrary/");
-	    this.BASE_NODE_URL             = new PublicApiNetworkUrl(baseUrl, "{network}" + VERSION + "nodes/{node}/");
-	    this.REGISTER_USER_URL     	   = new PublicApiServiceUrl(baseUrl, "internal/cloud/accounts/signupqueue");
-	    this.ACTIVATE_USER_URL         = new PublicApiServiceUrl(baseUrl, "internal/cloud/account-activations");
+		this.ROOT_ATOMPUB_URL          = new PublicApiServiceUrl(repoBaseUrl, "cmis/versions/1.0/atom");
+		this.ATOMPUB_1_0_URL           = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/cmis/versions/1.0/atom");
+		this.ATOMPUB_1_1_URL           = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/cmis/versions/1.1/atom");
+		this.BROWSER_BINDING_1_1_URL   = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/cmis/versions/1.1/browser");
+		this.NETWORKS_URL              = new PublicApiNetworkUrl(repoBaseUrl, "");
+		this.NETWORK_URL               = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/networks/{network}");
+		this.SITES_URL                 = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/sites");
+		this.SITE_URL                  = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/sites/{site}");
+		this.CONTAINERS_URL            = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/sites/{site}/containers");
+		this.CONTAINER_URL             = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/sites/{site}/containers/{container}");
+		this.MEMBERS_URL               = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/sites/{site}/members");
+		this.MEMBER_URL                = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/sites/{site}/members/{member}");
+		this.PEOPLE_URL                = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}");
+		this.PEOPLE_SITES_URL          = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/sites");
+		this.PEOPLE_SITE_URL           = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/sites/{site}");
+		this.PEOPLE_FAVORITES_URL 	   = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorites");
+		this.PEOPLE_FAVORITE_URL 	   = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorites/{targetGuid}");
+		this.PEOPLE_FAVORITE_SITES_URL = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/favorite-sites");
+		this.PEOPLE_PREFERENCES_URL    = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/preferences");
+		this.PEOPLE_PREFERENCE_URL     = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/preferences/{preference}");
+		this.PEOPLE_NETWORKS_URL       = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/networks");
+		this.PEOPLE_NETWORK_URL        = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/networks/{network}");
+		this.PEOPLE_ACTIVITIES_URL     = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/activities");
+		this.TAGS_URL                  = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/tags");
+		this.TAG_URL                   = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/tags/{tag}");
+		this.NODE_COMMENTS_URL         = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/comments");
+		this.NODE_COMMENT_URL          = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/comments/{comment}");
+	    this.NODE_TAGS_URL             = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/tags/");
+	    this.NODE_TAG_URL              = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/tags/{tag}");
+	    this.NODE_RATINGS_URL          = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/ratings");
+	    this.NODE_RATING_URL 		   = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/nodes/{node}/ratings/{rating}");
+	    this.PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests");
+	    this.PEOPLE_SITE_MEMBERSHIP_REQUEST_URL = new PublicApiNetworkUrl(repoBaseUrl, "{network}/public/alfresco/versions/1/people/{person}/site-membership-requests/{site}");
+	    this.CREATE_SITE_URL           = new PublicApiServiceUrl(repoBaseUrl, "api/sites");
+	    this.DELETE_SITE_URL           = new PublicApiServiceUrl(repoBaseUrl, "api/sites/{siteId}");
+	    this.ADM_CREATE_MULTI_URL      = new PublicApiServiceUrl(repoBaseUrl, "remoteadm/createmulti");
+	    this.ACCESS_DOC_LIB_URL        = new PublicApiServiceUrl(repoBaseUrl, "slingshot/doclib2/doclist/all/site/<siteId>/documentLibrary/");
+	    this.BASE_NODE_URL             = new PublicApiNetworkUrl(repoBaseUrl, "{network}" + VERSION + "nodes/{node}/");
+	    this.REGISTER_USER_URL     	   = new PublicApiServiceUrl(repoBaseUrl, "internal/cloud/accounts/signupqueue");
+	    this.ACTIVATE_USER_URL         = new PublicApiServiceUrl(repoBaseUrl, "internal/cloud/account-activations");
+	    this.SUBSCRIBERS_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers");
+	    this.SUBSCRIBER_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}");
+	    this.SUBSCRIPTIONS_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions");
+		this.SUBSCRIPTION_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}");
+		this.SYNCS_PATH                = new PublicApiNetworkUrl(syncBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}/sync");
+		this.SYNC_PATH                 = new PublicApiNetworkUrl(syncBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}/sync/{syncId}");
 
 	    SimpleModule module = new SimpleModule("", new Version(1, 0, 0, null));
 		module.addDeserializer(FavouriteTarget.class, new FavouriteTargetDeserializer());
@@ -193,9 +298,10 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 //		module.addSerializer(ObjectData.class, new NodeSerializer());
 		
 		mapper.registerModule(module);
-		
-		cmisServiceUrls.put(BindingType.ATOMPUB, ATOMPUB_URL);
-		cmisServiceUrls.put(BindingType.BROWSER, BROWSER_BINDING_URL);
+
+		cmisServiceUrls.put(new CMISEndpoint(BindingType.ATOMPUB, "1.0"), ATOMPUB_1_0_URL);
+		cmisServiceUrls.put(new CMISEndpoint(BindingType.ATOMPUB, "1.1"), ATOMPUB_1_1_URL);
+		cmisServiceUrls.put(new CMISEndpoint(BindingType.BROWSER, "1.1"), BROWSER_BINDING_1_1_URL);
 	}
 	
 	public void setCmisOperationContext(OperationContext cmisOperationContext)
@@ -411,28 +517,43 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		}
 	}
 
-	private Map<BindingType, PublicApiUrl> cmisServiceUrls = new HashMap<BindingType, PublicApiUrl>();
 	protected abstract Map<String, String> getCMISParameters();
 
-	protected Session createCMISSession(String networkId)
+	private String getCMISUrl(BindingType bindingType, String networkId, String cmisVersion)
 	{
-		return createCMISSession(networkId, BindingType.ATOMPUB);
+		String cmisUrl = null;
+
+		CMISEndpoint endpoint = new CMISEndpoint(bindingType, cmisVersion);
+		PublicApiUrl url = cmisServiceUrls.get(endpoint);
+		if(url != null)
+		{
+			cmisUrl = url.getUrl(networkId);
+		}
+
+		return cmisUrl;
 	}
 
-	private String getCMISUrl(BindingType bindingType, String networkId)
+	protected Session createCMISSession(String networkId, BindingType bindingType, String cmisVersion)
 	{
-		PublicApiUrl url = cmisServiceUrls.get(bindingType);
-		return url.getUrl(networkId);
-	}
+		AlfrescoObjectFactoryImpl objectFactory = null;
 
-	protected Session createCMISSession(String networkId, BindingType bindingType)
-	{
 		// default factory implementation
 		SessionFactoryImpl sessionFactory = SessionFactoryImpl.newInstance();
 		Map<String, String> parameters = new HashMap<String, String>();
 
 		// connection settings
-		parameters.put(SessionParameter.ATOMPUB_URL, getCMISUrl(bindingType, networkId));
+		if(bindingType.equals(BindingType.ATOMPUB))
+		{
+			parameters.put(SessionParameter.ATOMPUB_URL, getCMISUrl(bindingType, networkId, cmisVersion));
+		}
+		else if(bindingType.equals(BindingType.BROWSER))
+		{
+			parameters.put(SessionParameter.BROWSER_URL, getCMISUrl(bindingType, networkId, cmisVersion));
+		}
+		else
+		{
+			throw new IllegalArgumentException("Unsupported binding");
+		}
 		parameters.put(SessionParameter.BINDING_TYPE, bindingType.value());
 		parameters.put(SessionParameter.REPOSITORY_ID, networkId);
 
@@ -442,12 +563,18 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 			parameters.putAll(parameterOverrides);
 		}
 
-		AlfrescoObjectFactoryImpl objectFactory = new AlfrescoObjectFactoryImpl();
+		if(cmisVersion.equals("1.0"))
+		{
+			objectFactory = new AlfrescoObjectFactoryImpl();
+		}
 		
 		// create session
 		Session session = sessionFactory.createSession(parameters, objectFactory, authenticationProvider, null);
 
-		objectFactory.initialize(session, parameters);
+		if(objectFactory != null)
+		{
+			objectFactory.initialize(session, parameters);
+		}
 		
 		return session;
 	}
@@ -568,9 +695,9 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		return restTemplate;
 	}
 
-	public Session getCMISSession(String networkId)
+	public Session getCMISSession(String networkId, BindingType binding, String version)
 	{
-		Session session = createCMISSession(networkId);
+		Session session = createCMISSession(networkId, binding, version);
 		return session;
 	}
 
@@ -1747,9 +1874,18 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		return resp;
 	}
 	
+	public void removeSite(String networkId, String siteId)
+	{
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put(TemplateParams.NETWORK, networkId);
+        vars.put("siteId", siteId);
+
+        getRestTemplate().delete(DELETE_SITE_URL.getUrl(networkId), vars);
+	}
+
 	public ObjectId createRelationship(String networkId, String sourceObjectId, String targetObjectId)
 	{
-		Session session = getCMISSession(networkId);
+		Session session = getCMISSession(networkId, BindingType.ATOMPUB, "1.0");
 
 		Map<String, Serializable> relProps = new HashMap<String, Serializable>(); 
 		relProps.put("cmis:sourceId", sourceObjectId); 
@@ -1762,7 +1898,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	public java.util.List<Tree<FileableCmisObject>> getDescendants(String networkId, String folderId, Integer depth, IncludeRelationships includeRelationships,
 			Boolean includeAcls, Set<String> propertyFilter, Boolean includePolicies)
 	{
-		Session session = getCMISSession(networkId);
+		Session session = getCMISSession(networkId, BindingType.ATOMPUB, "1.0");
 
 		CmisObject o = session.getObject(folderId);
 		if(o instanceof Folder)
@@ -1780,7 +1916,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	public ItemIterable<CmisObject> getChildren(String networkId, String folderId, int skipCount, int maxItems, IncludeRelationships includeRelationships,
 			Boolean includeAcls, Set<String> propertyFilter, Boolean includePolicies)
 	{
-		Session session = getCMISSession(networkId);
+		Session session = getCMISSession(networkId, BindingType.ATOMPUB, "1.0");
 
 		CmisObject o = session.getObject(folderId);
 		if(o instanceof Folder)
@@ -1856,6 +1992,114 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		return queryString.toString();
 	}
 
+	public Subscriber createSubscriber(String networkId)
+			throws JsonParseException,
+			JsonMappingException,
+			IOException
+	{
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put(TemplateParams.NETWORK, networkId);
+
+		Subscriber subscriber = new Subscriber();
+
+		//            String response = getRestTemplate().postForObject(NODE_COMMENTS_URL.getUrl(network), new HttpEntity<Comment>(_comment, headers), String.class, vars);
+		String response = getRestTemplate().postForObject(SUBSCRIBERS_PATH.getUrl(), new HttpEntity<Subscriber>(subscriber, headers), String.class, vars);
+		log.debug("createSubscriber: " + response);
+		Response<Subscriber> c = mapper.readValue(response, entryResponseType(Subscriber.class));
+		Subscriber ret = c.getEntry();
+		return ret;
+	}
+
+    public Subscription createSubscription(String network, String subscriberId, SubscriptionType subscriptionType, String targetPath)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
+        
+        Subscription subscription = new Subscription(subscriberId, targetPath, subscriptionType);
+
+        String response = getRestTemplate().postForObject(SUBSCRIPTIONS_PATH.getUrl(), new HttpEntity<Subscription>(subscription, headers), String.class, vars);
+        log.debug("createSubscription: " + response);
+        Response<Subscription> c = mapper.readValue(response, entryResponseType(Subscription.class));
+        Subscription ret = c.getEntry();
+        return ret;
+    }
+
+	public void removeSubscriber(String network, String subscriberId)
+			throws JsonParseException,
+			JsonMappingException,
+			IOException
+	{
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put(TemplateParams.NETWORK, network);
+		vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
+
+        getRestTemplate().delete(SUBSCRIBER_PATH.getUrl(network), vars);
+	}
+
+    public void removeSubscription(String network, String subscriberId, String subscriptionId)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, network);
+        vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
+        vars.put(TemplateParams.SUBSCRIPTION_ID, subscriptionId);
+
+        getRestTemplate().delete(SUBSCRIPTION_PATH.getUrl(network), vars);
+    }
+
+    public StartSyncResponse start(StartSyncRequest req, String networkId, String subscriberId, String subscriptionsQuery)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, networkId);
+        vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
+        vars.put(TemplateParams.SUBSCRIPTION_ID, subscriptionsQuery);
+
+        String response = getRestTemplate().postForObject(SYNCS_PATH.getUrl(networkId), new HttpEntity<StartSyncRequest>(req, headers), String.class, vars);
+        log.debug("startSync: " + response);
+        Response<StartSyncResponse> c = mapper.readValue(response, entryResponseType(StartSyncResponse.class));
+        StartSyncResponse ret = c.getEntry();
+        return ret;
+    }
+
+    public GetChangesResponse getSync(String networkId, String subscriberId, String subscriptionsQuery, String syncId)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, networkId);
+        vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
+        vars.put(TemplateParams.SUBSCRIPTION_ID, subscriptionsQuery);
+
+        String response = getRestTemplate().getForObject(SYNC_PATH.getUrl(networkId), String.class, vars);
+        log.debug("getSync: " + response);
+        Response<GetChangesResponse> s = mapper.readValue(response, entryResponseType(GetChangesResponse.class));
+        return s.getEntry();
+    }
+
+    public void endSync(String networkId, String subscriberId, String subscriptionsQuery, String syncId)
+            throws JsonParseException,
+            JsonMappingException,
+            IOException
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, networkId);
+        vars.put("networkId", networkId);
+        vars.put("subscriberId", subscriberId);
+        vars.put("subscriptionId", subscriptionsQuery);
+
+        getRestTemplate().delete(SYNC_PATH.getUrl(networkId), vars);
+    }
+
 	private static class TemplateParams
 	{
 		public final static String NETWORK    = "network";
@@ -1870,6 +2114,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		public final static String MEMBER     = "member";
 		public final static String FAVOURITE  = "favourite";
 		public final static String TARGET_GUID  = "targetGuid";
+		public final static String SUBSCRIBER_ID = "subscriberId";
+		public final static String SUBSCRIPTION_ID = "subscriptionId";
 	}
 
 	public static class QueryParams
