@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl;
+import org.alfresco.service.synchronization.api.GetChangesResponse;
+import org.alfresco.service.synchronization.api.StartSyncRequest;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
@@ -26,6 +28,7 @@ import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParser;
 import org.apache.chemistry.opencmis.commons.spi.AuthenticationProvider;
@@ -53,6 +56,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.alfresco.api.Alfresco;
+import org.springframework.social.alfresco.api.CMISEndpoint;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
@@ -61,7 +65,7 @@ import org.springframework.social.alfresco.api.entities.DocumentFavouriteTarget;
 import org.springframework.social.alfresco.api.entities.Favourite;
 import org.springframework.social.alfresco.api.entities.FavouriteTarget;
 import org.springframework.social.alfresco.api.entities.FolderFavouriteTarget;
-import org.springframework.social.alfresco.api.entities.GetChangesResponse;
+import org.springframework.social.alfresco.api.entities.LegacyPerson;
 import org.springframework.social.alfresco.api.entities.LegacySite;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
@@ -75,7 +79,6 @@ import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Site.Visibility;
 import org.springframework.social.alfresco.api.entities.SiteFavouriteTarget;
 import org.springframework.social.alfresco.api.entities.SiteMembershipRequest;
-import org.springframework.social.alfresco.api.entities.StartSyncRequest;
 import org.springframework.social.alfresco.api.entities.StartSyncResponse;
 import org.springframework.social.alfresco.api.entities.Subscriber;
 import org.springframework.social.alfresco.api.entities.Subscription;
@@ -155,75 +158,10 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	protected PublicApiUrl SUBSCRIPTION_PATH;
 	protected PublicApiUrl SYNCS_PATH;
 	protected PublicApiUrl SYNC_PATH;
+	protected PublicApiUrl CREATE_PERSON_URL;
 
 	private OperationContext cmisOperationContext = new OperationContextImpl();
 	private Map<CMISEndpoint, PublicApiUrl> cmisServiceUrls = new HashMap<CMISEndpoint, PublicApiUrl>();
-	
-	private static class CMISEndpoint
-	{
-		private BindingType bindingType;
-		private String cmisVersion;
-
-		public CMISEndpoint(BindingType bindingType, String cmisVersion)
-		{
-			super();
-			if(bindingType.equals(BindingType.BROWSER) && cmisVersion.equals("1.0"))
-			{
-				throw new IllegalArgumentException("Browser binding not supported for CMIS version 1.0");
-			}
-			this.bindingType = bindingType;
-			this.cmisVersion = cmisVersion;
-		}
-
-		public BindingType getBindingType()
-		{
-			return bindingType;
-		}
-
-		public String getCmisVersion()
-		{
-			return cmisVersion;
-		}
-
-		@Override
-		public String toString()
-		{
-			return "CMISEndpoint [bindingType=" + bindingType
-					+ ", cmisVersion=" + cmisVersion + "]";
-		}
-
-		@Override
-		public int hashCode()
-		{
-			final int prime = 31;
-			int result = 1;
-			result = prime * result
-					+ ((bindingType == null) ? 0 : bindingType.hashCode());
-			result = prime * result
-					+ ((cmisVersion == null) ? 0 : cmisVersion.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj)
-		{
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			CMISEndpoint other = (CMISEndpoint) obj;
-			if (bindingType != other.bindingType)
-				return false;
-			if (cmisVersion == null) {
-				if (other.cmisVersion != null)
-					return false;
-			} else if (!cmisVersion.equals(other.cmisVersion))
-				return false;
-			return true;
-		}
-	}
 	
 	public AbstractAlfrescoTemplate(String repoBaseUrl, String syncBaseUrl, String publicApiServletName, String serviceServletName)
 	{
@@ -235,7 +173,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		{
 		      this.repoBaseUrl = repoBaseUrl;
 		}
-		if(!syncBaseUrl.endsWith("/"))
+		if(syncBaseUrl != null && !syncBaseUrl.endsWith("/"))
 		{
 		    this.syncBaseUrl = syncBaseUrl + "/";
 		}
@@ -291,6 +229,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		this.SUBSCRIPTION_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}");
 		this.SYNCS_PATH                = new PublicApiNetworkUrl(syncBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}/sync");
 		this.SYNC_PATH                 = new PublicApiNetworkUrl(syncBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}/sync/{syncId}");
+	    this.CREATE_PERSON_URL 		   = new PublicApiServiceUrl(repoBaseUrl, "api/people");
 
 	    SimpleModule module = new SimpleModule("", new Version(1, 0, 0, null));
 		module.addDeserializer(FavouriteTarget.class, new FavouriteTargetDeserializer());
@@ -299,9 +238,9 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		
 		mapper.registerModule(module);
 
-		cmisServiceUrls.put(new CMISEndpoint(BindingType.ATOMPUB, "1.0"), ATOMPUB_1_0_URL);
-		cmisServiceUrls.put(new CMISEndpoint(BindingType.ATOMPUB, "1.1"), ATOMPUB_1_1_URL);
-		cmisServiceUrls.put(new CMISEndpoint(BindingType.BROWSER, "1.1"), BROWSER_BINDING_1_1_URL);
+		cmisServiceUrls.put(new CMISEndpoint(BindingType.ATOMPUB, CmisVersion.CMIS_1_0), ATOMPUB_1_0_URL);
+		cmisServiceUrls.put(new CMISEndpoint(BindingType.ATOMPUB, CmisVersion.CMIS_1_1), ATOMPUB_1_1_URL);
+		cmisServiceUrls.put(new CMISEndpoint(BindingType.BROWSER, CmisVersion.CMIS_1_1), BROWSER_BINDING_1_1_URL);
 	}
 	
 	public void setCmisOperationContext(OperationContext cmisOperationContext)
@@ -519,12 +458,11 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 	protected abstract Map<String, String> getCMISParameters();
 
-	private String getCMISUrl(BindingType bindingType, String networkId, String cmisVersion)
+	private String getCMISUrl(CMISEndpoint cmisEndpoint, String networkId)
 	{
 		String cmisUrl = null;
 
-		CMISEndpoint endpoint = new CMISEndpoint(bindingType, cmisVersion);
-		PublicApiUrl url = cmisServiceUrls.get(endpoint);
+		PublicApiUrl url = cmisServiceUrls.get(cmisEndpoint);
 		if(url != null)
 		{
 			cmisUrl = url.getUrl(networkId);
@@ -533,7 +471,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		return cmisUrl;
 	}
 
-	protected Session createCMISSession(String networkId, BindingType bindingType, String cmisVersion)
+	protected Session createCMISSession(String networkId, CMISEndpoint cmisEndpoint)
 	{
 		AlfrescoObjectFactoryImpl objectFactory = null;
 
@@ -541,14 +479,18 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		SessionFactoryImpl sessionFactory = SessionFactoryImpl.newInstance();
 		Map<String, String> parameters = new HashMap<String, String>();
 
+		BindingType bindingType = cmisEndpoint.getBinding();
+		CmisVersion cmisVersion = cmisEndpoint.getVersion();
+		String cmisUrl = getCMISUrl(cmisEndpoint, networkId);
+
 		// connection settings
 		if(bindingType.equals(BindingType.ATOMPUB))
 		{
-			parameters.put(SessionParameter.ATOMPUB_URL, getCMISUrl(bindingType, networkId, cmisVersion));
+			parameters.put(SessionParameter.ATOMPUB_URL, cmisUrl);
 		}
 		else if(bindingType.equals(BindingType.BROWSER))
 		{
-			parameters.put(SessionParameter.BROWSER_URL, getCMISUrl(bindingType, networkId, cmisVersion));
+			parameters.put(SessionParameter.BROWSER_URL, cmisUrl);
 		}
 		else
 		{
@@ -695,9 +637,15 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		return restTemplate;
 	}
 
-	public Session getCMISSession(String networkId, BindingType binding, String version)
+	public Session getCMISSession(String networkId)
 	{
-		Session session = createCMISSession(networkId, binding, version);
+		CMISEndpoint cmisEndpoint = new CMISEndpoint(BindingType.BROWSER, CmisVersion.CMIS_1_1);
+		return getCMISSession(networkId, cmisEndpoint);
+	}
+
+	public Session getCMISSession(String networkId, CMISEndpoint cmisEndpoint)
+	{
+		Session session = createCMISSession(networkId, cmisEndpoint);
 		return session;
 	}
 
@@ -911,6 +859,29 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
     }
 
+
+    public LegacyPerson createPerson(String networkId, String username, String firstName, String lastName, String email,
+    		String password)
+    		throws JsonParseException,
+    		JsonMappingException,
+    		IOException
+    {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put(TemplateParams.NETWORK, networkId);
+
+		LegacyPerson person = new LegacyPerson();
+		person.setUserName(username);
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+		person.setEmail(email);
+		person.setPassword(password);
+
+    	String response = getRestTemplate().postForObject(CREATE_PERSON_URL.getUrl(),
+    			new HttpEntity<LegacyPerson>(person, headers), String.class, vars);
+    	log.debug("createPerson: " + response);
+		LegacyPerson ret = mapper.readValue(response, LegacyPerson.class);
+    	return ret;
+	}
 
     public Person getPerson(String network, String person)
         throws JsonParseException,
@@ -1827,7 +1798,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	"	  </document>"+
 	"	</master>";
 
-	public LegacySite createSite(String networkId, String siteId, String sitePreset, String title, String description, Visibility visibility)
+	public LegacySite createSite(String networkId, String siteId, String sitePreset, String title,
+			String description, Visibility visibility)
 			throws IOException
 	{
         RestTemplate rest = getRestTemplate();
@@ -1885,7 +1857,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 	public ObjectId createRelationship(String networkId, String sourceObjectId, String targetObjectId)
 	{
-		Session session = getCMISSession(networkId, BindingType.ATOMPUB, "1.0");
+		CMISEndpoint cmisEndpoint = new CMISEndpoint(BindingType.ATOMPUB, CmisVersion.CMIS_1_0);
+		Session session = getCMISSession(networkId, cmisEndpoint);
 
 		Map<String, Serializable> relProps = new HashMap<String, Serializable>(); 
 		relProps.put("cmis:sourceId", sourceObjectId); 
@@ -1898,7 +1871,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	public java.util.List<Tree<FileableCmisObject>> getDescendants(String networkId, String folderId, Integer depth, IncludeRelationships includeRelationships,
 			Boolean includeAcls, Set<String> propertyFilter, Boolean includePolicies)
 	{
-		Session session = getCMISSession(networkId, BindingType.ATOMPUB, "1.0");
+		CMISEndpoint cmisEndpoint = new CMISEndpoint(BindingType.ATOMPUB, CmisVersion.CMIS_1_0);
+		Session session = getCMISSession(networkId, cmisEndpoint);
 
 		CmisObject o = session.getObject(folderId);
 		if(o instanceof Folder)
@@ -1916,7 +1890,8 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	public ItemIterable<CmisObject> getChildren(String networkId, String folderId, int skipCount, int maxItems, IncludeRelationships includeRelationships,
 			Boolean includeAcls, Set<String> propertyFilter, Boolean includePolicies)
 	{
-		Session session = getCMISSession(networkId, BindingType.ATOMPUB, "1.0");
+		CMISEndpoint cmisEndpoint = new CMISEndpoint(BindingType.ATOMPUB, CmisVersion.CMIS_1_0);
+		Session session = getCMISSession(networkId, cmisEndpoint);
 
 		CmisObject o = session.getObject(folderId);
 		if(o instanceof Folder)

@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.alfresco.service.synchronization.api.GetChangesResponse;
+import org.alfresco.service.synchronization.api.StartSyncRequest;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
@@ -28,7 +30,6 @@ import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.Tree;
-import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -37,7 +38,7 @@ import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
 import org.springframework.social.alfresco.api.entities.Container;
 import org.springframework.social.alfresco.api.entities.Favourite;
-import org.springframework.social.alfresco.api.entities.GetChangesResponse;
+import org.springframework.social.alfresco.api.entities.LegacyPerson;
 import org.springframework.social.alfresco.api.entities.LegacySite;
 import org.springframework.social.alfresco.api.entities.Member;
 import org.springframework.social.alfresco.api.entities.Metadata;
@@ -49,7 +50,6 @@ import org.springframework.social.alfresco.api.entities.Role;
 import org.springframework.social.alfresco.api.entities.Site;
 import org.springframework.social.alfresco.api.entities.Site.Visibility;
 import org.springframework.social.alfresco.api.entities.SiteMembershipRequest;
-import org.springframework.social.alfresco.api.entities.StartSyncRequest;
 import org.springframework.social.alfresco.api.entities.StartSyncResponse;
 import org.springframework.social.alfresco.api.entities.Subscriber;
 import org.springframework.social.alfresco.api.entities.Subscription;
@@ -91,7 +91,8 @@ public interface Alfresco
 
 	public java.util.List<Repository> getCMISNetworks();
 
-	public Session getCMISSession(String networkId, BindingType binding, String version);
+	public Session getCMISSession(String networkId);
+	public Session getCMISSession(String networkId, CMISEndpoint cmisEndpoint);
 
     public Network getNetwork(String network)
         throws JsonParseException,
@@ -178,6 +179,12 @@ public interface Alfresco
     public void deleteMember(String network, String site, String personId)
         throws RestClientException;
 
+
+    LegacyPerson createPerson(String network, String username, String firstName, String lastName, String email,
+    		String password)
+            throws JsonParseException,
+                JsonMappingException,
+                IOException;
 
     public Person getPerson(String network, String person)
         throws JsonParseException,

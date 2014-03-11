@@ -27,7 +27,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 @JsonSerialize(include = Inclusion.NON_NULL)
 public class Subscriber
 {
-	private String deviceSubscriptionId;
+	private String subscriberId;
 	private Date createdAt;
 	private SyncService syncService;
 
@@ -35,14 +35,14 @@ public class Subscriber
 	{
 	}
 
-	public String getDeviceSubscriptionId()
+	public String getSubscriberId()
 	{
-		return deviceSubscriptionId;
+		return subscriberId;
 	}
 	
-	public void setDeviceSubscriptionId(String deviceSubscriptionId)
+	public void setSubscriberId(String subscriberId)
 	{
-		this.deviceSubscriptionId = deviceSubscriptionId;
+		this.subscriberId = subscriberId;
 	}
 	
 	public Date getCreatedAt()
@@ -64,13 +64,14 @@ public class Subscriber
 	{
 		this.syncService = syncService;
 	}
-	
+
 	@Override
-	public String toString() 
-	{
-		return "Subscriber [deviceSubscriptionId=" + deviceSubscriptionId
+	public String toString() {
+		return "Subscriber [subscriberId=" + subscriberId
 				+ ", createdAt=" + createdAt + ", syncService=" + syncService
 				+ "]";
 	}
+	
+
 	
 }

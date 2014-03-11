@@ -105,8 +105,10 @@ public class Subscription
 	@Override
 	public String toString()
 	{
-		return "Subscription [targetPath=" + targetPath + ", subscriptionType="
-				+ subscriptionType + "]";
+		return "Subscription [subscriberId=" + subscriberId
+				+ ", subscriptionId=" + subscriptionId + ", targetNodeId="
+				+ targetNodeId + ", targetPath=" + targetPath
+				+ ", subscriptionType=" + subscriptionType + ", createdAt="
+				+ createdAt + "]";
 	}
-	
 }

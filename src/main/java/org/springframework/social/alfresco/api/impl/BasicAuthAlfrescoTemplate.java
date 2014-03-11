@@ -33,10 +33,8 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 	
 	public BasicAuthAlfrescoTemplate(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData)
 	{
-		super(BasicAuthAlfrescoTemplate.getBaseUrl(repoConnectionData.getScheme(), repoConnectionData.getHost(),
-		        repoConnectionData.getPort(), repoConnectionData.getContext()),
-				BasicAuthAlfrescoTemplate.getBaseUrl(syncConnectionData.getScheme(), syncConnectionData.getHost(),
-				        syncConnectionData.getPort(), syncConnectionData.getContext()),
+		super(BasicAuthAlfrescoTemplate.getBaseUrl(repoConnectionData),
+				BasicAuthAlfrescoTemplate.getBaseUrl(syncConnectionData),
 				        repoConnectionData.getPublicApiServletName(),
 				        repoConnectionData.getServiceServletName());
 
@@ -69,6 +67,25 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 		return parameters;
 	}
 	
+	private static String getBaseUrl(ConnectionDetails connectionDetails)
+	{
+		String baseUrl = null;
+		if(connectionDetails != null)
+		{
+			StringBuilder sb = new StringBuilder(connectionDetails.getScheme());
+			sb.append("://");
+			sb.append(connectionDetails.getHost());
+			sb.append(":");
+			sb.append(String.valueOf(connectionDetails.getPort()));
+			sb.append("/");
+			sb.append(connectionDetails.getContext());
+			sb.append("/");
+
+			baseUrl = sb.toString();
+		}
+		return baseUrl;
+	}
+
 	private static String getBaseUrl(String scheme, String host, int port, String context)
 	{
 		StringBuilder sb = new StringBuilder(scheme);

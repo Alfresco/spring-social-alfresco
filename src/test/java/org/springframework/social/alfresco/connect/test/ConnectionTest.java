@@ -33,6 +33,7 @@ import java.util.Properties;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.BeforeClass;
@@ -42,6 +43,7 @@ import org.mortbay.jetty.handler.RewriteHandler;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.social.alfresco.api.Alfresco;
+import org.springframework.social.alfresco.api.CMISEndpoint;
 import org.springframework.social.alfresco.api.entities.Activity;
 import org.springframework.social.alfresco.api.entities.AlfrescoList;
 import org.springframework.social.alfresco.api.entities.Comment;
@@ -135,7 +137,8 @@ public class ConnectionTest
             JsonMappingException,
             IOException
     {
-        Session session = alfresco.getCMISSession(network, BindingType.ATOMPUB, "1.0");
+		CMISEndpoint cmisEndpoint = new CMISEndpoint(BindingType.ATOMPUB, CmisVersion.CMIS_1_0);
+        Session session = alfresco.getCMISSession(network, cmisEndpoint);
         Document doc = (Document)session.getObjectByPath(objectPath);
 
         assertEquals(filename, doc.getName());
