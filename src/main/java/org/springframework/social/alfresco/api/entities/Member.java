@@ -63,4 +63,10 @@ public class Member
         this.person = person;
     }
 
+	@Override
+	public String toString()
+	{
+		return "Member [role=" + role + ", id=" + id + ", person=" + person
+				+ "]";
+	}
 }

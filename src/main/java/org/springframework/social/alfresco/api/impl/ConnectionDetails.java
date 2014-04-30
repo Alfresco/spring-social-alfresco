@@ -18,7 +18,7 @@ public class ConnectionDetails
 {
 	private String scheme;
 	private String host;
-	private int port;
+	private Integer port;
 	private String username;
 	private String password;
 	private String context;
@@ -32,7 +32,7 @@ public class ConnectionDetails
 	private PoolingClientConnectionManager httpClientCM;
 	private HttpParams params;
 
-	public ConnectionDetails(String scheme, String host, int port,
+	public ConnectionDetails(String scheme, String host, Integer port,
 			String username, String password, int maxNumberOfConnections, int connectionTimeoutMs,
 			int socketTimeoutMs, int socketTtlMs)
 	{
@@ -109,7 +109,7 @@ public class ConnectionDetails
 		return host;
 	}
 
-	public int getPort()
+	public Integer getPort()
 	{
 		return port;
 	}

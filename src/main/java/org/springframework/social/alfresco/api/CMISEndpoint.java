@@ -13,7 +13,18 @@ public class CMISEndpoint
 	private BindingType binding;
 	private CmisVersion version;
 
-	public CMISEndpoint(BindingType binding, CmisVersion version) {
+	public CMISEndpoint(String binding, String version)
+	{
+		this.binding = BindingType.valueOf(binding);
+		this.version = CmisVersion.valueOf(version);
+		if(this.binding == BindingType.BROWSER && this.version == CmisVersion.CMIS_1_0)
+		{
+			throw new IllegalArgumentException("Browser binding not supported for CMIS version 1.0");
+		}
+	}
+
+	public CMISEndpoint(BindingType binding, CmisVersion version)
+	{
 		super();
 		if(binding == BindingType.BROWSER && version == CmisVersion.CMIS_1_0)
 		{

@@ -75,8 +75,11 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 			StringBuilder sb = new StringBuilder(connectionDetails.getScheme());
 			sb.append("://");
 			sb.append(connectionDetails.getHost());
-			sb.append(":");
-			sb.append(String.valueOf(connectionDetails.getPort()));
+			if(connectionDetails.getPort() != null)
+			{
+				sb.append(":");
+				sb.append(String.valueOf(connectionDetails.getPort()));
+			}
 			sb.append("/");
 			sb.append(connectionDetails.getContext());
 			sb.append("/");
@@ -86,21 +89,8 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 		return baseUrl;
 	}
 
-	private static String getBaseUrl(String scheme, String host, int port, String context)
+	protected List<HttpMessageConverter<?>> getMessageConverters()
 	{
-		StringBuilder sb = new StringBuilder(scheme);
-		sb.append("://");
-		sb.append(host);
-		sb.append(":");
-		sb.append(String.valueOf(port));
-		sb.append("/");
-		sb.append(context);
-		sb.append("/");
-
-		return sb.toString();
-	}
-
-	protected List<HttpMessageConverter<?>> getMessageConverters() {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new StringHttpMessageConverter());
 		messageConverters.add(getFormMessageConverter());

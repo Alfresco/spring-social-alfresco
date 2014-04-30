@@ -30,6 +30,8 @@ import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.Tree;
+import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -68,7 +70,10 @@ import org.springframework.web.client.RestClientException;
  */
 public interface Alfresco
 {
-    public static final String DEFAULT_SCOPE             = "public_api";
+    public static final String DEFAULT_SCOPE = "public_api";
+	public static CMISEndpoint cmisAtom10Endpoint = new CMISEndpoint(BindingType.ATOMPUB, CmisVersion.CMIS_1_0);
+	public static CMISEndpoint cmisAtom11Endpoint = new CMISEndpoint(BindingType.ATOMPUB, CmisVersion.CMIS_1_0);
+	public static CMISEndpoint cmisBrowser11Endpoint = new CMISEndpoint(BindingType.BROWSER, CmisVersion.CMIS_1_1);
 
     public static class QueryParams
     {
