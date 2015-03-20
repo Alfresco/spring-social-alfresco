@@ -1841,8 +1841,6 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 			response = rest.getForObject(url, String.class, vars);
 		}
 
-		System.out.println("Create site " + siteId + ":" + url + ":" + response);
-
 		return resp;
 	}
 	
