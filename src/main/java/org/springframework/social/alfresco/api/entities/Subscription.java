@@ -14,8 +14,6 @@
  */
 package org.springframework.social.alfresco.api.entities;
 
-import java.util.Date;
-
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
@@ -27,39 +25,82 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 @JsonSerialize(include = Inclusion.NON_NULL)
 public class Subscription
 {
-	private String subscriberId;
+//	  "targetNodeId" : "011cb041-1480-4ae8-be62-023de19a662c",
+//	    "id" : "ee453619-8e9c-4984-ab7c-74f73cd97b33",
+//	    "targetPath" : "/Company Home/Sites/site1/documentLibrary",
+//	    "deviceSubscriptionId" : "fd4b6ed0-7e73-42e6-af21-781cdf087211",
+//	    "createdAt" : "2015-06-11T15:47:09.295+0000",
+//	    "state" : "VALID"
+
+	private String id;
+	private String deviceSubscriptionId; // subscriberId
+	private String state;
 	private String subscriptionId;
 	private String targetNodeId;
 	private String targetPath;
 	private SubscriptionType subscriptionType;
-	private Date createdAt;
+	private String createdAt;
 
-	public Subscription(String subscriberId, String targetPath, SubscriptionType subscriptionType)
+	public Subscription()
+	{
+	}
+
+	public Subscription(String targetPath, SubscriptionType subscriptionType)
 	{
 		super();
-		this.subscriberId = subscriberId;
 		this.targetPath = targetPath;
 		this.subscriptionType = subscriptionType;
 	}
 
+	public String getId()
+	{
+		return id;
+	}
+
+
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+
+	public String getDeviceSubscriptionId()
+	{
+		return deviceSubscriptionId;
+	}
+
+
+	public void setDeviceSubscriptionId(String deviceSubscriptionId)
+	{
+		this.deviceSubscriptionId = deviceSubscriptionId;
+	}
+
+
+	public String getState()
+	{
+		return state;
+	}
+
+
+	public void setState(String state)
+	{
+		this.state = state;
+	}
+
+
+	public void setCreatedAt(String createdAt)
+	{
+		this.createdAt = createdAt;
+	}
+
 	public String getSubscriberId()
 	{
-		return subscriberId;
+		return deviceSubscriptionId;
 	}
 
 	public void setSubscriberId(String subscriberId)
 	{
-		this.subscriberId = subscriberId;
-	}
-
-	public String getSubscriptionId()
-	{
-		return subscriptionId;
-	}
-
-	public void setSubscriptionId(String subscriptionId)
-	{
-		this.subscriptionId = subscriptionId;
+		this.deviceSubscriptionId = subscriberId;
 	}
 
 	public String getTargetNodeId()
@@ -70,16 +111,6 @@ public class Subscription
 	public void setTargetNodeId(String targetNodeId)
 	{
 		this.targetNodeId = targetNodeId;
-	}
-
-	public Date getCreatedAt()
-	{
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt)
-	{
-		this.createdAt = createdAt;
 	}
 
 	public String getTargetPath()
@@ -103,12 +134,13 @@ public class Subscription
 	}
 
 	@Override
-	public String toString()
-	{
-		return "Subscription [subscriberId=" + subscriberId
-				+ ", subscriptionId=" + subscriptionId + ", targetNodeId="
-				+ targetNodeId + ", targetPath=" + targetPath
-				+ ", subscriptionType=" + subscriptionType + ", createdAt="
-				+ createdAt + "]";
-	}
+    public String toString()
+    {
+	    return "Subscription [id=" + id + ", deviceSubscriptionId="
+	            + deviceSubscriptionId + ", state=" + state
+	            + ", subscriptionId=" + subscriptionId
+	            + ", targetNodeId=" + targetNodeId + ", targetPath="
+	            + targetPath + ", subscriptionType=" + subscriptionType
+	            + ", createdAt=" + createdAt + "]";
+    }
 }

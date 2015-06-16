@@ -684,7 +684,8 @@ public class ConnectionTest
     private static void authenticate()
         throws MalformedURLException
     {
-        connectionFactory = new AlfrescoConnectionFactory("https://sgpublicapi1api.alfresco.me/", null, CONSUMER_KEY, CONSUMER_SECRET, "api", "service");
+        connectionFactory = new AlfrescoConnectionFactory("https://sgpublicapi1api.alfresco.me/", null, null,
+        		CONSUMER_KEY, CONSUMER_SECRET, "api", "service");
 
         OAuth2Parameters parameters = new OAuth2Parameters();
         parameters.setRedirectUri(REDIRECT_URI);

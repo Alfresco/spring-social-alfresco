@@ -15,7 +15,7 @@ public class StartSyncResponse implements Serializable
     private String url; // get url including sync id
     private String status; // ok, error
     private String message; // if status==error
-    private Exception error;
+    private String error;
 
     public StartSyncResponse()
     {        
@@ -28,16 +28,22 @@ public class StartSyncResponse implements Serializable
         this.status = "ok";
         this.message = null;
     }
-    
+
     public StartSyncResponse(Exception error)
     {
         this.syncId = null;
         this.url = null;
         this.status = "error";
-        this.error = error;
+        this.error = error.toString();
     }
 
-    public String getSyncId() {
+    public void setError(String error)
+	{
+		this.error = error;
+	}
+
+	public String getSyncId()
+	{
         return syncId;
     }
 
@@ -45,33 +51,21 @@ public class StartSyncResponse implements Serializable
         this.syncId = syncId;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public Exception getError() {
+    public String getError() {
         return error;
     }
 
-    public void setError(Exception error) {
-        this.error = error;
-    }
+    public String getUrl()
+	{
+		return url;
+	}
 
-    public String getURL()
-    {
-        return url;
-    }
-    
-    public void setURL(String url)
-    {
-        this.url = url;
-    }
+	public void setUrl(String url)
+	{
+		this.url = url;
+	}
 
-    public void setStatus(String status)
+	public void setStatus(String status)
     {
         this.status = status;
     }
@@ -90,11 +84,12 @@ public class StartSyncResponse implements Serializable
     {
         return message;
     }
-    
-    @Override
+
+	@Override
     public String toString()
     {
-        return "StartSyncResponse[url="+url+",status="+status+",message="+message+"]";
+	    return "StartSyncResponse [syncId=" + syncId + ", url=" + url
+	            + ", status=" + status + ", message=" + message + ", error="
+	            + error + "]";
     }
-
 }

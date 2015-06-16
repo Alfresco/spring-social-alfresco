@@ -487,7 +487,7 @@ public interface Alfresco
                 JsonMappingException,
                 IOException;
 
-    Subscriber createSubscriber(String networkId)
+    Subscriber createSubscriber(String networkId, String deviceOS)
             throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -507,7 +507,7 @@ public interface Alfresco
                 JsonMappingException,
                 IOException;
 
-    StartSyncResponse start(StartSyncRequest req, String networkId, String subscriberId, String subscriptionsQuery)
+    StartSyncResponse startSync(StartSyncRequest req, String networkId, String subscriberId, String subscriptionsQuery)
             throws JsonParseException,
             JsonMappingException,
             IOException;
@@ -521,6 +521,10 @@ public interface Alfresco
             throws JsonParseException,
             JsonMappingException,
             IOException;
+
+    String syncMetrics(String networkId);
+
+    String subsMetrics(String networkId);
 
     void setCmisOperationContext(OperationContext cmisOperationContext);
 }

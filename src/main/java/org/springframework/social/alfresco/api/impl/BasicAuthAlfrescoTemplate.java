@@ -26,44 +26,72 @@ import org.springframework.web.client.RestTemplate;
 
 public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 {
-    private final ClientConnectionManager httpClientCM;
-    private final HttpParams httpParams;
-	private final String password;
-	private final String username;
-	
-	public BasicAuthAlfrescoTemplate(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData)
+    private final ClientConnectionManager repoHttpClientCM;
+    private final HttpParams repoHttpParams;
+	private final String repoPassword;
+	private final String repoUsername;
+
+    private final ClientConnectionManager syncHttpClientCM;
+    private final HttpParams syncHttpParams;
+	private final String syncPassword;
+	private final String syncUsername;
+
+	public BasicAuthAlfrescoTemplate(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData,
+			ConnectionDetails subsConnectionData)
 	{
 		super(BasicAuthAlfrescoTemplate.getBaseUrl(repoConnectionData),
 				BasicAuthAlfrescoTemplate.getBaseUrl(syncConnectionData),
+				BasicAuthAlfrescoTemplate.getBaseUrl(subsConnectionData),
 				        repoConnectionData.getPublicApiServletName(),
 				        repoConnectionData.getServiceServletName());
-
-		this.username = repoConnectionData.getUsername();
-		this.password = repoConnectionData.getPassword();
-		this.httpClientCM = repoConnectionData.getHttpClientCM();
-		this.httpParams = repoConnectionData.getParams();
-
-		DefaultHttpClient client = new DefaultHttpClient(httpClientCM, httpParams);
-
-        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(
-                new AuthScope(AuthScope.ANY),
-                new UsernamePasswordCredentials(username, password));
-        client.setCredentialsProvider(credentialsProvider);
-
-		HttpComponentsClientHttpRequestFactory commons = new HttpComponentsClientHttpRequestFactory(client);
-
-		restTemplate = new RestTemplate(commons);
-		restTemplate.setMessageConverters(getMessageConverters());
-		configureRestTemplate();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-	}
+		{
+			this.repoUsername = repoConnectionData.getUsername();
+			this.repoPassword = repoConnectionData.getPassword();
+			this.repoHttpClientCM = repoConnectionData.getHttpClientCM();
+			this.repoHttpParams = repoConnectionData.getParams();
 	
+			DefaultHttpClient client = new DefaultHttpClient(repoHttpClientCM, repoHttpParams);
+	
+	        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+	        credentialsProvider.setCredentials(
+	                new AuthScope(AuthScope.ANY),
+	                new UsernamePasswordCredentials(repoUsername, repoPassword));
+	        client.setCredentialsProvider(credentialsProvider);
+	
+			HttpComponentsClientHttpRequestFactory commons = new HttpComponentsClientHttpRequestFactory(client);
+	
+			repoRestTemplate = new RestTemplate(commons);
+			repoRestTemplate.setMessageConverters(getMessageConverters());
+			configureRestTemplate();
+	        headers.setContentType(MediaType.APPLICATION_JSON);
+		}
+
+		{
+			this.syncUsername = syncConnectionData.getUsername();
+			this.syncPassword = syncConnectionData.getPassword();
+			this.syncHttpClientCM = syncConnectionData.getHttpClientCM();
+			this.syncHttpParams = syncConnectionData.getParams();
+	
+			DefaultHttpClient client = new DefaultHttpClient(syncHttpClientCM, syncHttpParams);
+	
+	        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+	        credentialsProvider.setCredentials(
+	                new AuthScope(AuthScope.ANY),
+	                new UsernamePasswordCredentials(syncUsername, syncPassword));
+	        client.setCredentialsProvider(credentialsProvider);
+	
+			HttpComponentsClientHttpRequestFactory commons = new HttpComponentsClientHttpRequestFactory(client);
+
+			syncRestTemplate = new RestTemplate(commons);
+			syncRestTemplate.setMessageConverters(getMessageConverters());
+		}
+	}
+
 	protected Map<String, String> getCMISParameters()
 	{
 		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(SessionParameter.USER, username);
-		parameters.put(SessionParameter.PASSWORD, password);
+		parameters.put(SessionParameter.USER, repoUsername);
+		parameters.put(SessionParameter.PASSWORD, repoPassword);
 		return parameters;
 	}
 	

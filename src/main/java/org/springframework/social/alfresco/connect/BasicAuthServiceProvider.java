@@ -9,15 +9,18 @@ public class BasicAuthServiceProvider implements ServiceProvider<Alfresco>
 {
 	private ConnectionDetails repoConnectionData;
 	private ConnectionDetails syncConnectionData;
+	private ConnectionDetails subsConnectionData;
 
-	public BasicAuthServiceProvider(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData)
+	public BasicAuthServiceProvider(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData,
+			ConnectionDetails subsConnectionData)
 	{
 		this.repoConnectionData = repoConnectionData;
 		this.syncConnectionData = syncConnectionData;
+		this.subsConnectionData = subsConnectionData;
 	}
 
 	public Alfresco getApi()
 	{
-        return new BasicAuthAlfrescoTemplate(repoConnectionData, syncConnectionData);
+        return new BasicAuthAlfrescoTemplate(repoConnectionData, syncConnectionData, subsConnectionData);
 	}
 }

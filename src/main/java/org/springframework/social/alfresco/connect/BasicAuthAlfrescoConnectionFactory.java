@@ -8,9 +8,11 @@ import org.springframework.social.connect.ConnectionFactory;
 
 public class BasicAuthAlfrescoConnectionFactory extends ConnectionFactory<Alfresco>
 {
-    public BasicAuthAlfrescoConnectionFactory(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData)
+    public BasicAuthAlfrescoConnectionFactory(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData,
+    		ConnectionDetails subsConnectionData)
     {
-        super("alfresco", new BasicAuthServiceProvider(repoConnectionData, syncConnectionData), new AlfrescoAdapter());
+        super("alfresco", new BasicAuthServiceProvider(repoConnectionData, syncConnectionData,
+        		subsConnectionData), new AlfrescoAdapter());
     }
 
 	public Connection<Alfresco> createConnection()

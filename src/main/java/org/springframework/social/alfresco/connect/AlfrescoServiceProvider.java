@@ -31,10 +31,12 @@ public class AlfrescoServiceProvider
 {
 	private String repoBaseUrl;
 	private String syncBaseUrl;
+	private String subsBaseUrl;
 	private String publicApiServletName;
 	private String serviceServletName;
 
-    public AlfrescoServiceProvider(String repoBaseUrl, String syncBaseUrl, String consumerKey, String consumerSecret, String publicApiServletName, String serviceServletName)
+    public AlfrescoServiceProvider(String repoBaseUrl, String syncBaseUrl, String subsBaseUrl,
+    		String consumerKey, String consumerSecret, String publicApiServletName, String serviceServletName)
     {
         super(AlfrescoServiceProvider.getOAuth2Template(repoBaseUrl, consumerKey, consumerSecret));
         this.repoBaseUrl = repoBaseUrl;
@@ -53,7 +55,7 @@ public class AlfrescoServiceProvider
     @Override
     public Alfresco getApi(String accessToken)
     {
-        return new AlfrescoTemplate(repoBaseUrl, syncBaseUrl, accessToken, publicApiServletName, serviceServletName);
+        return new AlfrescoTemplate(repoBaseUrl, syncBaseUrl, subsBaseUrl, accessToken, publicApiServletName, serviceServletName);
     }
 
 }

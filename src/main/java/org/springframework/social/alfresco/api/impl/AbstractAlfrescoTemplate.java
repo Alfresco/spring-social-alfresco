@@ -82,6 +82,7 @@ import org.springframework.social.alfresco.api.entities.SiteMembershipRequest;
 import org.springframework.social.alfresco.api.entities.StartSyncResponse;
 import org.springframework.social.alfresco.api.entities.Subscriber;
 import org.springframework.social.alfresco.api.entities.Subscription;
+import org.springframework.social.alfresco.api.entities.SubscriptionRequest;
 import org.springframework.social.alfresco.api.entities.SubscriptionType;
 import org.springframework.social.alfresco.api.entities.Tag;
 import org.springframework.social.alfresco.api.entities.UserActivationRequest;
@@ -101,9 +102,11 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 	protected ObjectMapper mapper  = new ObjectMapper();
 	protected HttpHeaders  headers = new HttpHeaders();
-	protected RestTemplate restTemplate;
+	protected RestTemplate repoRestTemplate;
+	protected RestTemplate syncRestTemplate;
 	protected String repoBaseUrl;
 	protected String syncBaseUrl;
+	protected String subsBaseUrl;
 	protected JSONParser parser = new JSONParser();
 	protected AuthenticationProvider authenticationProvider;
 	protected String publicApiServletName;
@@ -158,12 +161,15 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	protected PublicApiUrl SUBSCRIPTION_PATH;
 	protected PublicApiUrl SYNCS_PATH;
 	protected PublicApiUrl SYNC_PATH;
+	protected PublicApiUrl SYNC_METRICS;
+	protected PublicApiUrl SUBS_METRICS;
 	protected PublicApiUrl CREATE_PERSON_URL;
 
 	private OperationContext cmisOperationContext = new OperationContextImpl();
 	private Map<CMISEndpoint, PublicApiUrl> cmisServiceUrls = new HashMap<CMISEndpoint, PublicApiUrl>();
 	
-	public AbstractAlfrescoTemplate(String repoBaseUrl, String syncBaseUrl, String publicApiServletName, String serviceServletName)
+	public AbstractAlfrescoTemplate(String repoBaseUrl, String syncBaseUrl, String subsBaseUrl,
+			String publicApiServletName, String serviceServletName)
 	{
 		if(!repoBaseUrl.endsWith("/"))
 		{
@@ -223,13 +229,15 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 	    this.BASE_NODE_URL             = new PublicApiNetworkUrl(repoBaseUrl, "{network}" + VERSION + "nodes/{node}/");
 	    this.REGISTER_USER_URL     	   = new PublicApiServiceUrl(repoBaseUrl, "internal/cloud/accounts/signupqueue");
 	    this.ACTIVATE_USER_URL         = new PublicApiServiceUrl(repoBaseUrl, "internal/cloud/account-activations");
-	    this.SUBSCRIBERS_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers");
-	    this.SUBSCRIBER_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}");
-	    this.SUBSCRIPTIONS_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions");
-		this.SUBSCRIPTION_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}");
-		this.SYNCS_PATH                = new PublicApiNetworkUrl(syncBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}/sync");
-		this.SYNC_PATH                 = new PublicApiNetworkUrl(syncBaseUrl, "/api/{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}/sync/{syncId}");
-	    this.CREATE_PERSON_URL 		   = new PublicApiServiceUrl(repoBaseUrl, "api/people");
+	    this.SUBSCRIBERS_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "{network}/private/alfresco/versions/1/subscribers");
+	    this.SUBSCRIBER_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "{network}/private/alfresco/versions/1/subscribers/{subscriberId}");
+	    this.SUBSCRIPTIONS_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions");
+		this.SUBSCRIPTION_PATH 		   = new PublicApiNetworkUrl(repoBaseUrl, "{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}");
+		this.SYNCS_PATH                = new PublicApiNetworkUrl(syncBaseUrl, "{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}/sync");
+		this.SYNC_PATH                 = new PublicApiNetworkUrl(syncBaseUrl, "{network}/private/alfresco/versions/1/subscribers/{subscriberId}/subscriptions/{subscriptionId}/sync/{syncId}");
+		this.SYNC_METRICS              = new PublicApiNetworkUrl(syncBaseUrl, "{network}/private/alfresco/versions/1/metrics");
+		this.SUBS_METRICS              = new PublicApiNetworkUrl(subsBaseUrl, "{network}/private/alfresco/versions/1/metrics");
+		this.CREATE_PERSON_URL 		   = new PublicApiServiceUrl(repoBaseUrl, "api/people");
 
 	    SimpleModule module = new SimpleModule("", new Version(1, 0, 0, null));
 		module.addDeserializer(FavouriteTarget.class, new FavouriteTargetDeserializer());
@@ -580,7 +588,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 	protected void configureRestTemplate()
 	{
-		restTemplate.setErrorHandler(new ResponseErrorHandler()
+		repoRestTemplate.setErrorHandler(new ResponseErrorHandler()
 		{
 			public boolean hasError(ClientHttpResponse response) throws IOException
 			{
@@ -633,8 +641,12 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		});
 	}
 	
-	public RestTemplate getRestTemplate() {
-		return restTemplate;
+	public RestTemplate getRepoRestTemplate() {
+		return repoRestTemplate;
+	}
+
+	public RestTemplate getSyncRestTemplate() {
+		return syncRestTemplate;
 	}
 
 	public Session getCMISSession(String networkId)
@@ -655,7 +667,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
             IOException
     {
         Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK, networkId);
-        String response = getRestTemplate().getForObject(NETWORK_URL.getUrl(networkId), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(NETWORK_URL.getUrl(networkId), String.class, vars);
         log.debug("getNetwork: " + response);
         Response<Network> n = mapper.readValue(response, entryResponseType(Network.class));
         return n.getEntry();
@@ -676,7 +688,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
             JsonMappingException,
             IOException
     {
-        String response = getRestTemplate().getForObject(NETWORKS_URL.getUrl(null) + generateQueryString(parameters), String.class);
+        String response = getRepoRestTemplate().getForObject(NETWORKS_URL.getUrl(null) + generateQueryString(parameters), String.class);
         log.debug("getNetworks: " + response);
         Response<Network> n = mapper.readValue(response, entryResponseType(Network.class));
         return n.getList();
@@ -692,7 +704,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, networkId);
         vars.put(TemplateParams.SITE, site);
 
-        String response = getRestTemplate().getForObject(SITE_URL.getUrl(networkId), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(SITE_URL.getUrl(networkId), String.class, vars);
         log.debug("getSite: " + response);
         Response<Site> s = mapper.readValue(response, entryResponseType(Site.class));
         return s.getEntry();
@@ -716,7 +728,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
             IOException
     {
         Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK, networkId);
-        String response = getRestTemplate().getForObject(SITES_URL.getUrl(networkId) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(SITES_URL.getUrl(networkId) + generateQueryString(parameters), String.class, vars);
         log.debug("getSites: " + response);
         Response<Site> s = mapper.readValue(response, entryResponseType(Site.class));
         return s.getList();
@@ -733,7 +745,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.SITE, site);
         vars.put(TemplateParams.CONTAINER, contatiner);
 
-        String response = getRestTemplate().getForObject(CONTAINER_URL.getUrl(networkId), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(CONTAINER_URL.getUrl(networkId), String.class, vars);
         log.debug("getContainer: " + response);
         Response<Container> c = mapper.readValue(response, entryResponseType(Container.class));
         return c.getEntry();
@@ -758,7 +770,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, networkId);
         vars.put(TemplateParams.SITE, site);
 
-        String response = getRestTemplate().getForObject(CONTAINERS_URL.getUrl(networkId) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(CONTAINERS_URL.getUrl(networkId) + generateQueryString(parameters), String.class, vars);
         log.debug("getContainers: " + response);
         Response<Container> c = mapper.readValue(response, entryResponseType(Container.class));
         return c.getList();
@@ -775,7 +787,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.SITE, site);
         vars.put(TemplateParams.MEMBER, person);
 
-        String response = getRestTemplate().getForObject(MEMBER_URL.getUrl(networkId), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(MEMBER_URL.getUrl(networkId), String.class, vars);
         log.debug("getMember: " + response);
         Response<Member> m = mapper.readValue(response, entryResponseType(Member.class));
         return m.getEntry();
@@ -800,7 +812,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.SITE, site);
 
-        String response = getRestTemplate().getForObject(MEMBERS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(MEMBERS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getMembers: " + response);
         Response<Member> m = mapper.readValue(response, entryResponseType(Member.class));
         return m.getList();
@@ -820,7 +832,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         member.setId(personId);
         member.setRole(role);
 
-        String response = getRestTemplate().postForObject(MEMBERS_URL.getUrl(network), new HttpEntity<Member>(member, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(MEMBERS_URL.getUrl(network), new HttpEntity<Member>(member, headers), String.class, vars);
         log.debug("addMember: " + response);
         Response<Member> m = mapper.readValue(response, entryResponseType(Member.class));
         return m.getEntry();
@@ -839,7 +851,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         Member member = new Member();
         member.setRole(role);
 
-        getRestTemplate().put(MEMBER_URL.getUrl(network), new HttpEntity<Member>(member, headers), vars);
+        getRepoRestTemplate().put(MEMBER_URL.getUrl(network), new HttpEntity<Member>(member, headers), vars);
         log.debug("updateMember: member: " + personId + " to Role: " + role);
 
     }
@@ -854,7 +866,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.SITE, site);
         vars.put(TemplateParams.MEMBER, personId);
 
-        getRestTemplate().delete(MEMBER_URL.getUrl(network), vars);
+        getRepoRestTemplate().delete(MEMBER_URL.getUrl(network), vars);
         log.debug("deleteMember: " + personId + " from site: " + site);
 
     }
@@ -876,7 +888,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		person.setEmail(email);
 		person.setPassword(password);
 
-    	String response = getRestTemplate().postForObject(CREATE_PERSON_URL.getUrl(),
+    	String response = getRepoRestTemplate().postForObject(CREATE_PERSON_URL.getUrl(),
     			new HttpEntity<LegacyPerson>(person, headers), String.class, vars);
     	log.debug("createPerson: " + response);
 		LegacyPerson ret = mapper.readValue(response, LegacyPerson.class);
@@ -892,7 +904,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, person);
 
-        String response = getRestTemplate().getForObject(PEOPLE_URL.getUrl(network), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_URL.getUrl(network), String.class, vars);
         log.debug("getPerson: " + response);
         Response<Person> p = mapper.readValue(response, entryResponseType(Person.class));
         return p.getEntry();
@@ -917,7 +929,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, person);
 
-        String response = getRestTemplate().getForObject(PEOPLE_SITES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_SITES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getSites: " + response);
         Response<Site> s = mapper.readValue(response, entryResponseType(Site.class));
         return s.getList();
@@ -935,7 +947,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.PERSON, person);
         vars.put(TemplateParams.SITE, site);
 
-        String response = getRestTemplate().getForObject(PEOPLE_SITE_URL.getUrl(network), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_SITE_URL.getUrl(network), String.class, vars);
         log.debug("getSite: " + response);
         Response<Site> s = mapper.readValue(response, entryResponseType(Site.class));
         return s.getEntry();
@@ -954,7 +966,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         Site site = new Site();
         site.setId(siteId);
 
-        String response = getRestTemplate().postForObject(PEOPLE_FAVORITE_SITES_URL.getUrl(), new HttpEntity<Site>(site, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(PEOPLE_FAVORITE_SITES_URL.getUrl(), new HttpEntity<Site>(site, headers), String.class, vars);
         log.debug("addFavoriteSite: " + response);
         Response<Site> c = mapper.readValue(response, entryResponseType(Site.class));
         return c.getEntry();
@@ -980,7 +992,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 //        context.set(new Context(network));
 
-        String response = getRestTemplate().getForObject(PEOPLE_FAVORITES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_FAVORITES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getFavorites: " + response);
         Response<Favourite> s = mapper.readValue(response, entryResponseType(Favourite.class));
         return s.getList();
@@ -998,7 +1010,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 //            context.set(new Context(network));
 
-        String response = getRestTemplate().getForObject(PEOPLE_FAVORITE_URL.getUrl(network), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_FAVORITE_URL.getUrl(network), String.class, vars);
         log.debug("getFavorites: " + response);
         Response<Favourite> s = mapper.readValue(response, entryResponseType(Favourite.class));
         return s.getEntry();
@@ -1013,7 +1025,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, personId);
 
-        String response = getRestTemplate().postForObject(PEOPLE_FAVORITES_URL.getUrl(), new HttpEntity<Favourite>(favourite, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(PEOPLE_FAVORITES_URL.getUrl(), new HttpEntity<Favourite>(favourite, headers), String.class, vars);
         log.debug("addFavorite: " + response);
         Response<Favourite> c = mapper.readValue(response, entryResponseType(Favourite.class));
         return c.getEntry();
@@ -1029,7 +1041,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.PERSON, personId);
         vars.put(TemplateParams.TARGET_GUID, targetGuid);
 
-        getRestTemplate().delete(PEOPLE_FAVORITE_URL.getUrl(network), vars);
+        getRepoRestTemplate().delete(PEOPLE_FAVORITE_URL.getUrl(network), vars);
         log.debug("removefavourite: " + targetGuid);
     }
 
@@ -1050,7 +1062,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, personId);
 
-        String response = getRestTemplate().getForObject(PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getPersonSiteMemberhsipRequests: " + response);
         Response<SiteMembershipRequest> s = mapper.readValue(response, entryResponseType(SiteMembershipRequest.class));
         return s.getList();
@@ -1065,7 +1077,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, personId);
 
-        String response = getRestTemplate().postForObject(PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL.getUrl(), new HttpEntity<SiteMembershipRequest>(siteMembershipRequest, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(PEOPLE_SITE_MEMBERSHIP_REQUESTS_URL.getUrl(), new HttpEntity<SiteMembershipRequest>(siteMembershipRequest, headers), String.class, vars);
         log.debug("addPersonSiteMembershipRequest: " + response);
         Response<SiteMembershipRequest> c = mapper.readValue(response, entryResponseType(SiteMembershipRequest.class));
         return c.getEntry();
@@ -1081,7 +1093,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.PERSON, personId);
         vars.put(TemplateParams.SITE, siteId);
 
-        getRestTemplate().delete(PEOPLE_SITE_MEMBERSHIP_REQUEST_URL.getUrl(network), vars);
+        getRepoRestTemplate().delete(PEOPLE_SITE_MEMBERSHIP_REQUEST_URL.getUrl(network), vars);
         log.debug("cancelPersonSiteMembershipRequest: " + personId + ", " + siteId);
     }
     
@@ -1103,7 +1115,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, person);
 
-        String response = getRestTemplate().getForObject(PEOPLE_FAVORITE_SITES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_FAVORITE_SITES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getFavoriteSites: " + response);
         Response<Site> s = mapper.readValue(response, entryResponseType(Site.class));
         return s.getList();
@@ -1120,7 +1132,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.PERSON, person);
         vars.put(TemplateParams.PREFERENCE, preference);
 
-        String response = getRestTemplate().getForObject(PEOPLE_PREFERENCE_URL.getUrl(network), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_PREFERENCE_URL.getUrl(network), String.class, vars);
         log.debug("getPreference: " + response);
         Response<Preference> p = mapper.readValue(response, entryResponseType(Preference.class));
         return p.getEntry();
@@ -1145,7 +1157,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, person);
 
-        String response = getRestTemplate().getForObject(PEOPLE_PREFERENCES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_PREFERENCES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getPreferences: " + response);
         Response<Preference> p = mapper.readValue(response, entryResponseType(Preference.class));
         return p.getList();
@@ -1161,7 +1173,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, person);
 
-        String response = getRestTemplate().getForObject(PEOPLE_NETWORK_URL.getUrl(network), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_NETWORK_URL.getUrl(network), String.class, vars);
         log.debug("getNetwork: " + response);
         Response<Network> n = mapper.readValue(response, entryResponseType(Network.class));
         return n.getEntry();
@@ -1186,7 +1198,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, person);
 
-        String response = getRestTemplate().getForObject(PEOPLE_NETWORKS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_NETWORKS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getNetworks: " + response);
         Response<Network> n = mapper.readValue(response, entryResponseType(Network.class));
         return n.getList();
@@ -1211,7 +1223,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.PERSON, person);
 
-        String response = getRestTemplate().getForObject(PEOPLE_ACTIVITIES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(PEOPLE_ACTIVITIES_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getActivities: " + response);
         Response<Activity> a = mapper.readValue(response, entryResponseType(Activity.class));
         return a.getList();
@@ -1282,7 +1294,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
     {
         Map<String, String> vars = Collections.singletonMap(TemplateParams.NETWORK, network);
 
-        String response = getRestTemplate().getForObject(TAGS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(TAGS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getTags: " + response);
         Response<Tag> t = mapper.readValue(response, entryResponseType(Tag.class));
         return t.getList();
@@ -1299,7 +1311,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         Tag _tag = new Tag();
         _tag.setTag(tag);
 
-        getRestTemplate().put(TAG_URL.getUrl(network), new HttpEntity<Tag>(_tag, headers), vars);
+        getRepoRestTemplate().put(TAG_URL.getUrl(network), new HttpEntity<Tag>(_tag, headers), vars);
         log.debug("updateTag: " + tag);
 
     }
@@ -1323,7 +1335,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.NODE, node);
 
-        String response = getRestTemplate().getForObject(NODE_COMMENTS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(NODE_COMMENTS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getComments: " + response);
         Response<Comment> c = mapper.readValue(response, entryResponseType(Comment.class));
         return c.getList();
@@ -1343,7 +1355,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         _comment.setContent(comment);
 
 //        String response = getRestTemplate().postForObject(NODE_COMMENTS_URL.getUrl(network), new HttpEntity<Comment>(_comment, headers), String.class, vars);
-        String response = getRestTemplate().postForObject(NODE_COMMENTS_URL.getUrl(), new HttpEntity<Comment>(_comment, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(NODE_COMMENTS_URL.getUrl(), new HttpEntity<Comment>(_comment, headers), String.class, vars);
         log.debug("createComment: " + response);
         Response<Comment> c = mapper.readValue(response, entryResponseType(Comment.class));
         Comment ret = c.getEntry();
@@ -1369,7 +1381,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
             _comments.add(_comment);
         }
 
-        String response = getRestTemplate().postForObject(NODE_COMMENTS_URL.getUrl(network), new HttpEntity<java.util.List<Comment>>(_comments, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(NODE_COMMENTS_URL.getUrl(network), new HttpEntity<java.util.List<Comment>>(_comments, headers), String.class, vars);
         log.debug("createComments: " + response);
         Response<Comment> createdComments = mapper.readValue(response, entryResponseType(Comment.class));
         AlfrescoList<Comment> al = createdComments.getList();
@@ -1394,7 +1406,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         Comment _comment = new Comment();
         _comment.setContent(comment);
 
-        getRestTemplate().put(NODE_COMMENT_URL.getUrl(network), new HttpEntity<Comment>(_comment, headers), vars);
+        getRepoRestTemplate().put(NODE_COMMENT_URL.getUrl(network), new HttpEntity<Comment>(_comment, headers), vars);
         log.debug("updateComment: " + comment);
     }
 
@@ -1409,7 +1421,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NODE, node);
         vars.put(TemplateParams.COMMENT, commentId);
 
-        getRestTemplate().delete(NODE_COMMENT_URL.getUrl(network), vars);
+        getRepoRestTemplate().delete(NODE_COMMENT_URL.getUrl(network), vars);
         log.debug("deleteComment: " + commentId);
     }
 
@@ -1432,7 +1444,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.NODE, node);
 
-        String response = getRestTemplate().getForObject(NODE_TAGS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(NODE_TAGS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getNodeTafs: " + response);
         Response<Tag> t = mapper.readValue(response, entryResponseType(Tag.class));
         return t.getList();
@@ -1451,7 +1463,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         Tag _tag = new Tag();
         _tag.setTag(tag);
 
-        String response = getRestTemplate().postForObject(NODE_TAG_URL.getUrl(network), new HttpEntity<Tag>(_tag, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(NODE_TAG_URL.getUrl(network), new HttpEntity<Tag>(_tag, headers), String.class, vars);
         log.debug("addTagToNode: " + response);
         Response<Tag> t = mapper.readValue(response, entryResponseType(Tag.class));
         return t.getEntry();
@@ -1475,7 +1487,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
             _tags.add(_tag);
         }
 
-        String response = getRestTemplate().postForObject(NODE_TAGS_URL.getUrl(network), new HttpEntity<java.util.List<Tag>>(_tags, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(NODE_TAGS_URL.getUrl(network), new HttpEntity<java.util.List<Tag>>(_tags, headers), String.class, vars);
         log.debug("addTagsToNode: " + response);
         Response<Tag> t = mapper.readValue(response, entryResponseType(Tag.class));
         return t.getList();
@@ -1492,7 +1504,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NODE, node);
         vars.put(TemplateParams.TAG, tagId);
 
-        getRestTemplate().delete(NODE_TAG_URL.getUrl(network), vars);
+        getRepoRestTemplate().delete(NODE_TAG_URL.getUrl(network), vars);
         log.debug("removeTagFromNode: " + tagId);
     }
 
@@ -1515,7 +1527,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.NODE, node);
 
-        String response = getRestTemplate().getForObject(NODE_RATINGS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(NODE_RATINGS_URL.getUrl(network) + generateQueryString(parameters), String.class, vars);
         log.debug("getNodeRatings: " + response);
         Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
         return r.getList();
@@ -1532,7 +1544,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NODE, node);
         vars.put(TemplateParams.RATING, rating);
 
-        String response = getRestTemplate().getForObject(NODE_RATING_URL.getUrl(network), String.class, vars);
+        String response = getRepoRestTemplate().getForObject(NODE_RATING_URL.getUrl(network), String.class, vars);
         log.debug("getNodeRatings: " + response);
         Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
         return r.getEntry();
@@ -1549,7 +1561,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NODE, node);
         vars.put(TemplateParams.RATING, ratingId);
 
-        getRestTemplate().delete(NODE_RATING_URL.getUrl(network), vars);
+        getRepoRestTemplate().delete(NODE_RATING_URL.getUrl(network), vars);
         log.debug("removeNodeRating: " + ratingId);
     }
 
@@ -1579,7 +1591,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         _like.setId(Rating.LIKES);
         _like.setMyRating(like);
 
-        String response = getRestTemplate().postForObject(NODE_RATINGS_URL.getUrl(network), new HttpEntity<Rating>(_like, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(NODE_RATINGS_URL.getUrl(network), new HttpEntity<Rating>(_like, headers), String.class, vars);
         log.debug("rateNode: " + response);
         Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
         return r.getEntry();
@@ -1599,7 +1611,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         _stars.setId(Rating.STARS);
         _stars.setMyRating(stars);
 
-        String response = getRestTemplate().postForObject(NODE_RATINGS_URL.getUrl(network), new HttpEntity<Rating>(_stars, headers), String.class, vars);
+        String response = getRepoRestTemplate().postForObject(NODE_RATINGS_URL.getUrl(network), new HttpEntity<Rating>(_stars, headers), String.class, vars);
         log.debug("rateNode: " + response);
         Response<Rating> r = mapper.readValue(response, entryResponseType(Rating.class));
         return r.getEntry();
@@ -1694,7 +1706,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 
 }
 		 */
-		String response = getRestTemplate().postForObject(REGISTER_USER_URL.getUrl(), new HttpEntity<UserRegistrationRequest>(userRegistration, headers), String.class, vars);
+		String response = getRepoRestTemplate().postForObject(REGISTER_USER_URL.getUrl(), new HttpEntity<UserRegistrationRequest>(userRegistration, headers), String.class, vars);
 		log.debug("registerUser: " + response);
 		UserRegistrationResponse r = mapper.readValue(response, UserRegistrationResponse.class);
 		return r.getUserRegistration();
@@ -1713,7 +1725,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		userActivation.setId(id);
 		userActivation.setKey(key);
 
-		String response = getRestTemplate().postForObject(ACTIVATE_USER_URL.getUrl(), new HttpEntity<UserActivationRequest>(userActivation, headers), String.class, vars);
+		String response = getRepoRestTemplate().postForObject(ACTIVATE_USER_URL.getUrl(), new HttpEntity<UserActivationRequest>(userActivation, headers), String.class, vars);
 		log.debug("activateUser: " + response);		
 		UserActivationResponse r = mapper.readValue(response, UserActivationResponse.class);
 		return r;
@@ -1802,7 +1814,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 			String description, Visibility visibility)
 			throws IOException
 	{
-        RestTemplate rest = getRestTemplate();
+        RestTemplate rest = getRepoRestTemplate();
 
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put(TemplateParams.NETWORK, networkId);
@@ -1850,7 +1862,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		vars.put(TemplateParams.NETWORK, networkId);
         vars.put("siteId", siteId);
 
-        getRestTemplate().delete(DELETE_SITE_URL.getUrl(networkId), vars);
+        getRepoRestTemplate().delete(DELETE_SITE_URL.getUrl(networkId), vars);
 	}
 
 	public ObjectId createRelationship(String networkId, String sourceObjectId, String targetObjectId)
@@ -1965,7 +1977,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		return queryString.toString();
 	}
 
-	public Subscriber createSubscriber(String networkId)
+	public Subscriber createSubscriber(String networkId, String deviceOS)
 			throws JsonParseException,
 			JsonMappingException,
 			IOException
@@ -1974,9 +1986,11 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		vars.put(TemplateParams.NETWORK, networkId);
 
 		Subscriber subscriber = new Subscriber();
+		subscriber.setDeviceOS(deviceOS);
 
 		//            String response = getRestTemplate().postForObject(NODE_COMMENTS_URL.getUrl(network), new HttpEntity<Comment>(_comment, headers), String.class, vars);
-		String response = getRestTemplate().postForObject(SUBSCRIBERS_PATH.getUrl(), new HttpEntity<Subscriber>(subscriber, headers), String.class, vars);
+		String response = getRepoRestTemplate().postForObject(SUBSCRIBERS_PATH.getUrl(),
+				new HttpEntity<Subscriber>(subscriber, headers), String.class, vars);
 		log.debug("createSubscriber: " + response);
 		Response<Subscriber> c = mapper.readValue(response, entryResponseType(Subscriber.class));
 		Subscriber ret = c.getEntry();
@@ -1991,10 +2005,12 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(TemplateParams.NETWORK, network);
         vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
-        
-        Subscription subscription = new Subscription(subscriberId, targetPath, subscriptionType);
 
-        String response = getRestTemplate().postForObject(SUBSCRIPTIONS_PATH.getUrl(), new HttpEntity<Subscription>(subscription, headers), String.class, vars);
+        SubscriptionRequest subscriptionRequest = new SubscriptionRequest(
+        		targetPath, subscriptionType);
+
+        String response = getRepoRestTemplate().postForObject(SUBSCRIPTIONS_PATH.getUrl(),
+        		new HttpEntity<SubscriptionRequest>(subscriptionRequest, headers), String.class, vars);
         log.debug("createSubscription: " + response);
         Response<Subscription> c = mapper.readValue(response, entryResponseType(Subscription.class));
         Subscription ret = c.getEntry();
@@ -2010,7 +2026,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		vars.put(TemplateParams.NETWORK, network);
 		vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
 
-        getRestTemplate().delete(SUBSCRIBER_PATH.getUrl(network), vars);
+        getRepoRestTemplate().delete(SUBSCRIBER_PATH.getUrl(network), vars);
 	}
 
     public void removeSubscription(String network, String subscriberId, String subscriptionId)
@@ -2023,10 +2039,10 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
         vars.put(TemplateParams.SUBSCRIPTION_ID, subscriptionId);
 
-        getRestTemplate().delete(SUBSCRIPTION_PATH.getUrl(network), vars);
+        getRepoRestTemplate().delete(SUBSCRIPTION_PATH.getUrl(network), vars);
     }
 
-    public StartSyncResponse start(StartSyncRequest req, String networkId, String subscriberId, String subscriptionsQuery)
+    public StartSyncResponse startSync(StartSyncRequest req, String networkId, String subscriberId, String subscriptionsQuery)
             throws JsonParseException,
             JsonMappingException,
             IOException
@@ -2036,10 +2052,9 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
         vars.put(TemplateParams.SUBSCRIPTION_ID, subscriptionsQuery);
 
-        String response = getRestTemplate().postForObject(SYNCS_PATH.getUrl(networkId), new HttpEntity<StartSyncRequest>(req, headers), String.class, vars);
+        String response = getSyncRestTemplate().postForObject(SYNCS_PATH.getUrl(networkId), new HttpEntity<StartSyncRequest>(req, headers), String.class, vars);
         log.debug("startSync: " + response);
-        Response<StartSyncResponse> c = mapper.readValue(response, entryResponseType(StartSyncResponse.class));
-        StartSyncResponse ret = c.getEntry();
+        StartSyncResponse ret = mapper.readValue(response, StartSyncResponse.class);
         return ret;
     }
 
@@ -2052,11 +2067,12 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put(TemplateParams.NETWORK, networkId);
         vars.put(TemplateParams.SUBSCRIBER_ID, subscriberId);
         vars.put(TemplateParams.SUBSCRIPTION_ID, subscriptionsQuery);
+        vars.put(TemplateParams.SYNC_ID, syncId);
 
-        String response = getRestTemplate().getForObject(SYNC_PATH.getUrl(networkId), String.class, vars);
+        String response = getSyncRestTemplate().getForObject(SYNC_PATH.getUrl(networkId), String.class, vars);
         log.debug("getSync: " + response);
-        Response<GetChangesResponse> s = mapper.readValue(response, entryResponseType(GetChangesResponse.class));
-        return s.getEntry();
+        GetChangesResponse ret = mapper.readValue(response, GetChangesResponse.class);
+        return ret;
     }
 
     public void endSync(String networkId, String subscriberId, String subscriptionsQuery, String syncId)
@@ -2069,8 +2085,27 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
         vars.put("networkId", networkId);
         vars.put("subscriberId", subscriberId);
         vars.put("subscriptionId", subscriptionsQuery);
+        vars.put("syncId", syncId);
 
-        getRestTemplate().delete(SYNC_PATH.getUrl(networkId), vars);
+        getSyncRestTemplate().delete(SYNC_PATH.getUrl(networkId), vars);
+    }
+
+    public String syncMetrics(String networkId)
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, networkId);
+
+        String response = getSyncRestTemplate().getForObject(SYNC_METRICS.getUrl(networkId), String.class, vars);
+        return response;
+    }
+
+    public String subsMetrics(String networkId)
+    {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put(TemplateParams.NETWORK, networkId);
+
+        String response = getSyncRestTemplate().getForObject(SUBS_METRICS.getUrl(networkId), String.class, vars);
+        return response;
     }
 
 	private static class TemplateParams
@@ -2089,6 +2124,7 @@ public abstract class AbstractAlfrescoTemplate implements Alfresco
 		public final static String TARGET_GUID  = "targetGuid";
 		public final static String SUBSCRIBER_ID = "subscriberId";
 		public final static String SUBSCRIPTION_ID = "subscriptionId";
+		public final static String SYNC_ID = "syncId";
 	}
 
 	public static class QueryParams
