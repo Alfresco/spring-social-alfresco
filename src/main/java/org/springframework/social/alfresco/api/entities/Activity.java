@@ -32,7 +32,7 @@ public class Activity
      */
     public static final String SITEID = "siteId";
     /**
-     * Acitivity Query Parameter. Specifying a value of me filters the returned collection to include just those activities for the
+     * Activity Query Parameter. Specifying a value of me filters the returned collection to include just those activities for the
      * specified user. Specifying a value of others filters the returned collection to include just those activities that are not
      * for the specified user.
      */
@@ -185,59 +185,61 @@ public class Activity
      * @return The type of activity.
      * 
      * The following are the possible values:<br/>
-     * � org.alfresco.blog.post-created <br/>
-     * � org.alfresco.blog.post-updated <br/>
-     * � org.alfresco.blog.post-deleted <br/>
-     * � org.alfresco.comments.comment-created<br/>
-     * � org.alfresco.comments.comment-updated<br/>
-     * � org.alfresco.comments.comment-deleted<br/>
-     * � org.alfresco.discussions.post-created <br/>
-     * � org.alfresco.discussions.post-updated <br/>
-     * � org.alfresco.discussions.post-deleted <br/>
-     * � org.alfresco.discussions.reply-created <br/>
-     * � org.alfresco.discussions.reply-updated <br/>
-     * � org.alfresco.calendar.event-created <br/>
-     * � org.alfresco.calendar.event-updated <br/>
-     * � org.alfresco.calendar.event-deleted <br/>
-     * � org.alfresco.documentlibrary.files-added<br/>
-     * � org.alfresco.documentlibrary.files-updated <br/>
-     * � org.alfresco.documentlibrary.files-deleted <br/>
-     * � org.alfresco.documentlibrary.file-added <br/>
-     * � org.alfresco.documentlibrary.file-updated <br/>
-     * � org.alfresco.documentlibrary.file-created <br/>
-     * � org.alfresco.documentlibrary.file-deleted <br/>
-     * � org.alfresco.documentlibrary.file-liked <br/>
-     * � org.alfresco.documentlibrary.inline-edit <br/>
-     * � org.alfresco.documentlibrary.folder-liked <br/>
-     * � org.alfresco.documentlibrary.folder-added <br/>
-     * � org.alfresco.documentlibrary.folder-deleted <br/>
-     * � org.alfresco.documentlibrary.folders-added <br/>
-     * � org.alfresco.documentlibrary.folders-deleted <br/>
-     * � org.alfresco.documentlibrary.inline-edit <br/>
-     * � org.alfresco.documentlibrary.file-previewed <br/>
-     * � org.alfresco.documentlibrary.file-downloaded <br/>
-     * � org.alfresco.documentlibrary.file-liked <br/>
-     * � org.alfresco.documentlibrary.folder-liked <br/>
-     * � org.alfresco.wiki.page-created <br/>
-     * � org.alfresco.wiki.page-edited <br/>
-     * � org.alfresco.wiki.page-renamed <br/>
-     * � org.alfresco.wiki.page-deleted <br/>
-     * � org.alfresco.site.user-joined <br/>
-     * � org.alfresco.site.user-left <br/>
-     * � org.alfresco.site.user-role-changed <br/>
-     * � org.alfresco.site.group-added <br/>
-     * � org.alfresco.site.group-removed <br/>
-     * � org.alfresco.site.group-role-changed <br/>
-     * � org.alfresco.site.liked <br/>
-     * � org.alfresco.links.link-created <br/>
-     * � org.alfresco.links.link-updated <br/>
-     * � org.alfresco.links.link-deleted <br/>
-     * � org.alfresco.datalists.list-created <br/>
-     * � org.alfresco.datalists.list-updated <br/>
-     * � org.alfresco.datalists.list-deleted <br/>
-     * � org.alfresco.subscriptions.followed <br/>
-     * � org.alfresco.subscriptions.subscribed<br/>
-     * � org.alfresco.profile.status-changed <br/>
+     * <ul></ul>
+     * <li>org.alfresco.blog.post-created</li>
+     * <li>org.alfresco.blog.post-updated</li>
+     * <li>org.alfresco.blog.post-deleted</li>
+     * <li>org.alfresco.comments.comment-created<br/>
+     * <li>org.alfresco.comments.comment-updated<br/>
+     * <li>org.alfresco.comments.comment-deleted<br/>
+     * <li>org.alfresco.discussions.post-created</li>
+     * <li>org.alfresco.discussions.post-updated</li>
+     * <li>org.alfresco.discussions.post-deleted</li>
+     * <li>org.alfresco.discussions.reply-created</li>
+     * <li>org.alfresco.discussions.reply-updated</li>
+     * <li>org.alfresco.calendar.event-created</li>
+     * <li>org.alfresco.calendar.event-updated</li>
+     * <li>org.alfresco.calendar.event-deleted</li>
+     * <li>org.alfresco.documentlibrary.files-added<br/>
+     * <li>org.alfresco.documentlibrary.files-updated</li>
+     * <li>org.alfresco.documentlibrary.files-deleted</li>
+     * <li>org.alfresco.documentlibrary.file-added</li>
+     * <li>org.alfresco.documentlibrary.file-updated</li>
+     * <li>org.alfresco.documentlibrary.file-created</li>
+     * <li>org.alfresco.documentlibrary.file-deleted</li>
+     * <li>org.alfresco.documentlibrary.file-liked</li>
+     * <li>org.alfresco.documentlibrary.inline-edit</li>
+     * <li>org.alfresco.documentlibrary.folder-liked</li>
+     * <li>org.alfresco.documentlibrary.folder-added</li>
+     * <li>org.alfresco.documentlibrary.folder-deleted</li>
+     * <li>org.alfresco.documentlibrary.folders-added</li>
+     * <li>org.alfresco.documentlibrary.folders-deleted</li>
+     * <li>org.alfresco.documentlibrary.inline-edit</li>
+     * <li>org.alfresco.documentlibrary.file-previewed</li>
+     * <li>org.alfresco.documentlibrary.file-downloaded</li>
+     * <li>org.alfresco.documentlibrary.file-liked</li>
+     * <li>org.alfresco.documentlibrary.folder-liked</li>
+     * <li>org.alfresco.wiki.page-created</li>
+     * <li>org.alfresco.wiki.page-edited</li>
+     * <li>org.alfresco.wiki.page-renamed</li>
+     * <li>org.alfresco.wiki.page-deleted</li>
+     * <li>org.alfresco.site.user-joined</li>
+     * <li>org.alfresco.site.user-left</li>
+     * <li>org.alfresco.site.user-role-changed</li>
+     * <li>org.alfresco.site.group-added</li>
+     * <li>org.alfresco.site.group-removed</li>
+     * <li>org.alfresco.site.group-role-changed</li>
+     * <li>org.alfresco.site.liked</li>
+     * <li>org.alfresco.links.link-created</li>
+     * <li>org.alfresco.links.link-updated</li>
+     * <li>org.alfresco.links.link-deleted</li>
+     * <li>org.alfresco.datalists.list-created</li>
+     * <li>org.alfresco.datalists.list-updated</li>
+     * <li>org.alfresco.datalists.list-deleted</li>
+     * <li>org.alfresco.subscriptions.followed</li>
+     * <li>org.alfresco.subscriptions.subscribed<br/>
+     * <li>org.alfresco.profile.status-changed</li>
+     * </ul>
      */
     public String getActivityType()
     {
@@ -247,61 +249,63 @@ public class Activity
 
     /**
      * Set the Activity type<br/>
-     * <br/>
+     *<br/>
      * The following are the possible values:<br/>
-     * � org.alfresco.blog.post-created <br/>
-     * � org.alfresco.blog.post-updated <br/>
-     * � org.alfresco.blog.post-deleted <br/>
-     * � org.alfresco.comments.comment-created<br/>
-     * � org.alfresco.comments.comment-updated<br/>
-     * � org.alfresco.comments.comment-deleted<br/>
-     * � org.alfresco.discussions.post-created <br/>
-     * � org.alfresco.discussions.post-updated <br/>
-     * � org.alfresco.discussions.post-deleted <br/>
-     * � org.alfresco.discussions.reply-created <br/>
-     * � org.alfresco.discussions.reply-updated <br/>
-     * � org.alfresco.calendar.event-created <br/>
-     * � org.alfresco.calendar.event-updated <br/>
-     * � org.alfresco.calendar.event-deleted <br/>
-     * � org.alfresco.documentlibrary.files-added<br/>
-     * � org.alfresco.documentlibrary.files-updated <br/>
-     * � org.alfresco.documentlibrary.files-deleted <br/>
-     * � org.alfresco.documentlibrary.file-added <br/>
-     * � org.alfresco.documentlibrary.file-updated <br/>
-     * � org.alfresco.documentlibrary.file-created <br/>
-     * � org.alfresco.documentlibrary.file-deleted <br/>
-     * � org.alfresco.documentlibrary.file-liked <br/>
-     * � org.alfresco.documentlibrary.inline-edit <br/>
-     * � org.alfresco.documentlibrary.folder-liked <br/>
-     * � org.alfresco.documentlibrary.folder-added <br/>
-     * � org.alfresco.documentlibrary.folder-deleted <br/>
-     * � org.alfresco.documentlibrary.folders-added <br/>
-     * � org.alfresco.documentlibrary.folders-deleted <br/>
-     * � org.alfresco.documentlibrary.inline-edit <br/>
-     * � org.alfresco.documentlibrary.file-previewed <br/>
-     * � org.alfresco.documentlibrary.file-downloaded <br/>
-     * � org.alfresco.documentlibrary.file-liked <br/>
-     * � org.alfresco.documentlibrary.folder-liked <br/>
-     * � org.alfresco.wiki.page-created <br/>
-     * � org.alfresco.wiki.page-edited <br/>
-     * � org.alfresco.wiki.page-renamed <br/>
-     * � org.alfresco.wiki.page-deleted <br/>
-     * � org.alfresco.site.user-joined <br/>
-     * � org.alfresco.site.user-left <br/>
-     * � org.alfresco.site.user-role-changed <br/>
-     * � org.alfresco.site.group-added <br/>
-     * � org.alfresco.site.group-removed <br/>
-     * � org.alfresco.site.group-role-changed <br/>
-     * � org.alfresco.site.liked <br/>
-     * � org.alfresco.links.link-created <br/>
-     * � org.alfresco.links.link-updated <br/>
-     * � org.alfresco.links.link-deleted <br/>
-     * � org.alfresco.datalists.list-created <br/>
-     * � org.alfresco.datalists.list-updated <br/>
-     * � org.alfresco.datalists.list-deleted <br/>
-     * � org.alfresco.subscriptions.followed <br/>
-     * � org.alfresco.subscriptions.subscribed<br/>
-     * � org.alfresco.profile.status-changed <br/>
+     * <ul>
+     * <li>org.alfresco.blog.post-created</li>
+     * <li>org.alfresco.blog.post-updated</li>
+     * <li>org.alfresco.blog.post-deleted</li>
+     * <li>org.alfresco.comments.comment-created<br/>
+     * <li>org.alfresco.comments.comment-updated<br/>
+     * <li>org.alfresco.comments.comment-deleted<br/>
+     * <li>org.alfresco.discussions.post-created</li>
+     * <li>org.alfresco.discussions.post-updated</li>
+     * <li>org.alfresco.discussions.post-deleted</li>
+     * <li>org.alfresco.discussions.reply-created</li>
+     * <li>org.alfresco.discussions.reply-updated</li>
+     * <li>org.alfresco.calendar.event-created</li>
+     * <li>org.alfresco.calendar.event-updated</li>
+     * <li>org.alfresco.calendar.event-deleted</li>
+     * <li>org.alfresco.documentlibrary.files-added<br/>
+     * <li>org.alfresco.documentlibrary.files-updated</li>
+     * <li>org.alfresco.documentlibrary.files-deleted</li>
+     * <li>org.alfresco.documentlibrary.file-added</li>
+     * <li>org.alfresco.documentlibrary.file-updated</li>
+     * <li>org.alfresco.documentlibrary.file-created</li>
+     * <li>org.alfresco.documentlibrary.file-deleted</li>
+     * <li>org.alfresco.documentlibrary.file-liked</li>
+     * <li>org.alfresco.documentlibrary.inline-edit</li>
+     * <li>org.alfresco.documentlibrary.folder-liked</li>
+     * <li>org.alfresco.documentlibrary.folder-added</li>
+     * <li>org.alfresco.documentlibrary.folder-deleted</li>
+     * <li>org.alfresco.documentlibrary.folders-added</li>
+     * <li>org.alfresco.documentlibrary.folders-deleted</li>
+     * <li>org.alfresco.documentlibrary.inline-edit</li>
+     * <li>org.alfresco.documentlibrary.file-previewed</li>
+     * <li>org.alfresco.documentlibrary.file-downloaded</li>
+     * <li>org.alfresco.documentlibrary.file-liked</li>
+     * <li>org.alfresco.documentlibrary.folder-liked</li>
+     * <li>org.alfresco.wiki.page-created</li>
+     * <li>org.alfresco.wiki.page-edited</li>
+     * <li>org.alfresco.wiki.page-renamed</li>
+     * <li>org.alfresco.wiki.page-deleted</li>
+     * <li>org.alfresco.site.user-joined</li>
+     * <li>org.alfresco.site.user-left</li>
+     * <li>org.alfresco.site.user-role-changed</li>
+     * <li>org.alfresco.site.group-added</li>
+     * <li>org.alfresco.site.group-removed</li>
+     * <li>org.alfresco.site.group-role-changed</li>
+     * <li>org.alfresco.site.liked</li>
+     * <li>org.alfresco.links.link-created</li>
+     * <li>org.alfresco.links.link-updated</li>
+     * <li>org.alfresco.links.link-deleted</li>
+     * <li>org.alfresco.datalists.list-created</li>
+     * <li>org.alfresco.datalists.list-updated</li>
+     * <li>org.alfresco.datalists.list-deleted</li>
+     * <li>org.alfresco.subscriptions.followed</li>
+     * <li>org.alfresco.subscriptions.subscribed<br/>
+     * <li>org.alfresco.profile.status-changed</li>
+     * </ul>
      * 
      * @param activityType
      */
@@ -563,61 +567,63 @@ public class Activity
     // TODO need to add to setActivityType
     /**
      * Validate the activity type.<br/>
-     * <br/>
+     *<br/>
      * The following are the possible values:<br/>
-     * � org.alfresco.blog.post-created <br/>
-     * � org.alfresco.blog.post-updated <br/>
-     * � org.alfresco.blog.post-deleted <br/>
-     * � org.alfresco.comments.comment-created<br/>
-     * � org.alfresco.comments.comment-updated<br/>
-     * � org.alfresco.comments.comment-deleted<br/>
-     * � org.alfresco.discussions.post-created <br/>
-     * � org.alfresco.discussions.post-updated <br/>
-     * � org.alfresco.discussions.post-deleted <br/>
-     * � org.alfresco.discussions.reply-created <br/>
-     * � org.alfresco.discussions.reply-updated <br/>
-     * � org.alfresco.calendar.event-created <br/>
-     * � org.alfresco.calendar.event-updated <br/>
-     * � org.alfresco.calendar.event-deleted <br/>
-     * � org.alfresco.documentlibrary.files-added<br/>
-     * � org.alfresco.documentlibrary.files-updated <br/>
-     * � org.alfresco.documentlibrary.files-deleted <br/>
-     * � org.alfresco.documentlibrary.file-added <br/>
-     * � org.alfresco.documentlibrary.file-updated <br/>
-     * � org.alfresco.documentlibrary.file-created <br/>
-     * � org.alfresco.documentlibrary.file-deleted <br/>
-     * � org.alfresco.documentlibrary.file-liked <br/>
-     * � org.alfresco.documentlibrary.inline-edit <br/>
-     * � org.alfresco.documentlibrary.folder-liked <br/>
-     * � org.alfresco.documentlibrary.folder-added <br/>
-     * � org.alfresco.documentlibrary.folder-deleted <br/>
-     * � org.alfresco.documentlibrary.folders-added <br/>
-     * � org.alfresco.documentlibrary.folders-deleted <br/>
-     * � org.alfresco.documentlibrary.inline-edit <br/>
-     * � org.alfresco.documentlibrary.file-previewed <br/>
-     * � org.alfresco.documentlibrary.file-downloaded <br/>
-     * � org.alfresco.documentlibrary.file-liked <br/>
-     * � org.alfresco.documentlibrary.folder-liked <br/>
-     * � org.alfresco.wiki.page-created <br/>
-     * � org.alfresco.wiki.page-edited <br/>
-     * � org.alfresco.wiki.page-renamed <br/>
-     * � org.alfresco.wiki.page-deleted <br/>
-     * � org.alfresco.site.user-joined <br/>
-     * � org.alfresco.site.user-left <br/>
-     * � org.alfresco.site.user-role-changed <br/>
-     * � org.alfresco.site.group-added <br/>
-     * � org.alfresco.site.group-removed <br/>
-     * � org.alfresco.site.group-role-changed <br/>
-     * � org.alfresco.site.liked <br/>
-     * � org.alfresco.links.link-created <br/>
-     * � org.alfresco.links.link-updated <br/>
-     * � org.alfresco.links.link-deleted <br/>
-     * � org.alfresco.datalists.list-created <br/>
-     * � org.alfresco.datalists.list-updated <br/>
-     * � org.alfresco.datalists.list-deleted <br/>
-     * � org.alfresco.subscriptions.followed <br/>
-     * � org.alfresco.subscriptions.subscribed<br/>
-     * � org.alfresco.profile.status-changed <br/>
+     * <ul>
+     * <li>org.alfresco.blog.post-created</li>
+     * <li>org.alfresco.blog.post-updated</li>
+     * <li>org.alfresco.blog.post-deleted</li>
+     * <li>org.alfresco.comments.comment-created<br/>
+     * <li>org.alfresco.comments.comment-updated<br/>
+     * <li>org.alfresco.comments.comment-deleted<br/>
+     * <li>org.alfresco.discussions.post-created</li>
+     * <li>org.alfresco.discussions.post-updated</li>
+     * <li>org.alfresco.discussions.post-deleted</li>
+     * <li>org.alfresco.discussions.reply-created</li>
+     * <li>org.alfresco.discussions.reply-updated</li>
+     * <li>org.alfresco.calendar.event-created</li>
+     * <li>org.alfresco.calendar.event-updated</li>
+     * <li>org.alfresco.calendar.event-deleted</li>
+     * <li>org.alfresco.documentlibrary.files-added<br/>
+     * <li>org.alfresco.documentlibrary.files-updated</li>
+     * <li>org.alfresco.documentlibrary.files-deleted</li>
+     * <li>org.alfresco.documentlibrary.file-added</li>
+     * <li>org.alfresco.documentlibrary.file-updated</li>
+     * <li>org.alfresco.documentlibrary.file-created</li>
+     * <li>org.alfresco.documentlibrary.file-deleted</li>
+     * <li>org.alfresco.documentlibrary.file-liked</li>
+     * <li>org.alfresco.documentlibrary.inline-edit</li>
+     * <li>org.alfresco.documentlibrary.folder-liked</li>
+     * <li>org.alfresco.documentlibrary.folder-added</li>
+     * <li>org.alfresco.documentlibrary.folder-deleted</li>
+     * <li>org.alfresco.documentlibrary.folders-added</li>
+     * <li>org.alfresco.documentlibrary.folders-deleted</li>
+     * <li>org.alfresco.documentlibrary.inline-edit</li>
+     * <li>org.alfresco.documentlibrary.file-previewed</li>
+     * <li>org.alfresco.documentlibrary.file-downloaded</li>
+     * <li>org.alfresco.documentlibrary.file-liked</li>
+     * <li>org.alfresco.documentlibrary.folder-liked</li>
+     * <li>org.alfresco.wiki.page-created</li>
+     * <li>org.alfresco.wiki.page-edited</li>
+     * <li>org.alfresco.wiki.page-renamed</li>
+     * <li>org.alfresco.wiki.page-deleted</li>
+     * <li>org.alfresco.site.user-joined</li>
+     * <li>org.alfresco.site.user-left</li>
+     * <li>org.alfresco.site.user-role-changed</li>
+     * <li>org.alfresco.site.group-added</li>
+     * <li>org.alfresco.site.group-removed</li>
+     * <li>org.alfresco.site.group-role-changed</li>
+     * <li>org.alfresco.site.liked</li>
+     * <li>org.alfresco.links.link-created</li>
+     * <li>org.alfresco.links.link-updated</li>
+     * <li>org.alfresco.links.link-deleted</li>
+     * <li>org.alfresco.datalists.list-created</li>
+     * <li>org.alfresco.datalists.list-updated</li>
+     * <li>org.alfresco.datalists.list-deleted</li>
+     * <li>org.alfresco.subscriptions.followed</li>
+     * <li>org.alfresco.subscriptions.subscribed<br/>
+     * <li>org.alfresco.profile.status-changed</li>
+     * </ul>
      * 
      * @param activityType
      * @return
@@ -688,10 +694,12 @@ public class Activity
      * <br/>
      * Role must be of type<br/>
      * <br/>
-     * � SiteContributor<br/>
-     * � SiteManger<br/>
-     * � SiteCollaborator<br/>
-     * � SiteConsumer<br/>
+     * <ul>
+     * <li>SiteContributor</li>
+     * <li>SiteManger</li>
+     * <li>SiteCollaborator</li>
+     * <li>SiteConsumer</li>
+     * </ul>
      * <br/>
      * An empty string is also valid...but will be set as null
      * 
