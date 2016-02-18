@@ -4,3 +4,7 @@
 /.project
 
 .DS_Store
+
+spring-social-alfresco.iml
+src/test/resources/connectionTest.properties
+/.idea
