@@ -41,4 +41,17 @@ public class AlfrescoConnectionFactory
         super("alfresco", new AlfrescoServiceProvider(consumerKey, consumerSecret), new AlfrescoAdapter());
     }
 
+    /**
+     * An ApiAdapter that bridges between the connection and the API client
+     *
+     * @param consumerKey - Alfresco Api Key
+     * @param consumerSecret - Alfresco Key Secret
+     * @param authorizeUrl - Authorization URL
+     * @param accessTokenUrl - Access Token URL
+     */
+    public AlfrescoConnectionFactory(String consumerKey, String consumerSecret, String authorizeUrl, String accessTokenUrl)
+    {
+        super("alfresco", new AlfrescoServiceProvider(consumerKey, consumerSecret, authorizeUrl, accessTokenUrl), new AlfrescoAdapter());
+    }
+
 }

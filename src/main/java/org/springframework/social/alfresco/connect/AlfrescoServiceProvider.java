@@ -40,6 +40,19 @@ public class AlfrescoServiceProvider
         super(new OAuth2Template(consumerKey, consumerSecret, "https://api.alfresco.com/auth/oauth/versions/2/authorize", "https://api.alfresco.com/auth/oauth/versions/2/token"));
     }
 
+    /**
+     * Create new Alfresco OAuth2ServiceProvider
+     *
+     * @param consumerKey - Alfresco Api Key
+     * @param consumerSecret - Alfresco Key Secret
+     * @param authorizeUrl - Authorization URL
+     * @param accessTokenUrl - Access Token URL
+     */
+    public AlfrescoServiceProvider(String consumerKey, String consumerSecret, String authorizeUrl, String accessTokenUrl)
+    {
+        super(new OAuth2Template(consumerKey, consumerSecret, authorizeUrl, accessTokenUrl));
+    }
+
 
     /**
      * Returns the Alfresco Api client interface to access protected resources on behalf of a user
