@@ -36,12 +36,10 @@ public class BasicAuthAlfrescoTemplate extends AbstractAlfrescoTemplate
 	private final String syncPassword;
 	private final String syncUsername;
 
-	public BasicAuthAlfrescoTemplate(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData,
-			ConnectionDetails subsConnectionData)
+	public BasicAuthAlfrescoTemplate(ConnectionDetails repoConnectionData, ConnectionDetails syncConnectionData)
 	{
 		super(BasicAuthAlfrescoTemplate.getBaseUrl(repoConnectionData),
 				BasicAuthAlfrescoTemplate.getBaseUrl(syncConnectionData),
-				BasicAuthAlfrescoTemplate.getBaseUrl(subsConnectionData),
 				        repoConnectionData.getPublicApiServletName(),
 				        repoConnectionData.getServiceServletName());
 		{

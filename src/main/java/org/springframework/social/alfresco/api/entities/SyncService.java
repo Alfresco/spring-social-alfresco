@@ -11,43 +11,47 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 @JsonSerialize(include = Inclusion.NON_NULL)
 public class SyncService
 {
-	private String id;
-	private String uri;
+    private String id;
+    private String uri;
+    private SyncServiceConfig config;
 
-	public SyncService()
-	{
-	}
+    public SyncService() {
+    }
 
-	public SyncService(String id, String uri)
-	{
-		super();
-		this.id = id;
-		this.uri = uri;
-	}
+    public SyncService(String id, String uri, SyncServiceConfig config) {
+        super();
+        this.id = id;
+        this.uri = uri;
+        this.config = config;
+    }
 
-	public String getUri()
-	{
-		return uri;
-	}
+    public SyncServiceConfig getConfig() {
+        return config;
+    }
 
-	public void setUri(String uri)
-	{
-		this.uri = uri;
-	}
+    public void setConfig(SyncServiceConfig config) {
+        this.config = config;
+    }
 
-	public String getId()
-	{
-		return id;
-	}
+    public String getUri() {
+        return uri;
+    }
 
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 
-	@Override
-	public String toString()
-	{
-		return "SyncService [id=" + id + ", uri=" + uri + "]";
-	}
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "SyncService [id=" + id + ", uri=" + uri + ", config=" + config
+                + "]";
+    }
 }

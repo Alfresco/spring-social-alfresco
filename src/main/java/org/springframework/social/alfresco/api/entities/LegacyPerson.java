@@ -1,8 +1,10 @@
 package org.springframework.social.alfresco.api.entities;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
+@JsonIgnoreProperties
 @JsonSerialize(include = Inclusion.NON_NULL)
 public class LegacyPerson
 {

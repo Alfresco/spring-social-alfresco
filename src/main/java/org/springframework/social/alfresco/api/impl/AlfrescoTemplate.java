@@ -37,10 +37,10 @@ public class AlfrescoTemplate extends AbstractAlfrescoTemplate
 	 * A new AlfrescoTemplate is created each time a new accessToken is generated, including
 	 * after a token refresh.
 	 */
-    public AlfrescoTemplate(String repoBaseUrl, String syncBaseUrl, String subsBaseUrl,
+    public AlfrescoTemplate(String repoBaseUrl, String syncBaseUrl,
     		String accessToken, String publicApiServletName, String serviceServletName)
     {
-        super(repoBaseUrl, syncBaseUrl, subsBaseUrl, publicApiServletName, serviceServletName);
+        super(repoBaseUrl, syncBaseUrl, publicApiServletName, serviceServletName);
         this.authenticationProvider = OAuthCMISAuthenticationProvider.alfrescoOAuthProvider(accessToken);
         this.oauth2 = new OAuth2(accessToken);
         this.repoRestTemplate = oauth2.getTemplateOverride();
